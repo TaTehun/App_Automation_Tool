@@ -1,68 +1,104 @@
 import subprocess
 import time
 import uiautomator2 as u2
+import pandas as pd
+from concurrent.futures import ThreadPoolExecutor
+from threading import Lock 
 
+def connect_devices(): # from Hyeonjun
+    # Get connected devices
+    result = subprocess.run(['adb', 'devices'], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                            universal_newlines=True)
+    lines = result.stdout.split('\n')[1:]  # Skip the first line which is a header
+    device_list = [line.split('\t')[0] for line in lines if '\tdevice' in line]
 
-def install_app_direct(device_id: str, package_name: str) -> bool:
-    """Install app by launching Play Store directly"""
-    try:
-        print(f"Installing {package_name}...")
+    return device_list
         
-        # Launch Play Store directly with the package
+def process_csv():
+    
+    df = pd.read_csv('App_List_US_1.csv')
+    
+    # convert all column names to lowercase
+    # df.columns = df.columns.str.lower()
+    
+    package_names = df['App ID'].tolist()
+    
+    return package_names
+
+
+def unlock_device(device):
+    
+    try:
+        # call process_csv for the package_name - Todo 
+
+        # Waking up and unlock the devices
         subprocess.run([
-            "adb", "-s", device_id, "shell",
-            "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
-            "-a android.intent.action.VIEW",
-            "-d", f"market://details?id={package_name}"
+            "adb","-s",f"{device}","shell",
+            "input","keyevent","224"
         ], check=True)
         
-        print("Launched Play Store, waiting for load...")
-        time.sleep(3)
-        
-        return True
-        
-    except subprocess.SubprocessError as e:
-        print(f"Unable to load the app: {e}")
-        return False
-
-def connect_devices():
-    # Get connected device
-    result = subprocess.run(
-        ["adb", "devices"],
-        capture_output=True,
-        text=True,
-        check=True
-    )
-    # Get first connected device
-    lines = result.stdout.strip().split('\n')
-    if len(lines) <= 1:
-        print("No devices connected!")
-    else:
-        device_id = lines[1].split('\t')[0]
-        print(f"Found device: {device_id}")
-        return device_id
+        time.sleep(1)
+            
+        subprocess.run([
+            "adb","-s",f"{device}","shell",
+            "input","keyevent","82"
+        ], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Error: {e}")
     
-def click_install_button():
-    d = u2.connect()
-    if d(text = "Install").wait(timeout = 10.0):
-        d(text = "Install").click()
-    else:
-        print("Install button is not found")
 
-def test_installation():
+def test_installation(device, package_names):
     try:
-        # Use the specific package name you want to test
-        package_name = "com.hellosimply.simplysingdroid"
-        device_id = connect_devices()
+        # call process_csv for the package_name - Todo 
+            
+        # Navigate to the app page in google playstore
+        for package_name in package_names:
+            subprocess.run([
+                "adb", "-s", f"{device}", "shell",
+                "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
+                "-a android.intent.action.VIEW",
+                "-d", f"market://details?id={package_name}"
+            ], check=True)
         
-        print(f"Attempting to install {package_name}")
-        
-        if install_app_direct(device_id, package_name):            
-            click_install_button()
-            print("Installation process started successfully")
+            # Click install button
+            d = u2.connect(device)
+            if d(text = "Install").wait(timeout = 1000.0):
+                d(text = "Install").click()
+                d(text = "Uninstall").wait(timeout = 10000.0)
+                print(f"app {package_name} has been installed")
+            else:
+                print("Install button is not found")
+                
+            # Click open button
+#            if d(text = "Open").wait(timeout = 10.0):
+#                d(text = "Open").click()
+#            else:
+#                print("Open button is not found")
+            continue
             
     except subprocess.CalledProcessError as e:
         print(f"Error: {e}")
+        
+
+def execute_command(): # from Hyeonjun
+    lock = Lock()
+    devices = connect_devices()
+    package_names = process_csv()
+
+    try:
+        with ThreadPoolExecutor() as executor:
+            for device in devices:
+                lock.acquire()
+                unlock_device(device)
+                executor.submit( 
+                                test_installation(device, package_names), 
+                                device)
+                
+                lock.release()
+    except Exception as e:
+        print(e)
+                
+# Log for the installation fails
 
 if __name__ == "__main__":
-    test_installation()
+    execute_command()
