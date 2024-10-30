@@ -5,7 +5,7 @@ import pandas as pd
 from concurrent.futures import ThreadPoolExecutor
 from threading import Lock 
 
-def connect_devices(): # from Hyeonjun
+def connect_devices():
     # Get connected devices
     result = subprocess.run(['adb', 'devices'], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                             universal_newlines=True)
@@ -50,6 +50,8 @@ def unlock_device(device):
 def test_installation(device, package_names):
     try:
         # call process_csv for the package_name - Todo 
+        
+        
             
         # Navigate to the app page in google playstore
         for package_name in package_names:
@@ -62,25 +64,30 @@ def test_installation(device, package_names):
         
             # Click install button
             d = u2.connect(device)
-            if d(text = "Install").wait(timeout = 1000.0):
-                d(text = "Install").click()
-                d(text = "Uninstall").wait(timeout = 10000.0)
+
+            if d(text = "Install" or "Update").wait(timeout = 10.0):
+                d(text = "Install" or "Update").click()
+                d(text = "cancel").exists(timeout=10)
+                d(text = "Uninstall").exists(timeout= 10.0)
+                print(f"app {package_name} has been installed")
+                    
+            elif d(text = "Uninstall").exists(timeout=10):
                 print(f"app {package_name} has been installed")
             else:
                 print("Install button is not found")
+                    
+                # Click open button
+    #            if d(text = "Open").wait(timeout = 10.0):
+    #                d(text = "Open").click()
+    #            else:
+    #                print("Open button is not found")
                 
-            # Click open button
-#            if d(text = "Open").wait(timeout = 10.0):
-#                d(text = "Open").click()
-#            else:
-#                print("Open button is not found")
-            continue
             
     except subprocess.CalledProcessError as e:
         print(f"Error: {e}")
         
 
-def execute_command(): # from Hyeonjun
+def execute_command(): 
     lock = Lock()
     devices = connect_devices()
     package_names = process_csv()
@@ -102,3 +109,5 @@ def execute_command(): # from Hyeonjun
 
 if __name__ == "__main__":
     execute_command()
+    
+    
