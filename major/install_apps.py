@@ -26,7 +26,6 @@ def process_csv():
     
     return package_names, app_names
 
-
 def unlock_device(device):
     
     try:
@@ -55,7 +54,7 @@ def test_installation(device, package_names, app_names):
         
             
         # Navigate to the app page in google playstore
-        for package_name,app_name in package_names, app_names:
+        for package_name, app_name in zip(package_names, app_names):
             subprocess.run([
                 "adb", "-s", f"{device}", "shell",
                 "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
@@ -71,20 +70,20 @@ def test_installation(device, package_names, app_names):
             if d(text = "Uninstall").exists(timeout = 10):
                 if d(text = "Update").wait(timeout = 10):
                     d(text = "Update").click()
-                    print(f"[Pass] app {app_name} has been Updated")
-                else: print(f"[Pass] app {app_name} has been installed")
+                    print(f"[Pass] {app_name} has been Updated")
+                else: print(f"[Pass] {app_name} has been installed")
                 
             elif d.xpath("//*[contains(@text,'t compatible') or contains(@text,'t available') or contains(@text,'t found')]").exists:
-                print("[NT/NA] App is not available or compatible for this device")
+                print(f"[NT/NA] {app_name} is not available or compatible for this device")
             
             elif d.xpath("//*[contains(@text,'usd')]").exists:
-                print("[NT/NA] Paid App")
+                print(f"[NT/NA] {app_name} is a Paid App")
             
             elif d(text = "Install").wait(timeout = 10):
                 d(text = "Install").click()
                 while time.time() - start_time < time_out:
                     if d(text = "Uninstall").exists(timeout= 10):
-                        print(f"[Pass] app {app_name} has been installed")
+                        print(f"[Pass] {app_name} has been installed")
             else:
                 print("[Fail] Install button is not found")
                     
