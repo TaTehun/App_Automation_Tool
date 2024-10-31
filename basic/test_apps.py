@@ -1,58 +1,12 @@
 import subprocess
 import time
 import uiautomator2 as u2
-import pandas as pd
-from concurrent.futures import ThreadPoolExecutor
-from threading import Lock 
 
-def connect_devices():
-    # Get connected devices
-    result = subprocess.run(['adb', 'devices'], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                            universal_newlines=True)
-    lines = result.stdout.split('\n')[1:]  # Skip the first line which is a header
-    device_list = [line.split('\t')[0] for line in lines if '\tdevice' in line]
-
-    return device_list
-        
-def process_csv():
-    
-    df = pd.read_csv('App_List_US.csv', encoding='unicode_escape')
-    
-    # convert all column names to lowercase
-    # df.columns = df.columns.str.lower()
-    
-    package_names = df['App ID'].tolist()
-    app_names = df['App Name'].tolist()
-    
-    return package_names, app_names
-
-def unlock_device(device):
-    
-    try:
-        # call process_csv for the package_name - Todo 
-
-        # Waking up and unlock the devices
-        subprocess.run([
-            "adb","-s",f"{device}","shell",
-            "input","keyevent","224"
-        ], check=True)
-        
-        time.sleep(1)
-            
-        subprocess.run([
-            "adb","-s",f"{device}","shell",
-            "input","keyevent","82"
-        ], check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"Error: {e}")
-    
+# device -> run.py
+# package_names, app_names -> csv_handler.py
 
 def test_installation(device, package_names, app_names):
     try:
-        # call process_csv for the package_name - Todo 
-        
-        
-            
         # Navigate to the app page in google playstore
         for package_name, app_name in zip(package_names, app_names):
             subprocess.run([
@@ -67,36 +21,55 @@ def test_installation(device, package_names, app_names):
             start_time = time.time()
             time_out = 5000
             
+            # Verify if the app is pre-installed
             if d(text = "Uninstall").exists(timeout = 10):
                 if d(text = "Update").wait(timeout = 10):
                     d(text = "Update").click()
                     print(f"[Pass] {app_name} has been Updated")
-                else: print(f"[Pass] {app_name} has been installed")
-                
+                else: print(f"[Pass] {app_name} has already been installed")
+            
+            # Verify the app's compatibility and availability    
             elif d.xpath("//*[contains(@text,'t compatible') or contains(@text,'t available') or contains(@text,'t found')]").exists:
                 print(f"[NT/NA] {app_name} is not available or compatible for this device")
             
+            # Verify if the app is Paid-app
             elif d.xpath("//*[contains(@text,'usd')]").exists:
                 print(f"[NT/NA] {app_name} is a Paid App")
             
+            # Verify if the app is installable
             elif d(text = "Install").wait(timeout = 10):
                 d(text = "Install").click()
                 while time.time() - start_time < time_out:
                     if d(text = "Uninstall").exists(timeout= 10):
-                        print(f"[Pass] {app_name} has been installed")
+                        print(f"[Pass] {app_name} is successfully installed")
             else:
-                print("[Fail] Install button is not found")
-                    
-                # Click open button
-    #            if d(text = "Open").wait(timeout = 10.0):
-    #                d(text = "Open").click()
-    #            else:
-    #                print("Open button is not found")
+                print("[Fail] Install button is not found")    
                 
+            # Open the app
+            if d(text = "Uninstall").exists(timeout = 10):
+                if d(text = "Play").wait(timeout = 10):
+                    d(text = "Play").click()
+                elif d(text = "Open").wait(timeout = 10):
+                    d(text = "Open").click()
+                    
+                    time.sleep(3)
+                    
+                    print(f"[Pass] {app_name} is Opened")
+                else: print(f"[Fail] {app_name} Failed to open")
+
             
     except subprocess.CalledProcessError as e:
         print(f"Error: {e}")
         
+
+# Test bench
+'''
+from basic.install_apps import test_installation
+from basic.connect_devices import connect_devices
+from basic.unlock_device import unlock_device
+from basic.csv_handler import process_csv
+from concurrent.futures import ThreadPoolExecutor
+from threading import Lock
 
 def execute_command(): 
     lock = Lock()
@@ -106,12 +79,12 @@ def execute_command():
     try:
         with ThreadPoolExecutor() as executor:
             for device in devices:
-                lock.acquire()
+                print(f"Device {device} is processing...")
                 unlock_device(device)
+                lock.acquire()
                 executor.submit( 
                                 test_installation(device, package_names, app_names), 
                                 device)
-                
                 lock.release()
     except Exception as e:
         print(e)
@@ -120,5 +93,4 @@ def execute_command():
 
 if __name__ == "__main__":
     execute_command()
-    
-    
+'''
