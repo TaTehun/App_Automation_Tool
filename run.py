@@ -10,7 +10,7 @@ from basic.csv_handler import process_csv
 def execute_command(): # source code from Hyeonjun An.
     lock = Lock()
     devices = connect_devices()
-    package_names, app_names = process_csv()
+    package_names, app_names, df = process_csv()
 
     try:
         with ThreadPoolExecutor() as executor:
@@ -19,7 +19,7 @@ def execute_command(): # source code from Hyeonjun An.
                 unlock_device(device)
                 lock.acquire()
                 executor.submit( 
-                                test_installation(device, package_names, app_names), 
+                                test_installation(device, package_names, app_names, df), 
                                 device)
                 lock.release()
     except Exception as e:
