@@ -9,7 +9,9 @@ import re
 def test_installation(device, package_names, app_names, df):
     try:
         p_count, f_count, na_count, total_count = 0, 0, 0, 0
-        p_list, f_list, na_list, total_list = [], [], [], []
+        remark_list, test_result, app_version = [], [], []
+        t_result_list = ["Pass","Fail","NT/NA"]
+        
         # Navigate to the app page in google playstore
         for package_name, app_name in zip(package_names, app_names):
             subprocess.run([
@@ -25,34 +27,34 @@ def test_installation(device, package_names, app_names, df):
             if d(text = "Uninstall").wait(timeout = 15):
                 if d(text = "Update").exists:
                     d(text = "Update").click()
-                    p_list.append(f"[Pass] {app_name} has been Updated")
-                    total_list.append("App has been Updated")
+                    test_result.append(t_result_list[0]) #Pass
+                    remark_list.append("App has been Updated")
                     p_count += 1
                 else: 
-                    p_list.append(f"[Pass] {app_name} has already been installed")
-                    total_list.append("App has already been installed")
+                    test_result.append(t_result_list[0]) #Pass
+                    remark_list.append("App has already been installed")
                     p_count += 1
                     
             # Verify the app's compatibility and availability  
             elif d.xpath("//*[contains(@text,'t compatible')]").exists:
-                na_list.append(f"[NT/NA] {app_name} is not compatible for this device")
-                total_list.append("App not compatible for this device")
+                test_result.append(t_result_list[3]) # NT/NA
+                remark_list.append("App is not compatible for this device")
                 na_count += 1
                 
             elif d.xpath("//*[contains(@text,'t available')]").exists:
-                na_list.append(f"[NT/NA] {app_name} is not available for this device")
-                total_list.append("App not compatible for this device")
+                test_result.append(t_result_list[3]) # NT/NA
+                remark_list.append("App is not available for this device")
                 na_count += 1
                 
             elif d.xpath("//*[contains(@text,'t found')]").exists:
-                na_list.append(f"[NT/NA] {app_name} is not found")
-                total_list.append("App not compatible for this device")
+                test_result.append(t_result_list[3]) # NT/NA
+                remark_list.append("App is not found")
                 na_count += 1
             
             # Verify if the app is Paid-app
-            elif not d(text = "Install").exists and d.xpath("//*[contains(@text,'$')]").wait(timeout = 10):
-                na_list.append(f"[NT/NA] {app_name} is a Paid App")
-                total_list.append("App not compatible for this device")
+            elif d.xpath("//*[contains(@text,'$')]").wait(timeout = 10) and not d(text = "Install").exists:
+                test_result.append(t_result_list[3]) # NT/NA
+                remark_list.append("App is a Paid App")
                 na_count += 1
             
             # Verify if the app is installable
@@ -63,53 +65,44 @@ def test_installation(device, package_names, app_names, df):
                     d(text = "OK").click()
                     
                 if d(text = "Uninstall").wait(timeout = 600):
-                    p_list.append(f"[Pass] {app_name} is successfully installed")
-                    total_list.append("App is successfully instae")
+                    test_result.append(t_result_list[0]) # Pass
+                    remark_list.append("App is successfully Installed")
                     p_count += 1
                 else:
-                    f_list.append(f"[Fail] {app_name} failed to install within the timeout")
-                    total_list.append("App is Fail instae")
+                    test_result.append(t_result_list[1]) # Fail
+                    remark_list.append("App is failed to install within the timeout")
                     f_count += 1
             else:
-                f_list.append("[Fail] Install button is not found")
-                total_list.append("no bytton")
+                test_result.append(t_result_list[1]) # Fail
+                remark_list.append("Install button is not found")
                 f_count += 1
                 
         
             # Get App version
-            app_version = subprocess.run([
+            app_version_finder = subprocess.run([
                 "adb", "shell", "dumpsys", "package", f"{package_name}"],
                                         capture_output=True, text=True)
             
-            for line in app_version.stdout.splitlines():
+            found_version = False
+            for line in app_version_finder.stdout.splitlines():
                 if "versionName=" in line:
                     version = line.split("=")[1].strip()
-                    print(f"Version: {version}") 
+                    app_version.append(f"{version}")
+                    found_version = True
+                    break
+            if not found_version:
+                app_version.append("no version")
                 
+
                 '''
                     category = re.findall(r'android.intent.category\.(\w+)', app_output)
                     if category:
                         print(f"Category: {category}")
                 '''
-            # Get App categories
+            # Count tested app
             total_count += 1
-        
-                
-    except subprocess.CalledProcessError as e:
-        print(f"Error: {e}")
-        
-    if total_count == f_count + p_count + na_count:
-        print(f"Total {total_count} app testing is completed \n {f_count} Fails, {na_count} NT/NAs, {p_count} Passes!!")
-    else:
-        print("Total number doesn't match..")
-    
-    print("Fail:", f_list if f_list else f_count, 
-          "\n NT/NA:", na_list if na_list else na_count, 
-          "\n Pass:", p_list if p_list else p_count)
-    
-    df['Result'] = total_list
-    df.to_csv('123tj.csv', index=False)
-'''            
+            
+            
             # Open the app
             if d(text = "Uninstall").exists:
                 if d(text = "Play").exists:
@@ -118,14 +111,31 @@ def test_installation(device, package_names, app_names, df):
                     d(text = "Open").click()
                 else: 
                     print(f"[Fail] {app_name} Failed to open")
-                time.sleep(3)
             
-                print(f"[Pass] {app_name} is Opened")
-            '''
+            time.sleep(3)
+            print("App is opened!!")    
+            
 
         
-        
-
+                
+    except subprocess.CalledProcessError as e:
+        print(f"Error: {e}")
+    
+    # Installation Test result
+    actual_test_count = f_count + p_count + na_count 
+    if total_count == actual_test_count:
+        print(f"Total {total_count} app testing is completed"
+              f"\n{f_count} Fails, {na_count} NT/NAs, {p_count} Passes!!")
+    else:
+        print("Number of tested app doesn't match.."
+              f"\nTotal number of app run : {total_count}"
+              f"\nTest result is recorded : {actual_test_count}")
+    
+    df['App Version'] = app_version
+    df['Result'] = test_result
+    df['Remarks'] = remark_list
+    df.to_csv('123tj_result.csv', index=False)
+    
 # Test bench
 '''
 from basic.install_apps import test_installation
