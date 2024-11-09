@@ -9,12 +9,14 @@ import re
 def test_app_install(device, package_names, app_names, df):
     try:
         p_count, f_count, na_count, total_count = 0, 0, 0, 0
-        remark_list, test_result, app_version = [], [], []
+        remark_list, test_result = [], []
         t_result_list = ["Pass","Fail","NT/NA"]
+        attempt = 0
         
         # Navigate to the app page in google playstore
         for package_name, app_name in zip(package_names, app_names):
             for attempt in range(3):
+                attempt += 1
                 subprocess.run([
                     "adb", "-s", f"{device}", "shell",
                     "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
@@ -74,7 +76,7 @@ def test_app_install(device, package_names, app_names, df):
                     if d.xpath("//*[contains(@text,'When Wi')]").wait(timeout = 5):
                         d(text = "OK").click()
                         
-                    if d(text = "Uninstall").wait(timeout = 6):
+                    if d(text = "Uninstall").wait(timeout = 600):
                         test_result.append(t_result_list[0]) # Pass
                         remark_list.append("App is successfully Installed")
                         p_count += 1
@@ -86,9 +88,11 @@ def test_app_install(device, package_names, app_names, df):
                     test_result.append(t_result_list[1]) # Fail
                     remark_list.append("Install button is not found")
                     f_count += 1
-                
+
+                print (total_count, attempt, app_name, p_count, f_count, na_count)
+
                 #attempt to reload the page and repeat the installation
-                attempt += 1
+                
                 if test_result[-1] == t_result_list[0]:                    
                     break               
                 elif attempt <= 2:
@@ -98,7 +102,7 @@ def test_app_install(device, package_names, app_names, df):
                         na_count -= 1
                     test_result.pop()
                     remark_list.pop()
-
+                    
             total_count += 1
 
     except subprocess.CalledProcessError as e:
@@ -112,12 +116,13 @@ def test_app_install(device, package_names, app_names, df):
     else:
         print("Number of tested app doesn't match.."
             f"\nTotal number of app run : {total_count}"
-            f"\nTest result is recorded : {actual_test_count}")
+            f"\nTest result is recorded : {actual_test_count} : {p_count}, {f_count}, {na_count}")
         
     df['Result'] = test_result
     df['Remarks'] = remark_list
     df.to_csv('123tj_result.csv', index=False)
 
+    print (total_count, attempt, app_name, p_count, f_count, na_count)
 # Test bench
 '''
 from basic.install_apps import test_installation
