@@ -2,6 +2,7 @@ import subprocess
 import uiautomator2 as u2
 from basic.unlock_device import unlock_device
 import pandas as pd
+
 # device -> run.py
 # package_names, app_names -> csv_handler.py
 
