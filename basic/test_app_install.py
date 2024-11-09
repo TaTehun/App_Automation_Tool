@@ -2,6 +2,7 @@ import subprocess
 import uiautomator2 as u2
 from basic.unlock_device import unlock_device
 import pandas as pd
+
 # device -> run.py
 # package_names, app_names -> csv_handler.py
 
@@ -12,8 +13,14 @@ def test_app_install(device, package_names, app_names, df, csv_file):
         t_result_list = ["Pass","Fail","NT/NA"]
         d = u2.connect(device)
         
+        # Initialize columns
+        if 'Result' not in df.columns:
+            df['Result'] = ""  
+        if 'Remarks' not in df.columns:
+            df['Remarks'] = "" 
+        
         # Navigate to the app page in google playstore
-        for package_name, app_name in zip(package_names, app_names):
+        for i, (package_name, app_name) in enumerate(zip(package_names, app_names)):
             for attempt in range(3):
                 attempt += 1
                 
@@ -95,8 +102,6 @@ def test_app_install(device, package_names, app_names, df, csv_file):
                     remark_list.append("Install button is not found")
                     f_count += 1
 
-                print (total_count, attempt, app_name, p_count, f_count, na_count)
-
                 #attempt to reload the page and repeat the installation
                 if test_result[-1] == t_result_list[0]:                    
                     break               
@@ -107,11 +112,11 @@ def test_app_install(device, package_names, app_names, df, csv_file):
                         na_count -= 1
                     test_result.pop()
                     remark_list.pop()
-                    
-            # save the temporary result to csv file
-            df['Result'] = pd.Series(test_result).reindex(df.index, fill_value='Unknown')
-            df['Remarks'] = pd.Series(remark_list).reindex(df.index, fill_value='Unknown')
-            df.to_csv(f'{csv_file}_{device}_temp.csv', index=False)
+                   
+            # save the result to csv file
+            df.at[i, 'Result'] = test_result[-1]
+            df.at[i, 'Remarks'] = remark_list[-1]
+            df.to_csv(f'{csv_file}_{device}_result.csv', index=False)
 
             total_count += 1
             
@@ -127,13 +132,14 @@ def test_app_install(device, package_names, app_names, df, csv_file):
         print("Number of tested app doesn't match.."
             f"\nTotal number of app run : {total_count}"
             f"\nTest result is recorded : {actual_test_count} : {p_count}, {f_count}, {na_count}")
-        
-    # save the final result to csv file - will not save it if there is an error.    
-    df['Result'] = test_result
-    df['Remarks'] = remark_list
-    df.to_csv(f'{csv_file}_{device}_result.csv', index=False)    
 
-    print (total_count, attempt, app_name, p_count, f_count, na_count)
+    # Filter only Pass status
+    result_df = pd.read_csv(f'{csv_file}_{device}_result.csv')
+    result_df['Result'] = result_df['Result'].astype(str)
+    result_df.columns = result_df.columns.str.strip()
+    pass_df = result_df[result_df['Result'] == 'Pass']
+    pass_df.to_csv(f'Pass_{csv_file}_{device}_result.csv', index=False)
+        
     
 # Test bench
 '''

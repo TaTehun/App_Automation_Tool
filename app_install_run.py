@@ -10,7 +10,7 @@ from basic.csv_handler import process_csv
 def execute_command(): # source code from Hyeonjun An.
     lock = Lock()
     device_list = connect_devices()
-    package_names, app_names, df, csv_file = process_csv()
+    package_names, app_names, df, sf, csv_file = process_csv()
 
     try:
         with ThreadPoolExecutor() as executor:

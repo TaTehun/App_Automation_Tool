@@ -8,7 +8,6 @@ import re
 
 def test_app_run(device, package_names, app_names, df):
     try:
-        app_version = []
         d = u2.connect(device)
         
         for package_name, app_name in zip(package_names, app_names):
@@ -29,21 +28,6 @@ def test_app_run(device, package_names, app_names, df):
                     print(f"[Fail] {app_name} Failed to open")
                 time.sleep(3)
             print("App is Opened")
-                
-            # Get App version
-            app_version_finder = subprocess.run([
-                "adb", "shell", "dumpsys", "package", f"{package_name}"],
-                                        capture_output=True, text=True)
-            
-            found_version = False
-            for line in app_version_finder.stdout.splitlines():
-                if "versionName=" in line:
-                    version = line.split("=")[1].strip()
-                    app_version.append(f"{version}")
-                    found_version = True
-                    break
-            if not found_version:
-                app_version.append("no version")
 
     except subprocess.CalledProcessError as e:
         print(f"Error: {e}")
