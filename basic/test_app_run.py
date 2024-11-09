@@ -9,6 +9,7 @@ import re
 def test_app_run(device, package_names, app_names, df):
     try:
         app_version = []
+        d = u2.connect(device)
         
         for package_name, app_name in zip(package_names, app_names):
             subprocess.run([
@@ -17,9 +18,8 @@ def test_app_run(device, package_names, app_names, df):
                 "-a android.intent.action.VIEW",
                 "-d", f"market://details?id={package_name}"
             ], check=True)
-
-            d = u2.connect(device)
             
+            # Open the app
             if d(text = "Uninstall").exists:
                 if d(text = "Play").exists:
                     d(text = "Play").click()

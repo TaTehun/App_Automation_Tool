@@ -10,6 +10,7 @@ def test_app_install(device, package_names, app_names, df, csv_file):
         p_count, f_count, na_count, total_count, attempt = 0, 0, 0, 0, 0
         remark_list, test_result = [], []
         t_result_list = ["Pass","Fail","NT/NA"]
+        d = u2.connect(device)
         
         # Navigate to the app page in google playstore
         for package_name, app_name in zip(package_names, app_names):
@@ -25,8 +26,6 @@ def test_app_install(device, package_names, app_names, df, csv_file):
                     "-d", f"market://details?id={package_name}"
                 ], check=True)
 
-                d = u2.connect(device)
-                
                 # Popup variables
                 if d.xpath("//*[contains(@text,'t now')]").exists:
                     d(text = "Not now").click()
@@ -99,7 +98,6 @@ def test_app_install(device, package_names, app_names, df, csv_file):
                 print (total_count, attempt, app_name, p_count, f_count, na_count)
 
                 #attempt to reload the page and repeat the installation
-                
                 if test_result[-1] == t_result_list[0]:                    
                     break               
                 elif attempt <= 2:
@@ -116,6 +114,7 @@ def test_app_install(device, package_names, app_names, df, csv_file):
             df.to_csv(f'{csv_file}_{device}_temp.csv', index=False)
 
             total_count += 1
+            
     except subprocess.CalledProcessError as e:
         print(f"Error: {e}")
 
@@ -128,35 +127,36 @@ def test_app_install(device, package_names, app_names, df, csv_file):
         print("Number of tested app doesn't match.."
             f"\nTotal number of app run : {total_count}"
             f"\nTest result is recorded : {actual_test_count} : {p_count}, {f_count}, {na_count}")
+        
     # save the final result to csv file - will not save it if there is an error.    
     df['Result'] = test_result
     df['Remarks'] = remark_list
     df.to_csv(f'{csv_file}_{device}_result.csv', index=False)    
 
     print (total_count, attempt, app_name, p_count, f_count, na_count)
+    
 # Test bench
 '''
-from basic.install_apps import test_installation
-from basic.connect_devices import connect_devices
-from basic.unlock_device import unlock_device
-from basic.csv_handler import process_csv
 from concurrent.futures import ThreadPoolExecutor
 from threading import Lock
 
-def execute_command(): 
+from basic.test_app_install import test_app_install
+from basic.test_app_run import test_app_run
+from basic.connect_devices import connect_devices
+from basic.csv_handler import process_csv
+
+def execute_command(): # source code from Hyeonjun An.
     lock = Lock()
-    devices = connect_devices()
-    package_names, app_names = process_csv()
+    device_list = connect_devices()
+    package_names, app_names, df, csv_file = process_csv()
 
     try:
         with ThreadPoolExecutor() as executor:
-            for device in devices:
+            for device in device_list:
                 print(f"Device {device} is processing...")
-                unlock_device(device)
                 lock.acquire()
                 executor.submit( 
-                                test_installation(device, package_names, app_names), 
-                                device)
+                    test_app_install(device, package_names, app_names, df, csv_file), device)
                 lock.release()
     except Exception as e:
         print(e)
