@@ -15,16 +15,14 @@ def info_sync():
             df['Developer'] = ""
         if 'App Version' not in df.columns:
             df['App Version'] = ""
-        if 'Main Issue ID List' not in df.columns:
-            df['Main Issue ID List'] = ""
-        if 'Issue Description List' not in df.columns:
-            df['Issue Description List'] = ""
+        if 'Updated Date' not in df.columns:
+            df['Updated Date'] = ""
+            
         df['App Category'] = df.get('App Category', '').astype(str)
         df['Developer'] = df.get('Developer', '').astype(str)
         df['App Version'] = df.get('App Version', '').astype(str)
-        df['Main Issue ID List'] = df.get('Main Issue ID List', '').astype(str)
-        df['Issue Description List'] = df.get('Issue Description List', '').astype(str)
-
+        df['Updated Date'] = df.get('App Version', '').astype(str)
+        
         for i, package_name in enumerate(package_names):
             # Fetch app details for the current package name
             verify_app = search(package_name)
@@ -58,7 +56,7 @@ def info_sync():
             for device in device_list:
                 app_version_finder = subprocess.run([
                     "adb", "-s", device, "shell", "dumpsys", "package", f"{package_name}"
-                ], capture_output=True, text=True)
+                ], capture_output=True, text=True, shell=True, encoding='utf-8')
 
                 is_version = False
                 for line in app_version_finder.stdout.splitlines():
