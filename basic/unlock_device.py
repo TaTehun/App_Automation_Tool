@@ -1,7 +1,7 @@
 import subprocess
 import time
 
-def in_device_unlocked(device):
+def is_device_unlocked(device):
     is_unlocked = subprocess.run(
         ["adb","-s",f"{device}", "shell", "dumpsys", "window | grep 'mDreamingLockscreen'"],
         capture_output = True,
@@ -12,14 +12,20 @@ def in_device_unlocked(device):
         return True
     return False
 
+def keep_screen_on(device):
+    subprocess.run(
+        ["adb","-s",f"{device}", "shell", "settings", "put", "system", "screen_off_timeout", "86400000"
+    ], check = True) # screen on for 24 hours
+
 def unlock_device(device):
     try:
         attempt = 0
-        while True and attempt <= 5:
-            is_device_unlocked(device)
-                attempt += 1
-                
+        while attempt <= 5: 
+            if is_device_unlocked(device):
+                break
+            else:
                 # Waking up and unlock the devices
+                keep_screen_on(device)
                 subprocess.run([
                     "adb","-s",f"{device}","shell",
                     "input","keyevent","224"
@@ -31,7 +37,7 @@ def unlock_device(device):
                     "adb","-s",f"{device}","shell",
                     "input","keyevent","82"
                 ], check=True)
-
+                attempt += 1
         
     except subprocess.CalledProcessError as e:
         print(f"Error: {e}")

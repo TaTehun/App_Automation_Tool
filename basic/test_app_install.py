@@ -1,22 +1,23 @@
 import subprocess
-import time
 import uiautomator2 as u2
-import re
-
+from basic.unlock_device import unlock_device
+import pandas as pd
 # device -> run.py
 # package_names, app_names -> csv_handler.py
 
-def test_app_install(device, package_names, app_names, df):
+def test_app_install(device, package_names, app_names, df, csv_file):
     try:
-        p_count, f_count, na_count, total_count = 0, 0, 0, 0
+        p_count, f_count, na_count, total_count, attempt = 0, 0, 0, 0, 0
         remark_list, test_result = [], []
         t_result_list = ["Pass","Fail","NT/NA"]
-        attempt = 0
         
         # Navigate to the app page in google playstore
         for package_name, app_name in zip(package_names, app_names):
             for attempt in range(3):
                 attempt += 1
+                
+                unlock_device(device)
+                
                 subprocess.run([
                     "adb", "-s", f"{device}", "shell",
                     "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
@@ -26,6 +27,7 @@ def test_app_install(device, package_names, app_names, df):
 
                 d = u2.connect(device)
                 
+                # Popup variables
                 if d.xpath("//*[contains(@text,'t now')]").exists:
                     d(text = "Not now").click()
                 elif d.xpath("//*[contains(@text,'t add')]").exists:
@@ -38,10 +40,15 @@ def test_app_install(device, package_names, app_names, df):
                     if d(text = "Update").exists:
                         d(text = "Update").click()
                         # wait until open
-                        if d(text = "uninstall").exists:
+                        if d(text = "Uninstall").wait(timeout = 600):
                             test_result.append(t_result_list[0]) #Pass
                             remark_list.append("App has been Updated")
                             p_count += 1
+                        else:
+                            test_result.append(t_result_list[1]) # Fail
+                            remark_list.append("App is failed to install within the timeout")
+                            f_count += 1
+                            
                     else: 
                         test_result.append(t_result_list[0]) #Pass
                         remark_list.append("App has already been installed")
@@ -103,8 +110,12 @@ def test_app_install(device, package_names, app_names, df):
                     test_result.pop()
                     remark_list.pop()
                     
-            total_count += 1
+            # save the temporary result to csv file
+            df['Result'] = pd.Series(test_result).reindex(df.index, fill_value='Unknown')
+            df['Remarks'] = pd.Series(remark_list).reindex(df.index, fill_value='Unknown')
+            df.to_csv(f'{csv_file}_{device}_temp.csv', index=False)
 
+            total_count += 1
     except subprocess.CalledProcessError as e:
         print(f"Error: {e}")
 
@@ -117,10 +128,10 @@ def test_app_install(device, package_names, app_names, df):
         print("Number of tested app doesn't match.."
             f"\nTotal number of app run : {total_count}"
             f"\nTest result is recorded : {actual_test_count} : {p_count}, {f_count}, {na_count}")
-        
+    # save the final result to csv file - will not save it if there is an error.    
     df['Result'] = test_result
     df['Remarks'] = remark_list
-    df.to_csv('123tj_result.csv', index=False)
+    df.to_csv(f'{csv_file}_{device}_result.csv', index=False)    
 
     print (total_count, attempt, app_name, p_count, f_count, na_count)
 # Test bench

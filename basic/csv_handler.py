@@ -8,4 +8,4 @@ def process_csv():
     package_names = df['App ID'].tolist()
     app_names = df['App Name'].tolist()
     
-    return package_names, app_names, df
+    return package_names, app_names, df, csv_file
