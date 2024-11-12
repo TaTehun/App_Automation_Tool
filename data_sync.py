@@ -1,72 +1,73 @@
 import pandas as pd
-from basic.csv_handler import process_csv
-from basic.connect_devices import connect_devices
 
 def data_sync():
-    
     data_file = 'Book.csv'
     new_data_file = 'new_Book.csv'
+    
+    # Load data files
     df = pd.read_csv(data_file)
     nf = pd.read_csv(new_data_file)
+    
+    # Clean and strip columns
     df['Acccct'] = df['Acccct'].str.strip()
     df['Device'] = df['Device'].str.strip()
     nf['Accct'] = nf['Accct'].str.strip()
     nf['Device'] = nf['Device'].str.strip()
-    df['Promo Start'] = pd.to_datetime(df['Promo Start'], format = '%m/%d/%Y')
-    df['Promo End'] = pd.to_datetime(df['Promo End'], format = '%m/%d/%Y')
 
-    #print (account_sync)
-    #print (account_sync_nf)
-    #print (nf.head())
-    
-    nf = nf.fillna(0)
-    #print(nf)
+    # Convert Promo Start and End to datetime
+    df['Promo Start'] = pd.to_datetime(df['Promo Start'], format='%m/%d/%Y')
+    df['Promo End'] = pd.to_datetime(df['Promo End'], format='%m/%d/%Y')
+
+    nf = nf.fillna(0)  # Replace NaNs with 0
 
     try:
+        # Prepare lists for matched values and totals
         device_match, account_match, start_date_match, end_date_match, p_no_match = [], [], [], [], []
         unit_total = []
-        
+
+        # Identify date columns
         new_date = [col for col in nf.columns if isinstance(col, str) and '/' in col]
-        nf[new_date] = nf[new_date].apply(pd.to_datetime, format = '%m/%d/%Y')
         
+        # Convert date columns in nf to datetime
+        nf[new_date] = nf[new_date].apply(pd.to_datetime, format='%m/%d/%Y', errors='coerce')
+
+        # Iterate through each row in df
         for i, row in df.iterrows():
-            promo_start = row.get('Promo Start'),
-            promo_end = row.get('Promo End'),
-            device_list = row.get('Device'),
-            acct_list = row.get('Acccct'),
+            promo_start = row.get('Promo Start')
+            promo_end = row.get('Promo End')
+            device_list = row.get('Device')
+            acct_list = row.get('Acccct')
             p_no = row.get('Condition')
             
-            #print (device_list)
-            #print (nf[(nf['Accct'])])
+            # Check if promo_start, promo_end, device_list, and acct_list are valid
+            if pd.isna(promo_start) or pd.isna(promo_end) or pd.isna(device_list) or pd.isna(acct_list):
+                continue  # Skip if any of these are missing
 
-            #if pd.isna(promo_start) or pd.isna(promo_end) or pd.isna(device_list) or (acct_list):
-                #continue
-
-            nf['Device'] = nf['Device'].notna()
-            nf['Accct'] = nf['Accct'].notna()
-            nf.columns = nf.columns.str.strip()
-            
-            #matched_rows = nf[(nf['Device'] == device_list) & (nf['Accct'] == acct_list)]
+            # Match rows in nf based on Device and Accct columns
             matched_rows = nf[(nf['Device'] == device_list) & (nf['Accct'] == acct_list)]
             
-            #if matched_rows.empty:
-                #continue
+            if matched_rows.empty:
+                continue  # Skip if no rows match
             
             total_sum = 0
             
+            # Iterate over matched rows
             for _, match_row in matched_rows.iterrows():
-            
+                # Filter values in the date columns
                 filtered_new_dates = match_row[new_date]
                 
+                # Iterate over the date columns and their corresponding values
                 for new_d, value in filtered_new_dates.items():
                     if pd.notna(value) and isinstance(value, (int, float)):
-                        date_column_as_date = pd.to_datetime(new_d, format = '%m/%d/%Y')
+                        date_column_as_date = pd.to_datetime(new_d, format='%m/%d/%Y', errors='coerce')
+                        
+                        # Check if the date is within the promo start and end range
                         if promo_start <= date_column_as_date <= promo_end:
-                            unit_total += value
-            unit_total = filtered_new_dates.values.sum()
-            print (matched_rows)
+                            total_sum += value  # Add the value to the running total
 
-            #print (f"p_no : {p_no_match}, device: {device_match}, account: {account_match}, start: {start_date_match}, end: {end_date_match}, unit = {unit_total}")
+            # Store or print the result for this row
+            print(f"p_no: {p_no}, Total sum for Device={device_list} and Account={acct_list} between {promo_start.date()} and {promo_end.date()}: {total_sum}")
+            # You can also store results in lists if needed (e.g., device_match, account_match, etc.)
 
     except Exception as e:
         print(f"Error: {e}")
