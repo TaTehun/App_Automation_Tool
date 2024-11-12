@@ -28,9 +28,6 @@ def data_sync():
         # Identify date columns
         new_date = [col for col in nf.columns if isinstance(col, str) and '/' in col]
         
-        # Convert date columns in nf to datetime
-        nf[new_date] = nf[new_date].apply(pd.to_datetime, format='%m/%d/%Y', errors='coerce')
-
         # Iterate through each row in df
         for i, row in df.iterrows():
             promo_start = row.get('Promo Start')
@@ -46,19 +43,25 @@ def data_sync():
             # Match rows in nf based on Device and Accct columns
             matched_rows = nf[(nf['Device'] == device_list) & (nf['Accct'] == acct_list)]
             
-            #if matched_rows.empty:
-                #continue  # Skip if no rows match
+            if matched_rows.empty:
+                continue  # Skip if no rows match
             
+            total_sum = 0
+            
+            for _, match_row in matched_rows.iterrows():
+                filtered_new_dates = match_row[new_date]
 
-                # Iterate over the date columns and their corresponding values
-            matched_num = df.select_dtypes(include=[int, float])
-            matched_num = matched_num.fillna(0)
-            matched_rows = matched_rows.matched_num.sum(axis=1)
-            
-            print(matched_rows)
-            # Store or print the result for this row
-            #print(f"p_no: {p_no}, Total sum for Device={device_list} and Account={acct_list} between {promo_start.date()} and {promo_end.date()}: {total_sum}")
-            # You can also store results in lists if needed (e.g., device_match, account_match, etc.)
+                for new_d, value in filtered_new_dates.items():
+                    if pd.notna(value) and isinstance(value, (int, float)):
+                        date_column_as_date = pd.to_datetime(new_d, format='%m/%d/%Y', errors='coerce')
+                        if promo_start <= date_column_as_date <= promo_end:
+                            total_sum += value
+                            
+                            unit_total = total_sum
+                            
+                            print (unit_total)
+
+            print(f"p_no: {p_no}, Total sum for Device={device_list} and Account={acct_list} between {promo_start.date()} and {promo_end.date()}: {total_sum}")
 
     except Exception as e:
         print(f"Error: {e}")
