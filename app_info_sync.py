@@ -15,63 +15,58 @@ def info_sync():
             df['Developer'] = ""
         if 'App Version' not in df.columns:
             df['App Version'] = ""
-        if 'Main Issue ID List' not in df.columns:
-            df['Main Issue ID List'] = ""
-        if 'Issue Description List' not in df.columns:
-            df['Issue Description List'] = ""
+        if 'Updated Date' not in df.columns:
+            df['Updated Date'] = ""
+            
         df['App Category'] = df.get('App Category', '').astype(str)
         df['Developer'] = df.get('Developer', '').astype(str)
         df['App Version'] = df.get('App Version', '').astype(str)
-        df['Main Issue ID List'] = df.get('Main Issue ID List', '').astype(str)
-        df['Issue Description List'] = df.get('Issue Description List', '').astype(str)
-
+        df['Updated Date'] = df.get('App Version', '').astype(str)
+        
         for i, package_name in enumerate(package_names):
-            # Fetch app details for the current package name
-            verify_app = search(package_name)
-            app_found = any(result['appId'] == package_name for result in verify_app)
+            try:
+                # Fetch app details for the current package name
+                app_info = app(package_name)
+                    
+                # Sync category
+                is_category = app_info.get('categories', [])
+                if is_category:
+                    category_id = is_category[0].get('id', 'No category ID found').strip()
+                else:
+                    category_id = "Unknown"
+                df.at[i, 'App Category'] = category_id
 
-            if not app_found:
+                # Sync developer
+                is_developer = app_info.get('developer', 'No developer found').strip()
+                df.at[i, 'Developer'] = is_developer if is_developer else "Unknown"
+                
+                # Sync updated date
+                is_updated = app_info.get('lastUpdatedOn', 'No lastUpdatedOn found').strip()
+                df.at[i, 'Updated Date'] = is_updated if is_updated else "Unknown"
+            
+                # Get App version for each device
+                for device in device_list:
+                    app_version_finder = subprocess.run([
+                        "adb", "-s", device, "shell", "dumpsys", "package", f"{package_name}"
+                    ], capture_output=True, text=True, shell=True, encoding='utf-8')
+
+                    is_version = False
+                    for line in app_version_finder.stdout.splitlines():
+                        if "versionName=" in line:
+                            app_version = line.split("=")[1].strip()
+                            df.at[i, 'App Version'] = app_version
+                            is_version = True
+                            break
+                    if not is_version:
+                        df.at[i, 'App Version'] = "Unknown"
+
+                    # Save the result to CSV file for each device
+                    df.to_csv(f'{csv_file}_{device}_appInfo_result.csv', index=False)
+            except TypeError:
                 df.at[i, 'Developer'] = "App is not found"
                 df.at[i, 'App Category'] = "App is not found"
                 df.at[i, 'App Version'] = "App is not found"
                 continue
-            
-            app_info = app(package_name)
-                
-            # Sync category
-            is_category = app_info.get('categories', [])
-            if is_category:
-                category_id = is_category[0].get('id', 'No category ID found').strip()
-            else:
-                category_id = "Unknown"
-            df.at[i, 'App Category'] = category_id
-
-            # Sync developer
-            is_developer = app_info.get('developer', 'No developer found').strip()
-            df.at[i, 'Developer'] = is_developer if is_developer else "Unknown"
-            
-            # Sync updated date
-            is_updated = app_info.get('lastUpdatedOn', 'No lastUpdatedOn found').strip()
-            df.at[i, 'Updated Date'] = is_updated if is_updated else "Unknown"
-        
-            # Get App version for each device
-            for device in device_list:
-                app_version_finder = subprocess.run([
-                    "adb", "-s", device, "shell", "dumpsys", "package", f"{package_name}"
-                ], capture_output=True, text=True)
-
-                is_version = False
-                for line in app_version_finder.stdout.splitlines():
-                    if "versionName=" in line:
-                        app_version = line.split("=")[1].strip()
-                        df.at[i, 'App Version'] = app_version
-                        is_version = True
-                        break
-                if not is_version:
-                    df.at[i, 'App Version'] = "Unknown"
-
-                # Save the result to CSV file for each device
-                df.to_csv(f'{csv_file}_{device}_appInfo_result.csv', index=False)
 
     except subprocess.CalledProcessError as e:
         print(f"Error: {e}")

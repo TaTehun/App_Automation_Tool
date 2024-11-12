@@ -15,10 +15,14 @@ def test_app_install(device, package_names, app_names, df, csv_file):
         
         # Initialize columns
         if 'Result' not in df.columns:
-            df['Result'] = ""  
+            df['Result'] = ""
+        else:
+            df['Result'] = ""
         if 'Remarks' not in df.columns:
             df['Remarks'] = "" 
-        
+        else:
+            df['Remarks'] = "" 
+
         # Navigate to the app page in google playstore
         for i, (package_name, app_name) in enumerate(zip(package_names, app_names)):
             for attempt in range(3):
@@ -32,14 +36,6 @@ def test_app_install(device, package_names, app_names, df, csv_file):
                     "-a android.intent.action.VIEW",
                     "-d", f"market://details?id={package_name}"
                 ], check=True)
-
-                # Popup variables
-                if d.xpath("//*[contains(@text,'t now')]").exists:
-                    d(text = "Not now").click()
-                elif d.xpath("//*[contains(@text,'t add')]").exists:
-                    d.xpath("//*[contains(@text,'t add')]").click()
-                elif d.xpath("//*[contains(@text,'alert')]").exists:
-                    d(text = "OK").click()
                 
                 # Verify if the app is pre-installed
                 if d(text = "Uninstall").wait(timeout = 15):
@@ -54,7 +50,6 @@ def test_app_install(device, package_names, app_names, df, csv_file):
                             test_result.append(t_result_list[1]) # Fail
                             remark_list.append("App is failed to install within the timeout")
                             f_count += 1
-                            
                     else: 
                         test_result.append(t_result_list[0]) #Pass
                         remark_list.append("App has already been installed")
@@ -76,6 +71,11 @@ def test_app_install(device, package_names, app_names, df, csv_file):
                     remark_list.append("App is not found")
                     na_count += 1
                 
+                elif d.xpath("//*[contains(@text,'re offline')]").exists:
+                    test_result.append(t_result_list[2]) # NT/NA
+                    remark_list.append("Internet is not connected")
+                    na_count += 1
+                
                 # Verify if the app is Paid-app
                 elif d.xpath("//*[contains(@text,'$')]").wait(timeout = 5) and not d(text = "Install").exists:
                     test_result.append(t_result_list[2]) # NT/NA
@@ -89,10 +89,21 @@ def test_app_install(device, package_names, app_names, df, csv_file):
                     if d.xpath("//*[contains(@text,'When Wi')]").wait(timeout = 5):
                         d(text = "OK").click()
                         
-                    if d(text = "Uninstall").wait(timeout = 600):
+                    if d(text = "Uninstall").wait(timeout = 180):
                         test_result.append(t_result_list[0]) # Pass
                         remark_list.append("App is successfully Installed")
                         p_count += 1
+                    
+                    elif d(text = "Open").wait(timeout = 10) and not d(text = "Cancel").exists:
+                        test_result.append(t_result_list[2]) # NT/NA
+                        remark_list.append("App needs to be verified again")
+                        na_count += 1
+                        
+                    elif d(text = "Play").wait(timeout = 10) and not d(text = "Cancel").exists:
+                        test_result.append(t_result_list[2]) # NT/NA
+                        remark_list.append("App needs to be verified again")
+                        na_count += 1
+                        
                     else:
                         test_result.append(t_result_list[1]) # Fail
                         remark_list.append("App is failed to install within the timeout")
@@ -100,7 +111,15 @@ def test_app_install(device, package_names, app_names, df, csv_file):
                 else:
                     test_result.append(t_result_list[1]) # Fail
                     remark_list.append("Install button is not found")
-                    f_count += 1
+                    f_count += 1 
+
+                # Popup variables
+                if d.xpath("//*[contains(@text,'t now')]").exists:
+                    d(text = "Not now").click()
+                elif d.xpath("//*[contains(@text,'t add')]").exists:
+                    d.xpath("//*[contains(@text,'t add')]").click()
+                elif d.xpath("//*[contains(@text,'alert') and contains(@text,'OK')]").exists:
+                    d(text = "OK").click()
 
                 #attempt to reload the page and repeat the installation
                 if test_result[-1] == t_result_list[0]:                    
@@ -112,11 +131,11 @@ def test_app_install(device, package_names, app_names, df, csv_file):
                         na_count -= 1
                     test_result.pop()
                     remark_list.pop()
-                   
+                    
             # save the result to csv file
             df.at[i, 'Result'] = test_result[-1]
             df.at[i, 'Remarks'] = remark_list[-1]
-            df.to_csv(f'{csv_file}_{device}_result.csv', index=False)
+            df.to_csv(f'result_{device}.csv', index=False)
 
             total_count += 1
             
@@ -134,12 +153,12 @@ def test_app_install(device, package_names, app_names, df, csv_file):
             f"\nTest result is recorded : {actual_test_count} : {p_count}, {f_count}, {na_count}")
 
     # Filter only Pass status
-    result_df = pd.read_csv(f'{csv_file}_{device}_result.csv')
+    result_df = pd.read_csv(f'result_{device}.csv')
     result_df['Result'] = result_df['Result'].astype(str)
     result_df.columns = result_df.columns.str.strip()
     pass_df = result_df[result_df['Result'] == 'Pass']
-    pass_df.to_csv(f'Pass_{csv_file}_{device}_result.csv', index=False)
-        
+    pass_df.to_csv(f'pass_{device}_result.csv', index=False)
+    
     
 # Test bench
 '''
