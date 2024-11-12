@@ -43,6 +43,7 @@ def plm_checker():
             if issue_list:
                 new_df = pd.DataFrame(issue_list)
                 new_df.to_csv(f"plm_list_{device}.csv", index=False)
+                issue_list.clear()
                 
         for package_name in package_names:
             # PLM checker
