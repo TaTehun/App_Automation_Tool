@@ -8,6 +8,6 @@ def process_csv():
     sf = pd.read_csv(sync_issue_file, encoding='unicode_escape').rename(columns=lambda x: x.strip())
     
     package_names = df['App ID'].tolist()
-    app_names = df['App Name'].tolist()
+    app_names = df['App Name'].tolist()    
     
     return package_names, app_names, df, sf, csv_file

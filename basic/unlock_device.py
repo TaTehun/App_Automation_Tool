@@ -38,6 +38,12 @@ def unlock_device(device):
                     "input","keyevent","82"
                 ], check=True)
                 attempt += 1
+                
+                subprocess.run([
+                    "adb","-s",f"{device}","shell",
+                    "input","keyevent","3"
+                ], check=True)
+                attempt += 1
         
     except subprocess.CalledProcessError as e:
         print(f"Error: {e}")
