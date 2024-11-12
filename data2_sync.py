@@ -59,6 +59,42 @@ def data_sync():
             # Store or print the result for this row
             #print(f"p_no: {p_no}, Total sum for Device={device_list} and Account={acct_list} between {promo_start.date()} and {promo_end.date()}: {total_sum}")
             # You can also store results in lists if needed (e.g., device_match, account_match, etc.)
+            
+    def data_syn():
+        import pandas as pd
+
+# Load CSV files
+a_df = pd.read_csv('a.csv')
+b_df = pd.read_csv('b.csv')
+
+# Convert 'start_date' and 'end_date' columns in a_df to datetime
+a_df['start_date'] = pd.to_datetime(a_df['start_date'], format='%m/%d/%Y')
+a_df['end_date'] = pd.to_datetime(a_df['end_date'], format='%m/%d/%Y')
+
+# Iterate over rows in a_df and calculate the sum
+for index, row in a_df.iterrows():
+    device_name = row['device name']
+    account = row['account']
+    start_date = row['start_date']
+    end_date = row['end_date']
+
+    # Filter all matching rows in b_df, including duplicates
+    matching_rows = b_df[(b_df['device name'] == device_name) & (b_df['account'] == account)]
+
+    if not matching_rows.empty:
+        # Create a date range and convert it to the required string format
+        date_range = pd.date_range(start=start_date, end=end_date).strftime('%-m/%-d/%Y')
+
+        # Initialize total_sum
+        total_sum = 0
+
+        # Iterate over each matching row to accumulate the sum
+        for _, match in matching_rows.iterrows():
+            total_sum += match[date_range].sum()
+
+        # Output or store the total sum
+        print(f"Total sum for device '{device_name}' and account '{account}': {total_sum}")
+
 
     except Exception as e:
         print(f"Error: {e}")
