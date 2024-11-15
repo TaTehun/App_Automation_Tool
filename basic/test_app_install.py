@@ -41,6 +41,19 @@ def test_app_install(device, package_names, app_names, df, csv_file):
                 if d(text = "Uninstall").wait(timeout = 15):
                     if d(text = "Update").exists:
                         d(text = "Update").click()
+                        
+                    elif d.xpath("//*[contains(@text,'Update from')]").exists:
+                        d(text = "Uninstall").click()
+                        if d(text = "Uninstall").exists:
+                            d(text = "Uninstall").click()
+                            if d(text = "Install").wait(15):
+                                d(text = "Install").click()
+                                continue
+                            else:
+                                test_result.append(t_result_list[1]) # Fail
+                                remark_list.append("Install button is not found")
+                                f_count += 1 
+                                    
                         # wait until open
                         if d(text = "Uninstall").wait(timeout = 600):
                             test_result.append(t_result_list[0]) #Pass
@@ -131,6 +144,8 @@ def test_app_install(device, package_names, app_names, df, csv_file):
                         na_count -= 1
                     test_result.pop()
                     remark_list.pop()
+                
+            print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/3")
                     
             # save the result to csv file
             df.at[i, 'Result'] = test_result[-1]

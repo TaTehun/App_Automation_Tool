@@ -5,13 +5,13 @@ from basic.test_app_install import test_app_install
 from basic.test_app_run import test_app_run
 from basic.connect_devices import connect_devices
 from basic.csv_handler import process_csv
-
+from app_crash_detector import app_crash_detector
 
 def execute_command(): # source code from Hyeonjun An.
     lock = Lock()
     device_list = connect_devices()
     package_names, app_names, df, sf, csv_file = process_csv()
-
+    
     try:
         with ThreadPoolExecutor() as executor:
             for device in device_list:

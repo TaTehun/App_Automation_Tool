@@ -2,7 +2,7 @@ import pandas as pd
 
 def data_sync():
     data_file = 'Book.csv'
-    new_data_file = 'new_Book.csv'
+    new_data_file = 'new_Book1.csv'
     
     # Load data files
     df = pd.read_csv(data_file)
@@ -20,7 +20,6 @@ def data_sync():
 
     nf = nf.fillna(0)  # Replace NaNs with 0
     date_oct = pd.to_datetime('2024-10-01', format = '%Y-%m-%d')
-    
 
     try:
         # Identify date columns
@@ -41,11 +40,6 @@ def data_sync():
             acct_list = row.get('Account')
             p_no = row.get('Condition')
 
-            promo_start_date_e = pd.to_datetime("2024-01-01")
-            promo_start_date_e = promo_start_date_e.date()
-            promo_end_date_e = pd.to_datetime("2024-07-31")
-            promo_end_date_e = promo_end_date_e.date()
-            
             # Check if promo_start, promo_end, device_list, and acct_list are valid
             if pd.isna(promo_start) or pd.isna(promo_end) or pd.isna(device_list) or pd.isna(acct_list):
                 continue  # Skip if any of these are missing
@@ -58,22 +52,27 @@ def data_sync():
                 total_sum_oct = 0
                 matched_row_number = []
                 matched_row_oct = []
-            
+
+                promo_start_date_e = pd.to_datetime('2024-01-01', format = '%Y-%m-%d')
+                promo_start_date_e = promo_start_date_e.date()
+                promo_end_date_e = pd.to_datetime('2024-06-30', format = '%Y-%m-%d')
+                promo_end_date_e = promo_end_date_e.date()
+
+                
                 for _, match_row in matched_rows.iterrows():
                     filtered_new_dates = match_row[new_date]
                     unfiltered_new_dates = match_row[new_date_no]
-                    #print(filtered_new_dates)
-        
+                    #print(filtered_new_dates.items())
+
                     for new_d, value in filtered_new_dates.items():
-                        if isinstance(value, (int, float)):
+                        if pd.notna(value) and isinstance(value, (int, float)):
                             date_column_as = pd.to_datetime(new_d, format='%Y-%m-%d', errors='coerce')
                             date_column_as_date = date_column_as.date()
-                            
+                            #print(date_column_as_date, value)
                             if promo_start_date_e <= date_column_as_date <= promo_end_date_e:
+                                #print(promo_start_date_e, date_column_as_date, promo_end_date_e, value)
                                 total_sum += value
-                                matched_row_oct.append(date_column_as_date)
-                                #print (matched_row_oct)
-
+                            #print(value)
                     matched_row_number.append(str(int(match_row.name)+2))
                     '''    
                     for new_d, value in filtered_new_dates.items():
