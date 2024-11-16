@@ -7,7 +7,6 @@ import pandas as pd
 # package_names, app_names -> csv_handler.py
 
 def test_app_install(device, package_names, app_names, df, csv_file):
-    try:
         p_count, f_count, na_count, total_count, attempt = 0, 0, 0, 0, 0
         remark_list, test_result = [], []
         t_result_list = ["Pass","Fail","NT/NA"]
@@ -153,56 +152,56 @@ def test_app_install(device, package_names, app_names, df, csv_file):
             df.to_csv(f'result_{device}.csv', index=False)
 
             total_count += 1
-            
-    except subprocess.CalledProcessError as e:
-        print(f"Error: {e}")
 
-    # Installation Test result
-    actual_test_count = f_count + p_count + na_count 
-    if total_count == actual_test_count:
-        print(f"Total {total_count} app testing is completed"
-            f"\n{f_count} Fails, {na_count} NT/NAs, {p_count} Passes!!")
-    else:
-        print("Number of tested app doesn't match.."
-            f"\nTotal number of app run : {total_count}"
-            f"\nTest result is recorded : {actual_test_count} : {p_count}, {f_count}, {na_count}")
 
-    # Filter only Pass status
-    result_df = pd.read_csv(f'result_{device}.csv')
-    result_df['Result'] = result_df['Result'].astype(str)
-    result_df.columns = result_df.columns.str.strip()
-    pass_df = result_df[result_df['Result'] == 'Pass']
-    pass_df.to_csv(f'pass_{device}_result.csv', index=False)
-    
-    
-# Test bench
-'''
-from concurrent.futures import ThreadPoolExecutor
-from threading import Lock
+        # Installation Test result
+        actual_test_count = f_count + p_count + na_count 
+        if total_count == actual_test_count:
+            print(f"Total {total_count} app testing is completed"
+                f"\n{f_count} Fails, {na_count} NT/NAs, {p_count} Passes!!")
+        else:
+            print("Number of tested app doesn't match.."
+                f"\nTotal number of app run : {total_count}"
+                f"\nTest result is recorded : {actual_test_count} : {p_count}, {f_count}, {na_count}")
 
-from basic.test_app_install import test_app_install
-from basic.test_app_run import test_app_run
-from basic.connect_devices import connect_devices
-from basic.csv_handler import process_csv
+        # Filter only Pass status
+        result_df = pd.read_csv(f'result_{device}.csv')
+        result_df['Result'] = result_df['Result'].astype(str)
+        result_df.columns = result_df.columns.str.strip()
+        pass_df = result_df[result_df['Result'] == 'Pass']
+        pass_df.to_csv(f'pass_{device}_result.csv', index=False)
+        
+        return package_name
+        
+        
+        # Test bench
+        '''
+        from concurrent.futures import ThreadPoolExecutor
+        from threading import Lock
 
-def execute_command(): # source code from Hyeonjun An.
-    lock = Lock()
-    device_list = connect_devices()
-    package_names, app_names, df, csv_file = process_csv()
+        from basic.test_app_install import test_app_install
+        from basic.test_app_run import test_app_run
+        from basic.connect_devices import connect_devices
+        from basic.csv_handler import process_csv
 
-    try:
-        with ThreadPoolExecutor() as executor:
-            for device in device_list:
-                print(f"Device {device} is processing...")
-                lock.acquire()
-                executor.submit( 
-                    test_app_install(device, package_names, app_names, df, csv_file), device)
-                lock.release()
-    except Exception as e:
-        print(e)
-                
-# Log for the installation fails
+        def execute_command(): # source code from Hyeonjun An.
+            lock = Lock()
+            device_list = connect_devices()
+            package_names, app_names, df, csv_file = process_csv()
 
-if __name__ == "__main__":
-    execute_command()
-'''
+            try:
+                with ThreadPoolExecutor() as executor:
+                    for device in device_list:
+                        print(f"Device {device} is processing...")
+                        lock.acquire()
+                        executor.submit( 
+                            test_app_install(device, package_names, app_names, df, csv_file), device)
+                        lock.release()
+            except Exception as e:
+                print(e)
+                        
+        # Log for the installation fails
+
+        if __name__ == "__main__":
+            execute_command()
+        '''
