@@ -1,21 +1,23 @@
 import subprocess
-
+import time
 
 # Function to enable or disable dark mode
-def toggle_dark_mode():
-    is_dark_mode = subprocess.run(['adb', 'shell', 'cmd', 'uimode', 'night'
+def toggle_dark_mode(device):
+    is_dark_mode = subprocess.run(['adb', "-s", f"{device}", 'shell', 'cmd', 'uimode', 'night'
                                 ],capture_output=True, text=True, check=True)
     current_status = is_dark_mode.stdout.strip()
-    for _ in range(3):
-        if current_status == "Night mode: no":
-            # Enabling dark mode
-            subprocess.run(['adb', 'shell', 'cmd', 'uimode', 'night', 'yes'
-                        ],capture_output=True, text=True, check=True)
-        else:
-            # Disabling dark mode
-            subprocess.run(['adb', 'shell', 'cmd', 'uimode', 'night', 'no'
-                        ],capture_output=True, text=True, check=True)
-
+    if current_status == "Night mode: no":
+        # Enabling dark mode
+        subprocess.run(['adb', "-s", f"{device}", 'shell', 'cmd', 'uimode', 'night', 'yes'
+                    ],capture_output=True, text=True, check=True)
+        time.sleep(1)
+        print("dark mode!")
+    else:
+        # Disabling dark mode
+        subprocess.run(['adb', "-s", f"{device}", 'shell', 'cmd', 'uimode', 'night', 'no'
+                    ],capture_output=True, text=True, check=True)
+        time.sleep(1)
+        print("Light mode!")
 
             
 

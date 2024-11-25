@@ -3,7 +3,7 @@ import time
 
 def is_device_unlocked(device):
     is_unlocked = subprocess.run(
-        ["adb","-s",f"{device}", "shell", "dumpsys", "window | grep 'mDreamingLockscreen'"],
+        ["adb","-s",f"{device}", "shell", "dumpsys", "window |  'mDreamingLockscreen'"],
         capture_output = True,
         text = True,
     )   
@@ -12,10 +12,11 @@ def is_device_unlocked(device):
         return True
     return False
 
+# screen on for 24 hours
 def keep_screen_on(device):
     subprocess.run(
         ["adb","-s",f"{device}", "shell", "settings", "put", "system", "screen_off_timeout", "86400000"
-    ], check = True) # screen on for 24 hours
+    ], check = True) 
 
 def unlock_device(device):
     try:

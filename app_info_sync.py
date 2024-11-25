@@ -43,7 +43,7 @@ def info_sync():
                 # Sync updated date
                 is_updated = app_info.get('lastUpdatedOn', 'No lastUpdatedOn found').strip()
                 df.at[i, 'Updated Date'] = is_updated if is_updated else "Unknown"
-            
+                
                 # Get App version for each device
                 for device in device_list:
                     app_version_finder = subprocess.run([
@@ -58,10 +58,13 @@ def info_sync():
                             is_version = True
                             break
                     if not is_version:
-                        df.at[i, 'App Version'] = "Unknown"
+                        # Sync app version
+                        is_version_info = app_info.get('version', 'No version found').strip()
+                        df.at[i, 'App Version'] = is_version_info if is_version_info else "Unknown"
 
                     # Save the result to CSV file for each device
                     df.to_csv(f'{csv_file}_{device}_appInfo_result.csv', index=False)
+
             except TypeError:
                 df.at[i, 'Developer'] = "App is not found"
                 df.at[i, 'App Category'] = "App is not found"
