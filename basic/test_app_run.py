@@ -50,10 +50,19 @@ def is_app_open(package_name, device):
 
 def test_app_run(device, package_names, app_names, df, crash_flag, crash_log):
         test_result = []
+        mw_results = []
         if 'Running Result' not in df.columns:
             df['Running Result'] = ""
         else:
             df['Running Result'] = ""
+        if 'MW_Result' not in df.columns:
+            df['MW_Result'] = ""
+        else:
+            df['MW_Result'] = ""
+        if 'Final_MW_Result' not in df.columns:
+            df['Final_MW_Result'] = ""
+        else:
+            df['Final_MW_Result'] = ""
         t_result_list = ["Pass","NT/NA","Crash"]
 
         d = u2.connect(device)
@@ -95,6 +104,7 @@ def test_app_run(device, package_names, app_names, df, crash_flag, crash_log):
                             time.sleep(2)
                             toggle_multi_window_mode(device)
                             test_result.append(t_result_list[0]) # PASS
+                            mw_results.append(toggle_multi_window_mode(device))
                             print("test done")
                         else:
                             print("app is not opened")
@@ -108,6 +118,7 @@ def test_app_run(device, package_names, app_names, df, crash_flag, crash_log):
                             toggle_dark_mode(device)
                             time.sleep(5)
                             toggle_multi_window_mode(device)
+                            mw_results.append(toggle_multi_window_mode(device))
                             test_result.append(t_result_list[0]) # PASS
                             print ("test done")
                         else:
@@ -127,6 +138,13 @@ def test_app_run(device, package_names, app_names, df, crash_flag, crash_log):
                 elif attempt <= 2:
                     print(f"{app_name} launch status: {test_result[-1]}, attempt: {attempt}/3")
                     test_result.pop()
+            
+            if mw_results:
+                df.at[i,'MW_Result'] = f'{attempt}th, '.join(mw_results)
+                final_mw_result = max(set(mw_results), key=mw_results.count)
+                df.at['Final_MW_Result'] = final_mw_result
+            mw_results.clear()
+            
             df.at[i, 'Running Result'] = test_result[-1]
             df.to_csv(f'test_result_{device}.csv', index=False)
     
