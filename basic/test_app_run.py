@@ -12,7 +12,7 @@ import pandas as pd
 
 def is_app_open(package_name, device):
     #Check if the app is running
-    samsung_setting = "com.android.settings/com.samsung.android.settings"
+    samsung_setting = "com.android.settings/com.samsung.android.settings.wifi"
     android_permission = "com.android.permissioncontroller"
     d = u2.connect(device)
     attempt = 0
@@ -23,7 +23,6 @@ def is_app_open(package_name, device):
                 shell=True,
                 text=True
             ).strip()
-            print(result)
             if package_name in result:
                 return True
             elif samsung_setting in result:
@@ -43,6 +42,10 @@ def is_app_open(package_name, device):
                     d(text = "Cancel").click()
                 elif d(text = "OK").exists:
                     d(text = "OK").click()
+                elif d(text = "Not now").exists:
+                    d(text = "Not now").click()
+                elif d(text = "Close").exists:
+                    d(text = "Close").click()
                 
         attempt += 1
     except subprocess.CalledProcessError:
@@ -64,12 +67,13 @@ def test_app_run(device, package_names, app_names, df, crash_flag, crash_log):
         else:
             df['Final_MW_Result'] = ""
         t_result_list = ["Pass","NT/NA","Crash"]
-
+        
         d = u2.connect(device)
         attempt = 0
-        
+        attempt_num = int(input("Enter the number of times to repeat the launch test: "))
+
         for i, (package_name, app_name) in enumerate(zip(package_names, app_names)):
-            for attempt in range(3):
+            for attempt in range(attempt_num):
                 attempt += 1
                 
                 unlock_device(device)
@@ -98,13 +102,11 @@ def test_app_run(device, package_names, app_names, df, crash_flag, crash_log):
                     if d(text = "Play").exists:
                         d(text = "Play").click(10)
                         time.sleep(2)
-                            
                         if is_app_open(package_name, device):
                             toggle_dark_mode(device)
                             time.sleep(2)
-                            toggle_multi_window_mode(device)
-                            test_result.append(t_result_list[0]) # PASS
                             mw_results.append(toggle_multi_window_mode(device))
+                            test_result.append(t_result_list[0]) # PASS
                             print("test done")
                         else:
                             print("app is not opened")
@@ -112,12 +114,10 @@ def test_app_run(device, package_names, app_names, df, crash_flag, crash_log):
 
                     elif d(text = "Open").exists:
                         d(text = "Open").click(10)
-                        time.sleep(5)
-                        
+                        time.sleep(2)
                         if is_app_open(package_name, device):
                             toggle_dark_mode(device)
-                            time.sleep(5)
-                            toggle_multi_window_mode(device)
+                            time.sleep(2)
                             mw_results.append(toggle_multi_window_mode(device))
                             test_result.append(t_result_list[0]) # PASS
                             print ("test done")
@@ -133,16 +133,16 @@ def test_app_run(device, package_names, app_names, df, crash_flag, crash_log):
                     
                 #attempt to reload the page and repeat the installation
                 if test_result[-1] == t_result_list[2]:
-                    print(f"{app_name} launch status: {test_result[-1]}, attempt: {attempt}/3")
+                    print(f"{app_name} launch status: {test_result[-1]}, attempt: {attempt}/{attempt_num}")
                     break               
-                elif attempt <= 2:
-                    print(f"{app_name} launch status: {test_result[-1]}, attempt: {attempt}/3")
+                elif attempt <= attempt_num -1:
+                    print(f"{app_name} launch status: {test_result[-1]}, attempt: {attempt}/{attempt_num}")
                     test_result.pop()
             
             if mw_results:
-                df.at[i,'MW_Result'] = f'{attempt}th, '.join(mw_results)
+                df.at[i,'MW_Result'] = ', '.join(mw_results)
                 final_mw_result = max(set(mw_results), key=mw_results.count)
-                df.at['Final_MW_Result'] = final_mw_result
+                df.at[i,'Final_MW_Result'] = final_mw_result
             mw_results.clear()
             
             df.at[i, 'Running Result'] = test_result[-1]

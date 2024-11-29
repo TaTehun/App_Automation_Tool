@@ -17,10 +17,11 @@ def toggle_multi_window_mode(device):
         
     d.long_click(screen_width -1, center_y, duration = 3)
     toast_text = d.toast.get_message(5.0, 5.0)
-    if toast_text and "t use this app in Multi" in toast_text:
-        mw_result = "Not supportive"
-    elif d.xpath("//*[contains(@text,'Select app')]").exists:
+    if d.xpath("//*[contains(@text,'Select app')]").wait(2):
+        time.sleep(5)
         mw_result = "Pass"
+    elif toast_text and "t use this app in Multi" in toast_text:
+        mw_result = "Not supportive"
     else:
         mw_result = "Fail"
     # click home button

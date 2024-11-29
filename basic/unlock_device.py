@@ -8,13 +8,9 @@ def is_device_unlocked(device):
         capture_output = True,
         text = True,
     )   
-    
-    print(is_unlocked)
-                        
+                            
     if "mShowingDream=false" and "mDreamingLockscreen=false" in is_unlocked.stdout:
-        print("Yes")
         return True
-    print("NO!!")
     return False
 
 # screen on for 24 hours
