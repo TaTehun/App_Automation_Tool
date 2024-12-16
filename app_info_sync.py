@@ -31,13 +31,16 @@ def info_sync():
                 # Sync category
                 is_category = app_info.get('categories', [])
                 if is_category:
-                    category_id = is_category[0].get('id', 'No category ID found').strip()
+                    if not is_category[0].get('id') is None:
+                        category_id = is_category[0].get('id', 'No category ID found').strip()
                 else:
                     category_id = "Unknown"
+
                 df.at[i, 'App Category'] = category_id
 
                 # Sync developer
                 is_developer = app_info.get('developer', 'No developer found').strip()
+                
                 df.at[i, 'Developer'] = is_developer if is_developer else "Unknown"
                 
                 # Sync updated date

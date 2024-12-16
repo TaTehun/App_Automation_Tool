@@ -1,5 +1,9 @@
 import subprocess
 import time
+import uiautomator2 as u2
+#(-32001, 'androidx.test.uiautomator.UiObjectNotFoundException', 
+# ({'mask': 1, 'childOrSibling': [], 'childOrSiblingSelector': [], 'text': 'Open'},))
+
 
 def is_device_unlocked(device):
     is_unlocked = subprocess.run(
@@ -22,6 +26,11 @@ def keep_screen_on(device):
 def unlock_device(device):
     try:
         attempt = 0
+        d = u2.connect(device)
+        screen_width, screen_height = d.window_size()
+        center_x, center_y = screen_width //2 , screen_height // 2
+        center_y2 = screen_width //8
+
         while attempt <= 5: 
             if is_device_unlocked(device):
                 break
@@ -34,16 +43,15 @@ def unlock_device(device):
                 ], check=True)
                 
                 time.sleep(2)
-                
+                '''
                 subprocess.run([
                     "adb","-s",f"{device}","shell",
                     "input","keyevent","82"
                 ], check=True)
-                attempt += 1
-                
+                '''
                 subprocess.run([
                     "adb","-s",f"{device}","shell",
-                    "input","keyevent","3"
+                    "input","touchscreen swipe", f"{center_x}", f"{center_y}", f"{center_x}", f"{center_y2}"
                 ], check=True)
                 attempt += 1
         

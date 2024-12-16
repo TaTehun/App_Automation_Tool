@@ -46,12 +46,18 @@ def is_app_open(package_name, device):
                     d(text = "Not now").click()
                 elif d(text = "Close").exists:
                     d(text = "Close").click()
+                else:
+                    subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_BACK'
+                                    ],check=True) 
                 
         attempt += 1
     except subprocess.CalledProcessError:
         return False  # Continue if there's an issue with the adb command
 
-def test_app_run(device, package_names, app_names, df, crash_flag, crash_log):
+def test_app_run(device, package_names, app_names, df, crash_flag, crash_log,launch_attempt):
+        d = u2.connect(device)
+        attempt = 0
+        
         test_result = []
         mw_results = []
         if 'Running Result' not in df.columns:
@@ -68,12 +74,9 @@ def test_app_run(device, package_names, app_names, df, crash_flag, crash_log):
             df['Final_MW_Result'] = ""
         t_result_list = ["Pass","NT/NA","Crash"]
         
-        d = u2.connect(device)
-        attempt = 0
-        attempt_num = int(input("Enter the number of times to repeat the launch test: "))
 
         for i, (package_name, app_name) in enumerate(zip(package_names, app_names)):
-            for attempt in range(attempt_num):
+            for attempt in range(launch_attempt):
                 attempt += 1
                 
                 unlock_device(device)
@@ -99,6 +102,15 @@ def test_app_run(device, package_names, app_names, df, crash_flag, crash_log):
                     break
 
                 if d(text = "Uninstall").wait(5):
+                    if d(text = "Update").exists:
+                        d(text = "Update").click(10)
+                        if d(text = "Uninstall").wait(timeout = 180):
+                            continue
+                        else: 
+                            print(f"{app_name} has no open or play button")
+                            test_result.append(t_result_list[1]) # NA
+                                                        
+                        
                     if d(text = "Play").exists:
                         d(text = "Play").click(10)
                         time.sleep(2)
@@ -130,13 +142,25 @@ def test_app_run(device, package_names, app_names, df, crash_flag, crash_log):
                 else:
                     print(f"app is not installed")
                     test_result.append(t_result_list[1]) # NA
-                    
+                    if d(text = "Allow").exists:
+                        d(text = "Allow").click()
+                    elif d(text = "Cancel").exists:
+                        d(text = "Cancel").click()
+                    elif d(text = "OK").exists:
+                        d(text = "OK").click()
+                    elif d(text = "Not now").exists:
+                        d(text = "Not now").click()
+                    elif d(text = "Close").exists:
+                        d(text = "Close").click()
+                    else:
+                        subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_BACK'
+                                        ],check=True)                    
                 #attempt to reload the page and repeat the installation
                 if test_result[-1] == t_result_list[2]:
-                    print(f"{app_name} launch status: {test_result[-1]}, attempt: {attempt}/{attempt_num}")
+                    print(f"{app_name} launch status: {test_result[-1]}, attempt: {attempt}/{launch_attempt}")
                     break               
-                elif attempt <= attempt_num -1:
-                    print(f"{app_name} launch status: {test_result[-1]}, attempt: {attempt}/{attempt_num}")
+                elif attempt <= launch_attempt -1:
+                    print(f"{app_name} launch status: {test_result[-1]}, attempt: {attempt}/{launch_attempt}")
                     test_result.pop()
             
             if mw_results:
@@ -148,5 +172,3 @@ def test_app_run(device, package_names, app_names, df, crash_flag, crash_log):
             df.at[i, 'Running Result'] = test_result[-1]
             df.to_csv(f'test_result_{device}.csv', index=False)
     
-    # df['Result'] = test_result
-    # df.to_csv('123tj_result.csv', index=False)
