@@ -29,14 +29,13 @@ def unlock_device(device):
         d = u2.connect(device)
         screen_width, screen_height = d.window_size()
         center_x, center_y = screen_width //2 , screen_height // 2
-        center_y2 = screen_width //8
 
         while attempt <= 5: 
             if is_device_unlocked(device):
+                keep_screen_on(device)
                 break
             else:
                 # Waking up and unlock the devices
-                keep_screen_on(device)
                 subprocess.run([
                     "adb","-s",f"{device}","shell",
                     "input","keyevent","224"
@@ -51,7 +50,7 @@ def unlock_device(device):
                 '''
                 subprocess.run([
                     "adb","-s",f"{device}","shell",
-                    "input","touchscreen swipe", f"{center_x}", f"{center_y}", f"{center_x}", f"{center_y2}"
+                    "input","touchscreen swipe", "0", f"{center_y}", f"{screen_width}", f"{center_y}"
                 ], check=True)
                 attempt += 1
         
