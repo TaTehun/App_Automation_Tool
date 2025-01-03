@@ -10,7 +10,7 @@ def app_crash_detector(device):
     def monitor_crashes():
         try:
             print("Start monitoring")
-            logcat_process = subprocess.Popen(
+            logcat_process = subprocess.run(
                 f"adb -s {device} logcat -v time",
                 shell=True,
                 stdout=subprocess.PIPE,

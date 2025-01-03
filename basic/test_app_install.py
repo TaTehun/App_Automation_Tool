@@ -69,7 +69,7 @@ def test_app_install(device, package_names, app_names, df, csv_file, crash_flag,
             unlock_device(device)
                 
             subprocess.run([
-                "adb", "-s", f"{device}", "shell",
+                "adb", "-s", device, "shell",
                 "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
                 "-a android.intent.action.VIEW",
                 "-d", f"market://details?id={package_name}"
@@ -169,7 +169,7 @@ def test_app_install(device, package_names, app_names, df, csv_file, crash_flag,
         df.at[i, 'Crash'] = "Crash" if crash_flag.is_set() else "Pass"
         df.at[i, 'Result'] = test_result[-1]
         df.at[i, 'Remarks'] = remark_list[-1]
-        df.to_csv(f'result_{device}.csv', index=False)
+        df.to_csv(f'Install_result_{device}.csv', index=False)
 
         total_count += 1
 
@@ -184,11 +184,11 @@ def test_app_install(device, package_names, app_names, df, csv_file, crash_flag,
             f"\nTest result is recorded : {actual_test_count} : {p_count}, {f_count}, {na_count}")
 
     # Filter only Pass status
-    result_df = pd.read_csv(f'result_{device}.csv')
+    result_df = pd.read_csv(f'Install_result_{device}.csv')
     result_df['Result'] = result_df['Result'].astype(str)
     result_df.columns = result_df.columns.str.strip()
     pass_df = result_df[result_df['Result'] == 'Pass']
-    pass_df.to_csv(f'pass_{device}_result.csv', index=False)
+    pass_df.to_csv(f'pass_only_{device}_result.csv', index=False)
 
     # Test bench
     '''

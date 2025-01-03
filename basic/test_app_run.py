@@ -170,5 +170,5 @@ def test_app_run(device, package_names, app_names, df, crash_flag, crash_log,lau
             mw_results.clear()
             
             df.at[i, 'Running Result'] = test_result[-1]
-            df.to_csv(f'test_result_{device}.csv', index=False)
+            df.to_csv(f'launch_result_{device}.csv', index=False)
     

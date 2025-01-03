@@ -66,7 +66,7 @@ def info_sync():
                         df.at[i, 'App Version'] = is_version_info if is_version_info else "Unknown"
 
                     # Save the result to CSV file for each device
-                    df.to_csv(f'{csv_file}_{device}_appInfo_result.csv', index=False)
+                    df.to_csv(f'appInfo_result_{device}.csv', index=False)
 
             except TypeError:
                 df.at[i, 'Developer'] = "App is not found"

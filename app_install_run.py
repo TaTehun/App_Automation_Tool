@@ -18,19 +18,21 @@ def execute_command():
     device_list = connect_devices()
     package_names, app_names, df, sf, csv_file = process_csv()
     install_attempt, launch_attempt = attempts()
-
+    
     try:
         with ThreadPoolExecutor() as executor: # source code from Hyeonjun An.
-            for device in device_list:
+            for d_num in range (len(device_list)):
+                device = device_list[d_num]
                 print(f"Device {device} is processing...")
+                
                 crash_flag, crash_log = app_crash_detector(device)                
-                lock.acquire()
-                executor.submit(
-                    test_app_install(device, package_names, app_names, df, csv_file, crash_flag, crash_log, install_attempt), device)
-                time.sleep(5)
-                executor.submit( 
-                    test_app_run(device, package_names, app_names, df, crash_flag, crash_log,launch_attempt), device)
-                lock.release()
+                #lock.acquire()
+            executor.submit(
+                test_app_install(device, package_names, app_names, df, csv_file, crash_flag, crash_log, install_attempt), device_list)
+                #time.sleep(5)
+                #executor.submit( 
+                    #test_app_run(device, package_names, app_names, df, crash_flag, crash_log,launch_attempt), device)
+                #lock.release()
     except Exception as e:
         print(e)
                 
