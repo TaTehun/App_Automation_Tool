@@ -8,7 +8,7 @@ from major.theme_dark import toggle_dark_mode
 from major.multi_window import toggle_multi_window_mode
 from basic.unlock_device import unlock_device
 import pandas as pd
-
+import platform
 
 def is_app_open(package_name, device):
     #Check if the app is running
@@ -16,13 +16,25 @@ def is_app_open(package_name, device):
     android_permission = "com.android.permissioncontroller"
     d = u2.connect(device)
     attempt = 0
+    os_name = platform.system()
+    
     try:
         for attempt in range(3):
-            result = subprocess.check_output(
-                f"adb -s {device} shell dumpsys activity activities | findstr ResumedActivity",
-                shell=True,
-                text=True
-            ).strip()
+            if os_name in ["Linux", "Darwin"]:  # macOS and Linux
+                result = subprocess.check_output(
+                    f"adb -s {device} shell dumpsys activity activities | grep ResumedActivity",
+                    shell=True,
+                    text=True
+                ).strip()
+            elif os_name == "Windows":
+                result = subprocess.check_output(
+                    f"adb -s {device} shell dumpsys activity activities | findstr ResumedActivity",
+                    shell=True,
+                    text=True
+                ).strip()
+            else:
+                print(f"Unsupported OS: {os_name}")
+                
             if package_name in result:
                 return True
             elif samsung_setting in result:

@@ -1,18 +1,29 @@
 import subprocess
 import time
 import uiautomator2 as u2
+import platform
 #(-32001, 'androidx.test.uiautomator.UiObjectNotFoundException', 
 # ({'mask': 1, 'childOrSibling': [], 'childOrSiblingSelector': [], 'text': 'Open'},))
 
 
 def is_device_unlocked(device):
-    is_unlocked = subprocess.run(
-        f"adb -s {device} shell dumpsys window | findstr mDreamingLockscreen",
-        shell = True,
-        capture_output = True,
-        text = True,
-    )   
-                            
+    os_name = platform.system()
+
+    if os_name in ["Linux", "Darwin"]:  # macOS and Linux
+        is_unlocked = subprocess.run(
+            f"adb -s {device} shell dumpsys window | grep mDreamingLockscreen",
+            shell = True,
+            capture_output = True,
+            text = True,)
+    elif os_name == "Windows":
+        is_unlocked = subprocess.run(
+            f"adb -s {device} shell dumpsys window | findstr mDreamingLockscreen",
+            shell = True,
+            capture_output = True,
+            text = True,)
+    else:
+        print(f"Unsupported OS: {os_name}")
+   
     if "mShowingDream=false" and "mDreamingLockscreen=false" in is_unlocked.stdout:
         return True
     return False

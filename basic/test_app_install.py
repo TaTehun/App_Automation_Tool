@@ -2,6 +2,7 @@ import subprocess
 import uiautomator2 as u2
 from basic.unlock_device import unlock_device
 import pandas as pd
+import time
 
 # device -> run.py
 # package_names, app_names -> csv_handler.py
@@ -29,18 +30,24 @@ def test_app_install(device, package_names, app_names, df, csv_file, crash_flag,
             
 
     def is_app_installed(p_count,f_count,na_count):
-        #Add cancel button flag
-        if d(text = "Uninstall").wait(timeout = 180) and not d(text = "Cancel").exists:
+        
+        no_cancel = not d(text = "Cancel").exists
+        yes_cancel = d(text = "Cancel").exists
+        
+        while yes_cancel:
+            pass
+        
+        if d(text = "Uninstall").wait(timeout = 180):
             test_result.append(t_result_list[0]) # Pass
             remark_list.append("App is successfully Installed")
             p_count += 1
                             
-        elif d(text = "Open").exists and not d(text = "Cancel").exists:
+        elif d(text = "Open").exists:
             test_result.append(t_result_list[2]) # NT/NA
             remark_list.append("App needs to be verified again")
             na_count += 1
                             
-        elif d(text = "Play").exists and not d(text = "Cancel").exists:
+        elif d(text = "Play").exists:
             test_result.append(t_result_list[2]) # NT/NA
             remark_list.append("App needs to be verified again")
             na_count += 1
@@ -179,6 +186,7 @@ def test_app_install(device, package_names, app_names, df, csv_file, crash_flag,
         print(f"Total {total_count} app testing is completed"
             f"\n{f_count} Fails, {na_count} NT/NAs, {p_count} Passes!!")
     else:
+        ##numbers keep not matching
         print("Number of tested app doesn't match.."
             f"\nTotal number of app run : {total_count}"
             f"\nTest result is recorded : {actual_test_count} : {p_count}, {f_count}, {na_count}")
@@ -189,35 +197,3 @@ def test_app_install(device, package_names, app_names, df, csv_file, crash_flag,
     result_df.columns = result_df.columns.str.strip()
     pass_df = result_df[result_df['Result'] == 'Pass']
     pass_df.to_csv(f'pass_only_{device}_result.csv', index=False)
-
-    # Test bench
-    '''
-        from concurrent.futures import ThreadPoolExecutor
-        from threading import Lock
-
-        from basic.test_app_install import test_app_install
-        from basic.test_app_run import test_app_run
-        from basic.connect_devices import connect_devices
-        from basic.csv_handler import process_csv
-
-        def execute_command(): # source code from Hyeonjun An.
-            lock = Lock()
-            device_list = connect_devices()
-            package_names, app_names, df, csv_file = process_csv()
-
-            try:
-                with ThreadPoolExecutor() as executor:
-                    for device in device_list:
-                        print(f"Device {device} is processing...")
-                        lock.acquire()
-                        executor.submit( 
-                            test_app_install(device, package_names, app_names, df, csv_file), device)
-                        lock.release()
-            except Exception as e:
-                print(e)
-                        
-        # Log for the installation fails
-
-        if __name__ == "__main__":
-            execute_command()
-        '''
