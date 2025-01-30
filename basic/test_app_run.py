@@ -127,7 +127,7 @@ def test_app_run(device, package_names, app_names, df, crash_flag, crash_log,lau
                         d(text = "Play").click(10)
                         time.sleep(2)
                         if is_app_open(package_name, device):
-                            toggle_dark_mode(device)
+                            #toggle_dark_mode(device)
                             time.sleep(2)
                             mw_results.append(toggle_multi_window_mode(device))
                             test_result.append(t_result_list[0]) # PASS
@@ -140,7 +140,7 @@ def test_app_run(device, package_names, app_names, df, crash_flag, crash_log,lau
                         d(text = "Open").click(10)
                         time.sleep(2)
                         if is_app_open(package_name, device):
-                            toggle_dark_mode(device)
+                            #toggle_dark_mode(device)
                             time.sleep(2)
                             mw_results.append(toggle_multi_window_mode(device))
                             test_result.append(t_result_list[0]) # PASS

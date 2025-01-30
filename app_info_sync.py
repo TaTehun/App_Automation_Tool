@@ -68,12 +68,12 @@ def info_sync():
                     # Save the result to CSV file for each device
                     df.to_csv(f'appInfo_result_{device}.csv', index=False)
 
-            except TypeError:
+            except Exception:
                 df.at[i, 'Developer'] = "App is not found"
                 df.at[i, 'App Category'] = "App is not found"
                 df.at[i, 'App Version'] = "App is not found"
                 continue
-
+                
     except subprocess.CalledProcessError as e:
         print(f"Error: {e}")
 

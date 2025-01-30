@@ -1,7 +1,7 @@
 import pandas as pd
 
 def process_csv():
-    csv_file = 'App_List_US_1.csv'
+    csv_file = 'test1.csv'
     sync_issue_file = 'Book4.csv'
     
     df = pd.read_csv(csv_file, encoding='unicode_escape').rename(columns=lambda x: x.strip())
