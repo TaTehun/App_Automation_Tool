@@ -61,6 +61,10 @@ def info_sync():
                         if "versionCode=" in line:
                             target_sdk = line.split()
                             d_target = dict(item.split("=") for item in target_sdk)
+
+                            # target_sdk = ['versionCode=10910200', 'minSdk=27', 'targetSdk=35']
+                            # d_target = {'versionCode': '10910200', 'minSdk': '27', 'targetSdk': '35'}
+                            
                             if "targetSdk" in d_target:
                                 df.at[i, 'TargetSdk'] = d_target['targetSdk']
                             else:
