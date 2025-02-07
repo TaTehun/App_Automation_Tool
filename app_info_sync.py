@@ -17,11 +17,14 @@ def info_sync():
             df['App Version'] = ""
         if 'Updated Date' not in df.columns:
             df['Updated Date'] = ""
+        if 'TargetSdk' not in df.columns:
+            df['TargetSdk'] = ""
             
         df['App Category'] = df.get('App Category', '').astype(str)
         df['Developer'] = df.get('Developer', '').astype(str)
         df['App Version'] = df.get('App Version', '').astype(str)
         df['Updated Date'] = df.get('App Version', '').astype(str)
+        df['TargetSdk'] = df.get('TargetSdk', '').astype(str)
         
         for i, package_name in enumerate(package_names):
             try:
@@ -52,9 +55,17 @@ def info_sync():
                     app_version_finder = subprocess.run([
                         "adb", "-s", device, "shell", "dumpsys", "package", f"{package_name}"
                     ], capture_output=True, text=True, shell=True, encoding='utf-8')
-
+                    
                     is_version = False
                     for line in app_version_finder.stdout.splitlines():
+                        if "versionCode=" in line:
+                            target_sdk = line.split()
+                            d_target = dict(item.split("=") for item in target_sdk)
+                            if "targetSdk" in d_target:
+                                df.at[i, 'TargetSdk'] = d_target['targetSdk']
+                            else:
+                                df.at[i, 'App Version'] = "No data"
+
                         if "versionName=" in line:
                             app_version = line.split("=")[1].strip()
                             df.at[i, 'App Version'] = app_version
@@ -72,6 +83,8 @@ def info_sync():
                 df.at[i, 'Developer'] = "App is not found"
                 df.at[i, 'App Category'] = "App is not found"
                 df.at[i, 'App Version'] = "App is not found"
+                df.at[i, 'Updated Date'] = "App is not found"
+                df.at[i, 'TargetSdk'] = "App is not found"
                 continue
                 
     except subprocess.CalledProcessError as e:

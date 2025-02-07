@@ -30,9 +30,9 @@ def execute_command():
                 executor.submit(
                 test_app_install(device, package_names, app_names, df, csv_file, crash_flag, crash_log, install_attempt), device)
             
-                time.sleep(1)
-                executor.submit( 
-                    test_app_run(device, package_names, app_names, df, crash_flag, crash_log,launch_attempt), device)
+                #time.sleep(1)
+                #executor.submit( 
+                    #test_app_run(device, package_names, app_names, df, crash_flag, crash_log,launch_attempt), device)
                 lock.release()
     except Exception as e:
         print(e)
