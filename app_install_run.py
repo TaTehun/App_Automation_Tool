@@ -1,7 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor
 from threading import Lock
 from basic.app_crash_detector import app_crash_detector
-from basic.test_app_install import test_app_install
+from app_install_info import test_app_install
 from basic.test_app_run import test_app_run
 from basic.connect_devices import connect_devices
 from basic.csv_handler import process_csv
@@ -28,7 +28,7 @@ def execute_command():
                 lock.acquire()
                 
                 executor.submit(
-                test_app_install(device, package_names, app_names, df, csv_file, crash_flag, crash_log, install_attempt), device)
+                test_app_install(device, package_names, app_names, df, install_attempt), device)
             
                 #time.sleep(1)
                 #executor.submit( 
