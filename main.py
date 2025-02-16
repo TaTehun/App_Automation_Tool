@@ -1,14 +1,14 @@
 import sys
-import os
 import threading
 from PyQt5.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QTextEdit, QSpinBox
+    QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QTextEdit, QSpinBox, QMessageBox
 )
+from PyQt5.QtCore import QMetaObject, Qt
 from basic.connect_devices import connect_devices
 from basic.csv_handler import process_csv
 from concurrent.futures import ThreadPoolExecutor
-from threading import Lock, Event
-from app_install_info import test_app_install
+from threading import Lock
+from test_script import test_app_install  # Assuming your function is in test_script.py
 
 class AppTesterGUI(QWidget):
     def __init__(self):
@@ -34,18 +34,13 @@ class AppTesterGUI(QWidget):
         
         self.install_attempt_input = QSpinBox()
         self.install_attempt_input.setMinimum(1)
-        self.install_attempt_input.setMaximum(50)
+        self.install_attempt_input.setMaximum(10)
         self.install_attempt_input.setValue(3)
         layout.addWidget(self.install_attempt_input)
         
         self.start_button = QPushButton("Start Testing")
         self.start_button.clicked.connect(self.start_testing)
         layout.addWidget(self.start_button)
-
-        self.stop_button = QPushButton("Stop Testing")
-        self.stop_button.clicked.connect(self.stop_testing)
-        self.stop_button.setEnabled(False)
-        layout.addWidget(self.stop_button)
         
         self.log_output = QTextEdit()
         self.log_output.setReadOnly(True)
@@ -60,49 +55,46 @@ class AppTesterGUI(QWidget):
         self.app_names = []
         self.df = None
         self.lock = Lock()
-        self.stop_testing_event = Event()
+
+    def show_error(self, message):
+        QMessageBox.critical(self, "Error", message)
 
     def connect_devices(self):
-        self.device_list = connect_devices()
-        self.device_label.setText(f"Connected Devices: {', '.join(self.device_list)}")
+        try:
+            self.device_list = connect_devices()
+            self.device_label.setText(f"Connected Devices: {', '.join(self.device_list)}")
+        except Exception as e:
+            self.show_error(str(e))
 
     def load_csv(self):
-        self.package_names, self.app_names, self.df, _, _ = process_csv()
-        self.log_output.append("Loaded default CSV file: test1.csv")
+        try:
+            self.package_names, self.app_names, self.df, _, _ = process_csv()
+            QMetaObject.invokeMethod(self.log_output, "append", Qt.QueuedConnection, "Loaded default CSV file: test1.csv")
+        except Exception as e:
+            self.show_error(str(e))
 
     def start_testing(self):
         if not self.device_list or not self.package_names:
-            self.log_output.append("Error: Devices not connected or CSV not loaded.")
+            QMetaObject.invokeMethod(self.log_output, "append", Qt.QueuedConnection, "Error: Devices not connected or CSV not loaded.")
             return
         
         install_attempt = self.install_attempt_input.value()
-        self.stop_testing_event.clear()
         
-        self.log_output.append("Starting tests...")
-        
-        self.stop_button.setEnabled(True)
-        self.start_button.setEnabled(False)
+        QMetaObject.invokeMethod(self.log_output, "append", Qt.QueuedConnection, "Starting tests...")
         
         def run_tests():
-            with ThreadPoolExecutor() as executor:
-                for device in self.device_list:
-                    if self.stop_testing_event.is_set():
-                        break
-                    self.log_output.append(f"Processing device {device}...")
-                    self.lock.acquire()
-                    executor.submit(test_app_install, device, self.package_names, self.app_names, self.df, install_attempt)
-                    self.lock.release()
-            self.log_output.append("Testing completed.")
-            self.stop_button.setEnabled(False)
-            self.start_button.setEnabled(True)
+            try:
+                with ThreadPoolExecutor() as executor:
+                    for device in self.device_list:
+                        QMetaObject.invokeMethod(self.log_output, "append", Qt.QueuedConnection, (f"Processing device {device}...",))
+                        self.lock.acquire()
+                        executor.submit(test_app_install, device, self.package_names, self.app_names, self.df, install_attempt)
+                        self.lock.release()
+                QMetaObject.invokeMethod(self.log_output, "append", Qt.QueuedConnection, "Testing completed.")
+            except Exception as e:
+                self.show_error(str(e))
         
         threading.Thread(target=run_tests, daemon=True).start()
-
-    def stop_testing(self):
-        os._exit(0)
-        #self.log_output.append("Testing stopped by user.")
-        self.stop_button.setEnabled(False)
-        self.start_button.setEnabled(True)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
