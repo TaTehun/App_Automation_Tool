@@ -7,7 +7,7 @@ from basic.connect_devices import connect_devices
 from basic.csv_handler import process_csv
 from concurrent.futures import ThreadPoolExecutor
 from threading import Lock
-from app_install_info import test_app_install  # Assuming your function is in test_script.py
+from app_install_info import test_app_install
 
 class AppTesterGUI(QWidget):
     def __init__(self):
