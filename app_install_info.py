@@ -7,6 +7,7 @@ from threading import Lock
 import subprocess
 import uiautomator2 as u2
 import subprocess
+import time
 
 # device -> run.py
 # package_names, app_names -> csv_handler.py
@@ -37,11 +38,15 @@ def test_app_install(device, package_names, app_names, df, install_attempt):
     def is_app_installed():
         #no_cancel = not d(text = "Cancel").exists
         yes_cancel = d(text = "Cancel").exists
+        timeout = 180
+        timeout_start = time.time()
         
+        #Checking if cancel button is activated for 180 sec
         while yes_cancel:
-            pass
-        
-        if d(text = "Uninstall").wait(timeout = 180):
+            if time.time() - timeout_start > timeout:
+                break
+            
+        if d(text = "Uninstall").exists:
             test_result.append(t_result_list[0]) # Pass
             remark_list.append("App is successfully Installed")
                             
@@ -52,7 +57,11 @@ def test_app_install(device, package_names, app_names, df, install_attempt):
         elif d(text = "Play").exists:
             test_result.append(t_result_list[2]) # NT/NA
             remark_list.append("App needs to be verified again")
-                
+            
+        else:
+            test_result.append(t_result_list[1]) #Fail
+            remark_list.append("Timeout")
+            
     def handle_popup():  
         screen_width, screen_height = d.window_size()    
         # Popup variables
@@ -261,10 +270,7 @@ def execute_command():
                 
                 executor.submit(
                 test_app_install(device, package_names, app_names, df, install_attempt), device)
-            
-                #time.sleep(1)
-                #executor.submit( 
-                    #test_app_run(device, package_names, app_names, df, crash_flag, crash_log,launch_attempt), device)
+
                 lock.release()
     except Exception as e:
         print(e)
