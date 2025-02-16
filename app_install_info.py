@@ -161,10 +161,10 @@ def test_app_install(device, package_names, app_names, df, install_attempt):
                 
             #attempt to reload the page and repeat the installation
             if test_result[-1] == t_result_list[0]: #Pass
-                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/3")
+                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}")
                 break               
             elif attempt <= install_attempt -1:
-                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/3")
+                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}")
                 handle_popup()
                 test_result.pop()
                 remark_list.pop()
