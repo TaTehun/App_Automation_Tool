@@ -313,7 +313,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt):
                 is_version_info = app_info.get('version', 'No version found').strip()
                 df.at[i, 'App Version'] = is_version_info if is_version_info else "Unknown"
             
-        except Exception:
+        except Exception as e:
             df.at[i, 'Developer'] = "App is not found"
             df.at[i, 'App Category'] = "App is not found"
             df.at[i, 'App Version'] = "App is not found"
@@ -446,7 +446,7 @@ class AppTesterGUI(QWidget):
             self.show_error(str(e))
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
+    qt_app = QApplication(sys.argv)
     ex = AppTesterGUI()
     ex.show()
-    sys.exit(app.exec_())
+    sys.exit(qt_app.exec_())
