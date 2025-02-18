@@ -393,7 +393,6 @@ class AppTesterGUI(QWidget):
         self.package_names = []
         self.app_names = []
         self.df = None
-        self.lock = Lock()
         self.stop_testing_event = Event()
         
     def show_error(self, message):
@@ -426,12 +425,9 @@ class AppTesterGUI(QWidget):
             self.start_button.setEnabled(False)
             
             def run_tests():
-                with ThreadPoolExecutor() as executor:
-                    for device in self.device_list:
-                        self.log_output.append(f"Processing device {device}...")
-                        self.lock.acquire()
-                        executor.submit(test_app_install, device, self.package_names, self.app_names, self.df, install_attempt)
-                        self.lock.release()
+                for device in self.device_list:
+                    self.log_output.append(f"Processing device {device}...")
+                    test_app_install (device, self.package_names, self.app_names, self.df, install_attempt)
                 self.log_output.append("Testing completed.")
                 self.stop_button.setEnabled(False)
                 self.start_button.setEnabled(True)

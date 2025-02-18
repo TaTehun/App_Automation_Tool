@@ -1,6 +1,20 @@
 
 /myenv
 *.csv
-*.csv
 scheck.py
 *.xlsb
+
+Exception in thread Thread-3 (run_tests):
+Traceback (most recent call last):
+  File "threading.py", line 1045, in _bootstrap_inner
+  File "threading.py", line 982, in run
+  File "main.py", line 430, in run_tests
+  File "main.py", line 106, in test_app_install
+  File "uiautomator2\__init__.py", line 1107, in connect
+  File "uiautomator2\__init__.py", line 1123, in connect_usb
+  File "uiautomator2\__init__.py", line 69, in __init__
+  File "uiautomator2\core.py", line 170, in __init__
+  File "uiautomator2\core.py", line 189, in start_uiautomator
+  File "uiautomator2\core.py", line 201, in _setup_jar
+  File "uiautomator2\core.py", line 210, in _check_device_file_hash
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\T2CE2F~1.JAN\\AppData\\Local\\Temp\\_MEI990282\\uiautomator2\\assets\\u2.jar'
