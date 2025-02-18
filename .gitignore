@@ -18,3 +18,28 @@ Traceback (most recent call last):
   File "uiautomator2\core.py", line 201, in _setup_jar
   File "uiautomator2\core.py", line 210, in _check_device_file_hash
 FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\T2CE2F~1.JAN\\AppData\\Local\\Temp\\_MEI990282\\uiautomator2\\assets\\u2.jar'
+
+C:\Users\t2.jang\Documents\GitHub\3rd_apps\myenv\Lib\site-packages\uiautomator2\__init__.py
+
+pyinstaller --onefile --hidden-import=uiautomator2 --add-data "C:\Users\t2.jang\Documents\GitHub\3rd_apps\myenv\Lib\site-packages\uiautomator2\__init__.py/uiautomator2/assets/u2.jar;uiautomator2/assets"
+usage: pyinstaller [-h] [-v] [-D] [-F] [--specpath DIR] [-n NAME]
+                   [--contents-directory CONTENTS_DIRECTORY] [--add-data SOURCE:DEST]
+                   [--add-binary SOURCE:DEST] [-p DIR] [--hidden-import MODULENAME]
+                   [--collect-submodules MODULENAME] [--collect-data MODULENAME]
+                   [--collect-binaries MODULENAME] [--collect-all MODULENAME]
+                   [--copy-metadata PACKAGENAME] [--recursive-copy-metadata PACKAGENAME]
+                   [--additional-hooks-dir HOOKSPATH] [--runtime-hook RUNTIME_HOOKS]
+                   [--exclude-module EXCLUDES] [--splash IMAGE_FILE]
+                   [-d {all,imports,bootloader,noarchive}] [--optimize LEVEL]
+                   [--python-option PYTHON_OPTION] [-s] [--noupx] [--upx-exclude FILE] [-c] [-w]     
+                   [--hide-console {hide-late,minimize-early,hide-early,minimize-late}]
+                   [-i <FILE.ico or FILE.exe,ID or FILE.icns or Image or "NONE">]
+                   [--disable-windowed-traceback] [--version-file FILE] [--manifest <FILE or XML>]   
+                   [-m <FILE or XML>] [-r RESOURCE] [--uac-admin] [--uac-uiaccess]
+                   [--argv-emulation] [--osx-bundle-identifier BUNDLE_IDENTIFIER]
+                   [--target-architecture ARCH] [--codesign-identity IDENTITY]
+                   [--osx-entitlements-file FILENAME] [--runtime-tmpdir PATH]
+                   [--bootloader-ignore-signals] [--distpath DIR] [--workpath WORKPATH] [-y]
+                   [--upx-dir UPX_DIR] [--clean] [--log-level LEVEL]
+                   scriptname [scriptname ...]
+pyinstaller: error: the following arguments are required: scriptname
