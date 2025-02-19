@@ -10,7 +10,6 @@ import platform
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QTextEdit, QSpinBox, QMessageBox
 )
-from concurrent.futures import ThreadPoolExecutor
 from threading import Lock, Event
 from google_play_scraper import app
 
@@ -165,7 +164,12 @@ def test_app_install(device, package_names, app_names, df, install_attempt):
         elif d.xpath("//*[contains(@text,'Want to see local')]").wait(timeout = 5):
             d(text = "No thanks").click(10)
         else:
+            # Touch and hold the Home button, then circle or tap text or images to learn more and explore.
             d.click(screen_width //2, screen_height // 2)
+            subprocess.run([
+                "adb","-s",f"{device}","shell",
+                "input","keyevent","26"
+            ], check=True)
             
     # Navigate to the app page in google playstore
     for i, (package_name, app_name) in enumerate(zip(package_names, app_names)):
