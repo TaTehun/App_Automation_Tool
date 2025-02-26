@@ -100,6 +100,113 @@ def process_csv():
     
     return package_names, app_names, df, csv_file
 
+def toggle_dark_mode(device):
+    is_dark_mode = subprocess.run(['adb', "-s", f"{device}", 'shell', 'cmd', 'uimode', 'night'
+                                ],capture_output=True, text=True, check=True)
+    current_status = is_dark_mode.stdout.strip()
+    if current_status == "Night mode: no":
+        # Enabling dark mode
+        subprocess.run(['adb', "-s", f"{device}", 'shell', 'cmd', 'uimode', 'night', 'yes'
+                    ],capture_output=True, text=True, check=True)
+        time.sleep(1)
+        print("dark mode!")
+    else:
+        # Disabling dark mode
+        subprocess.run(['adb', "-s", f"{device}", 'shell', 'cmd', 'uimode', 'night', 'no'
+                    ],capture_output=True, text=True, check=True)
+        time.sleep(1)
+        print("Light mode!")
+        
+def toggle_multi_window_mode(device):
+    d = u2.connect(device)
+    
+    # initialize the screen size & duration
+    screen_width, screen_height = d.window_size()
+    center_x, center_y = screen_width //2 , screen_height // 2
+    
+    # click recents button
+    subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_APP_SWITCH'
+                    ],check=True)
+        
+    time.sleep(2)
+        
+    d.long_click(screen_width -1, center_y, duration = 3)
+    toast_text = d.toast.get_message(5.0, 5.0)
+    if d.xpath("//*[contains(@text,'Select app')]").wait(2):
+        time.sleep(5)
+        mw_result = "Pass"
+    elif toast_text and "t use this app in Multi" in toast_text:
+        mw_result = "Not supportive"
+    else:
+        mw_result = "Fail"
+    # click home button
+    subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_HOME'
+                    ],check=True)
+    time.sleep(1)
+    subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_APP_SWITCH'
+                    ],check=True)
+    time.sleep(2)
+    d.click(center_x, center_y)
+    time.sleep(2)
+    
+    return mw_result
+
+def is_app_open(package_name, device):
+    #Check if the app is running
+    samsung_setting = "com.android.settings/com.samsung.android.settings.wifi"
+    android_permission = "com.android.permissioncontroller"
+    d = u2.connect(device)
+    attempt = 0
+    os_name = platform.system()
+    
+    try:
+        for attempt in range(3):
+            if os_name in ["Linux", "Darwin"]:  # macOS and Linux
+                result = subprocess.check_output(
+                    f"adb -s {device} shell dumpsys activity activities | grep ResumedActivity",
+                    shell=True,
+                    text=True
+                ).strip()
+            elif os_name == "Windows":
+                result = subprocess.check_output(
+                    f"adb -s {device} shell dumpsys activity activities | findstr ResumedActivity",
+                    shell=True,
+                    text=True
+                ).strip()
+            else:
+                print(f"Unsupported OS: {os_name}")
+                
+            if package_name in result:
+                return True
+            elif samsung_setting in result:
+                if d(text = "Not now").exists:
+                    d(text = "Not now").click(10)
+                    time.sleep(1)
+            elif android_permission in result:
+                if d(text = "While using the app").exists:
+                    d(text = "While using the app").click()
+                elif d(text = "Allow").exists:
+                    d(text = "Allow").click()
+            else:
+                print("is app running? : ", result)
+                if d(text = "Allow").exists:
+                    d(text = "Allow").click()
+                elif d(text = "Cancel").exists:
+                    d(text = "Cancel").click()
+                elif d(text = "OK").exists:
+                    d(text = "OK").click()
+                elif d(text = "Not now").exists:
+                    d(text = "Not now").click()
+                elif d(text = "Close").exists:
+                    d(text = "Close").click()
+                else:
+                    subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_BACK'
+                                    ],check=True) 
+                
+        attempt += 1
+    except subprocess.CalledProcessError:
+        return False  # Continue if there's an issue with the adb command
+
 def test_app_install(device, package_names, app_names, df, install_attempt):
         
     d = u2.connect(device)
