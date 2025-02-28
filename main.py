@@ -412,7 +412,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt):
                     if "targetSdk" in d_target:
                         df.at[i, 'TargetSdk'] = d_target['targetSdk']
                     else:
-                        df.at[i, 'App Version'] = "No data"
+                        df.at[i, 'TargetSdk'] = "No data"
 
                 if "versionName=" in line:
                     app_version = line.split("=")[1].strip()
