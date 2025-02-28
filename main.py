@@ -277,6 +277,64 @@ def test_app_install(device, package_names, app_names, df, install_attempt):
                 "adb","-s",f"{device}","shell",
                 "input","keyevent","26"
             ], check=True)
+    def info_scrapper():
+        try:
+            app_info = app(package_name)
+                        
+            # Sync category
+            is_category = app_info.get('categories', [])
+            if is_category:
+                if not is_category[0].get('id') is None:
+                    category_id = is_category[0].get('id', 'No category ID found').strip()
+            else:
+                category_id = "Unknown"
+            df.at[i, 'App Category'] = category_id
+
+            # Sync developer
+            is_developer = app_info.get('developer', 'No developer found').strip()
+                    
+            df.at[i, 'Developer'] = is_developer if is_developer else "Unknown"
+                    
+            # Sync updated date
+            is_updated = app_info.get('lastUpdatedOn', 'No lastUpdatedOn found').strip()
+            df.at[i, 'Updated Date'] = is_updated if is_updated else "Unknown"
+            
+            app_version_finder = subprocess.run([
+                "adb", "-s", device, "shell", "dumpsys", "package", f"{package_name}"
+            ], capture_output=True, text=True, shell=True, encoding='utf-8')
+                    
+            is_version = False
+            for line in app_version_finder.stdout.splitlines():
+                if "versionCode=" in line:
+                    target_sdk = line.split()
+                    d_target = dict(item.split("=") for item in target_sdk)
+
+                    # target_sdk = ['versionCode=10910200', 'minSdk=27', 'targetSdk=35']
+                    # d_target = {'versionCode': '10910200', 'minSdk': '27', 'targetSdk': '35'}
+                            
+                    if "targetSdk" in d_target:
+                        df.at[i, 'TargetSdk'] = d_target['targetSdk']
+                    else:
+                        df.at[i, 'TargetSdk'] = "No data"
+
+                if "versionName=" in line:
+                    app_version = line.split("=")[1].strip()
+                    df.at[i, 'App Version'] = app_version
+                    is_version = True
+                    break
+            if not is_version:
+                # Sync app version
+                is_version_info = app_info.get('version', 'No version found').strip()
+                df.at[i, 'App Version'] = is_version_info if is_version_info else "Unknown"
+            
+        except Exception as e:
+            df.at[i, 'Developer'] = "App is not found"
+            df.at[i, 'App Category'] = "App is not found"
+            df.at[i, 'App Version'] = "App is not found"
+            df.at[i, 'Updated Date'] = "App is not found"
+            df.at[i, 'TargetSdk'] = "App is not found"
+                
+        df.to_csv(f'Install_result_{device}.csv', index=False)
             
     # Navigate to the app page in google playstore
     for i, (package_name, app_name) in enumerate(zip(package_names, app_names)):
@@ -362,6 +420,8 @@ def test_app_install(device, package_names, app_names, df, install_attempt):
             #attempt to reload the page and repeat the installation
             if test_result[-1] == t_result_list[0]: #Pass
                 print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}")
+                info_scrapper()
+                # App launcher
                 break               
             elif attempt <= install_attempt -1:
                 print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}")
@@ -375,65 +435,43 @@ def test_app_install(device, package_names, app_names, df, install_attempt):
         
         total_count += 1
         
-        try:
-            app_info = app(package_name)
-                        
-            # Sync category
-            is_category = app_info.get('categories', [])
-            if is_category:
-                if not is_category[0].get('id') is None:
-                    category_id = is_category[0].get('id', 'No category ID found').strip()
-            else:
-                category_id = "Unknown"
-            df.at[i, 'App Category'] = category_id
-
-            # Sync developer
-            is_developer = app_info.get('developer', 'No developer found').strip()
-                    
-            df.at[i, 'Developer'] = is_developer if is_developer else "Unknown"
-                    
-            # Sync updated date
-            is_updated = app_info.get('lastUpdatedOn', 'No lastUpdatedOn found').strip()
-            df.at[i, 'Updated Date'] = is_updated if is_updated else "Unknown"
-            
-            app_version_finder = subprocess.run([
-                "adb", "-s", device, "shell", "dumpsys", "package", f"{package_name}"
-            ], capture_output=True, text=True, shell=True, encoding='utf-8')
-                    
-            is_version = False
-            for line in app_version_finder.stdout.splitlines():
-                if "versionCode=" in line:
-                    target_sdk = line.split()
-                    d_target = dict(item.split("=") for item in target_sdk)
-
-                    # target_sdk = ['versionCode=10910200', 'minSdk=27', 'targetSdk=35']
-                    # d_target = {'versionCode': '10910200', 'minSdk': '27', 'targetSdk': '35'}
-                            
-                    if "targetSdk" in d_target:
-                        df.at[i, 'TargetSdk'] = d_target['targetSdk']
-                    else:
-                        df.at[i, 'TargetSdk'] = "No data"
-
-                if "versionName=" in line:
-                    app_version = line.split("=")[1].strip()
-                    df.at[i, 'App Version'] = app_version
-                    is_version = True
-                    break
-            if not is_version:
-                # Sync app version
-                is_version_info = app_info.get('version', 'No version found').strip()
-                df.at[i, 'App Version'] = is_version_info if is_version_info else "Unknown"
-            
-        except Exception as e:
-            df.at[i, 'Developer'] = "App is not found"
-            df.at[i, 'App Category'] = "App is not found"
-            df.at[i, 'App Version'] = "App is not found"
-            df.at[i, 'Updated Date'] = "App is not found"
-            df.at[i, 'TargetSdk'] = "App is not found"
-                
-        df.to_csv(f'Install_result_{device}.csv', index=False)
     print(f"Total {total_count} app testing is completed")
-    
+"""
+Warning: Activity not started, intent has been delivered to currently running top-most instance.      
+Exception in thread Thread-3 (run_tests):
+Traceback (most recent call last):
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "c:\Users\t2.jang\Documents\GitHub\3rd_apps\main.py", line 544, in run_tests
+    test_app_install (device, self.package_names, self.app_names, self.df, install_attempt)
+  File "c:\Users\t2.jang\Documents\GitHub\3rd_apps\main.py", line 356, in test_app_install
+    d(text = "Update").click(10)
+  File "C:\Users\t2.jang\Documents\GitHub\3rd_apps\myenv\Lib\site-packages\uiautomator2\_selector.py", line 149, in click
+    x, y = self.center(offset=offset)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\t2.jang\Documents\GitHub\3rd_apps\myenv\Lib\site-packages\uiautomator2\_selector.py", line 176, in center
+    lx, ly, rx, ry = self.bounds()
+                     ^^^^^^^^^^^^^
+  File "C:\Users\t2.jang\Documents\GitHub\3rd_apps\myenv\Lib\site-packages\uiautomator2\_selector.py", line 163, in bounds
+    info = self.info
+           ^^^^^^^^^
+  File "C:\Users\t2.jang\Documents\GitHub\3rd_apps\myenv\Lib\site-packages\uiautomator2\_selector.py", line 128, in info
+    return self.jsonrpc.objInfo(self.selector)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\t2.jang\Documents\GitHub\3rd_apps\myenv\Lib\site-packages\uiautomator2\__init__.py", line 185, in __call__
+    return self.server.jsonrpc_call(self.method, params, http_timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\t2.jang\Documents\GitHub\3rd_apps\myenv\Lib\site-packages\uiautomator2\core.py", line 270, in jsonrpc_call
+    return _jsonrpc_call(self._dev, method, params, timeout, self._debug)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\t2.jang\Documents\GitHub\3rd_apps\myenv\Lib\site-packages\uiautomator2\core.py", line 150, in _jsonrpc_call
+    raise UiObjectNotFoundError(code, message, params)
+uiautomator2.exceptions.UiObjectNotFoundError: (-32001, 'androidx.test.uiautomator.UiObjectNotFoundException', ({'mask': 1, 'childOrSibling': [], 'childOrSiblingSelector': [], 'text': 'Update'},))        
+
+"""    
+
 
     """
     # Installation Test result
