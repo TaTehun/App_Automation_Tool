@@ -275,7 +275,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt):
             d.click(screen_width //2, screen_height // 2)
             subprocess.run([
                 "adb","-s",f"{device}","shell",
-                "input","keyevent","26"
+                "input","keyevent","4"
             ], check=True)
     def info_scrapper():
         try:
@@ -436,41 +436,6 @@ def test_app_install(device, package_names, app_names, df, install_attempt):
         total_count += 1
         
     print(f"Total {total_count} app testing is completed")
-"""
-Warning: Activity not started, intent has been delivered to currently running top-most instance.      
-Exception in thread Thread-3 (run_tests):
-Traceback (most recent call last):
-  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\threading.py", line 1045, in _bootstrap_inner
-    self.run()
-  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\threading.py", line 982, in run
-    self._target(*self._args, **self._kwargs)
-  File "c:\Users\t2.jang\Documents\GitHub\3rd_apps\main.py", line 544, in run_tests
-    test_app_install (device, self.package_names, self.app_names, self.df, install_attempt)
-  File "c:\Users\t2.jang\Documents\GitHub\3rd_apps\main.py", line 356, in test_app_install
-    d(text = "Update").click(10)
-  File "C:\Users\t2.jang\Documents\GitHub\3rd_apps\myenv\Lib\site-packages\uiautomator2\_selector.py", line 149, in click
-    x, y = self.center(offset=offset)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\t2.jang\Documents\GitHub\3rd_apps\myenv\Lib\site-packages\uiautomator2\_selector.py", line 176, in center
-    lx, ly, rx, ry = self.bounds()
-                     ^^^^^^^^^^^^^
-  File "C:\Users\t2.jang\Documents\GitHub\3rd_apps\myenv\Lib\site-packages\uiautomator2\_selector.py", line 163, in bounds
-    info = self.info
-           ^^^^^^^^^
-  File "C:\Users\t2.jang\Documents\GitHub\3rd_apps\myenv\Lib\site-packages\uiautomator2\_selector.py", line 128, in info
-    return self.jsonrpc.objInfo(self.selector)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\t2.jang\Documents\GitHub\3rd_apps\myenv\Lib\site-packages\uiautomator2\__init__.py", line 185, in __call__
-    return self.server.jsonrpc_call(self.method, params, http_timeout)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\t2.jang\Documents\GitHub\3rd_apps\myenv\Lib\site-packages\uiautomator2\core.py", line 270, in jsonrpc_call
-    return _jsonrpc_call(self._dev, method, params, timeout, self._debug)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\t2.jang\Documents\GitHub\3rd_apps\myenv\Lib\site-packages\uiautomator2\core.py", line 150, in _jsonrpc_call
-    raise UiObjectNotFoundError(code, message, params)
-uiautomator2.exceptions.UiObjectNotFoundError: (-32001, 'androidx.test.uiautomator.UiObjectNotFoundException', ({'mask': 1, 'childOrSibling': [], 'childOrSiblingSelector': [], 'text': 'Update'},))        
-
-"""    
 
 
 """
