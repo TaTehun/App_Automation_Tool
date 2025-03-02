@@ -473,7 +473,7 @@ uiautomator2.exceptions.UiObjectNotFoundError: (-32001, 'androidx.test.uiautomat
 """    
 
 
-    """
+"""
     # Installation Test result
     actual_test_count = p_count + f_count + na_count 
     if total_count == actual_test_count:
@@ -491,7 +491,7 @@ uiautomator2.exceptions.UiObjectNotFoundError: (-32001, 'androidx.test.uiautomat
     result_df.columns = result_df.columns.str.strip()
     pass_df = result_df[result_df['Result'] == 'Pass']
     pass_df.to_csv(f'pass_only_{device}_result.csv', index=False)
-    """  
+"""  
     
 class AppTesterGUI(QWidget):
     def __init__(self):
