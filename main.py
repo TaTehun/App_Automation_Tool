@@ -309,8 +309,9 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             df.at[i, 'Updated Date'] = is_updated if is_updated else "Unknown"
             
             app_version_finder = subprocess.run([
-                "adb", "-s", device, "shell", "dumpsys", "package", f"{package_name}"
-            ], capture_output=True, text=True, shell=True, encoding='utf-8')
+                "adb", "-s", device, "shell", "dumpsys", "package", package_name
+            ], capture_output=True, text=True) #shell=True, encoding='utf-8'
+            #print(app_version_finder)
             
             # App version        
             is_version = False
@@ -320,7 +321,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                     d_target = dict(item.split("=") for item in target_sdk)
 
                     # target_sdk = ['versionCode=10910200', 'minSdk=27', 'targetSdk=35']
-                    # d_target = {'versionCode': '10910200', 'minSdk': '27', 'targetSdk': '35'}
+                    # d_target = {'versionCode': '10910200', 'minSdk'com.waze: '27', 'targetSdk': '35'}
                             
                     if "targetSdk" in d_target:
                         df.at[i, 'TargetSdk'] = d_target['targetSdk']
@@ -508,11 +509,11 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 handle_popup()
                 test_result.pop()
                 remark_list.pop()
+            else:
+                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}")
                 if launch_result:
                     launch_result.pop()
                 launch_result.append(l_result_list[1]) # NA
-            else:
-                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}")
         info_scrapper()
         
                    
