@@ -96,7 +96,7 @@ def process_csv():
     df = pd.read_csv(csv_file, encoding='unicode_escape').rename(columns=lambda x: x.strip())
     
     package_names = df['App ID'].tolist()
-    app_names = df['App ID'].tolist()    
+    app_names = df['App Name'].tolist()    
     
     return package_names, app_names, df, csv_file
 
@@ -207,12 +207,13 @@ def is_app_open(package_name, device):
     except subprocess.CalledProcessError:
         return False  # Continue if there's an issue with the adb command
 
-def test_app_install(device, package_names, app_names, df, install_attempt):
+def test_app_install(device, package_names, app_names, df, install_attempt, launch_attempt):
         
     d = u2.connect(device)
-    total_count, attempt = 0, 0
-    remark_list, test_result = [], []
+    total_count, attempt, l_attempt = 0, 0, 0
+    remark_list, test_result, mw_results, launch_result = [], [], [], []
     t_result_list = ["Pass","Fail","NT/NA"]
+    l_result_list = ["Pass","NT/NA","Crash"]
                     
     # Initialize columns
     if 'Install Result' not in df.columns:
@@ -225,10 +226,18 @@ def test_app_install(device, package_names, app_names, df, install_attempt):
         df['Developer'] = ""
     if 'App Version' not in df.columns:
         df['App Version'] = ""
+    if 'App Version2' not in df.columns:
+        df['App Version2'] = ""
     if 'Updated Date' not in df.columns:
         df['Updated Date'] = ""
     if 'TargetSdk' not in df.columns:
         df['TargetSdk'] = "" 
+    if 'Running Result' not in df.columns:
+        df['Running Result'] = ""
+    if 'MW_Result' not in df.columns:
+        df['MW_Result'] = ""
+    if 'Final_MW_Result' not in df.columns:
+        df['Final_MW_Result'] = ""
 
     def is_app_installed():
         #no_cancel = not d(text = "Cancel").exists
@@ -275,7 +284,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt):
             d.click(screen_width //2, screen_height // 2)
             subprocess.run([
                 "adb","-s",f"{device}","shell",
-                "input","keyevent","4"
+                "input","keyevent","KEYCODE_BACK"
             ], check=True)
     def info_scrapper():
         try:
@@ -302,7 +311,8 @@ def test_app_install(device, package_names, app_names, df, install_attempt):
             app_version_finder = subprocess.run([
                 "adb", "-s", device, "shell", "dumpsys", "package", f"{package_name}"
             ], capture_output=True, text=True, shell=True, encoding='utf-8')
-                    
+            
+            # App version        
             is_version = False
             for line in app_version_finder.stdout.splitlines():
                 if "versionCode=" in line:
@@ -333,9 +343,62 @@ def test_app_install(device, package_names, app_names, df, install_attempt):
             df.at[i, 'App Version'] = "App is not found"
             df.at[i, 'Updated Date'] = "App is not found"
             df.at[i, 'TargetSdk'] = "App is not found"
+        
+    def app_launcher():
+        if d(text = "Play").wait(timeout = 5):
+            d(text = "Play").click(10)
+            time.sleep(2)
+            if is_app_open(package_name, device):
+                toggle_dark_mode(device)
+                time.sleep(2)
+                mw_results.append(toggle_multi_window_mode(device))
+                launch_result.append(l_result_list[0]) # PASS
+                print("test done")
+            else:
+                print("app is not opened")
+                launch_result.append(l_result_list[1]) # NA
+
+        elif d(text = "Open").wait(timeout = 5):
+            d(text = "Open").click(10)
+            time.sleep(2)
+            if is_app_open(package_name, device):
+                toggle_dark_mode(device)
+                time.sleep(2)
+                mw_results.append(toggle_multi_window_mode(device))
+                launch_result.append(l_result_list[0]) # PASS
+                print ("test done")
+            else:
+                print("app is not opened")
+                launch_result.append(l_result_list[1]) # NA
+        else: 
+            print(f"app is not installed")
+            launch_result.append(l_result_list[1]) # NA
+            if d(text = "Allow").exists:
+                d(text = "Allow").click()
+            elif d(text = "Cancel").exists:
+                d(text = "Cancel").click()
+            elif d(text = "OK").exists:
+                d(text = "OK").click()
+            elif d(text = "Not now").exists:
+                d(text = "Not now").click()
+            elif d(text = "Close").exists:
+                d(text = "Close").click()
+            else:
+                subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_BACK'
+                                ],check=True)
                 
-        df.to_csv(f'Install_result_{device}.csv', index=False)
-            
+        # Press home button
+        subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_HOME'
+                    ],check=True)
+                
+        # open the app from google playstore
+        subprocess.run([
+            "adb", "-s", f"{device}", "shell",
+            "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
+            "-a android.intent.action.VIEW",
+            "-d", f"market://details?id={package_name}"
+        ], check=True)
+
     # Navigate to the app page in google playstore
     for i, (package_name, app_name) in enumerate(zip(package_names, app_names)):
         for attempt in range(install_attempt):
@@ -420,19 +483,47 @@ def test_app_install(device, package_names, app_names, df, install_attempt):
             #attempt to reload the page and repeat the installation
             if test_result[-1] == t_result_list[0]: #Pass
                 print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}")
-                info_scrapper()
-                # App launcher
-                break               
+                for l_attempt in range(launch_attempt):
+                    l_attempt += 1
+                    app_launcher()
+                #attempt to reload the page and repeat the installation
+                    if launch_result[-1] == l_result_list[2]:
+                        print(f"{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
+                        break               
+                    elif l_attempt <= launch_attempt -1:  
+                        print(f"{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
+                        launch_result.pop()
+                    else:
+                        print(f"{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
+
+                if mw_results:
+                    df.at[i,'MW_Result'] = ', '.join(mw_results)
+                    final_mw_result = max(set(mw_results), key=mw_results.count)
+                    df.at[i,'Final_MW_Result'] = final_mw_result
+                    mw_results.clear()
+                break
+
             elif attempt <= install_attempt -1:
                 print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}")
                 handle_popup()
                 test_result.pop()
                 remark_list.pop()
-                    
+                if launch_result:
+                    launch_result.pop()
+                launch_result.append(l_result_list[1]) # NA
+            else:
+                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}")
+        info_scrapper()
+        
+                   
         # save the result to csv file
+        df.at[i, 'Running Result'] = launch_result[-1]
         df.at[i, 'Install Result'] = test_result[-1]
         df.at[i, 'Remarks'] = remark_list[-1]
-        
+        install_result_df = df[['App Name','App ID','Install Result', 'Remarks', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk']]
+        launch_result_df = df[['App Name','App ID','Running Result', 'MW_Result', 'Final_MW_Result']]
+        launch_result_df.to_csv(f'launch_result_{device}.csv', index=False)
+        install_result_df.to_csv(f'Install_result_{device}.csv', index=False)
         total_count += 1
         
     print(f"Total {total_count} app testing is completed")
@@ -479,12 +570,21 @@ class AppTesterGUI(QWidget):
 
         self.install_attempt_label = QLabel("Installation Attempts:")
         layout.addWidget(self.install_attempt_label)
-        
+
         self.install_attempt_input = QSpinBox()
         self.install_attempt_input.setMinimum(1)
         self.install_attempt_input.setMaximum(50)
         self.install_attempt_input.setValue(3)
         layout.addWidget(self.install_attempt_input)
+        
+        self.launch_attempt_label = QLabel("Launch test Attempts:")
+        layout.addWidget(self.launch_attempt_label)
+        
+        self.launch_attempt_input = QSpinBox()
+        self.launch_attempt_input.setMinimum(1)
+        self.launch_attempt_input.setMaximum(50)
+        self.launch_attempt_input.setValue(3)
+        layout.addWidget(self.launch_attempt_input)
         
         self.start_button = QPushButton("Start Testing")
         self.start_button.clicked.connect(self.start_testing)
@@ -531,6 +631,7 @@ class AppTesterGUI(QWidget):
                 return
             
             install_attempt = self.install_attempt_input.value()
+            launch_attempt = self.launch_attempt_input.value()
             self.stop_testing_event.clear()
             
             self.log_output.append("Starting tests...")
@@ -541,7 +642,7 @@ class AppTesterGUI(QWidget):
             def run_tests():
                 for device in self.device_list:
                     self.log_output.append(f"Processing device {device}...")
-                    test_app_install (device, self.package_names, self.app_names, self.df, install_attempt)
+                    test_app_install (device, self.package_names, self.app_names, self.df, install_attempt, launch_attempt)
                 self.log_output.append("Testing completed.")
                 self.stop_button.setEnabled(False)
                 self.start_button.setEnabled(True)
