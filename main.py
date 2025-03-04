@@ -151,6 +151,14 @@ def toggle_multi_window_mode(device):
     
     return mw_result
 
+def toggle_monkey_test(device, package_name):
+    event_count = 3000
+    result = subprocess.run([
+        'adb', "-s", device, 'shell', 'monkey','-p',package_name, '--pct-touch 50', '--pct-motion 25', '--pct-trackball 25', '-v', str(event_count)
+                ],capture_output=True, text=True) 
+    print(result.stdout)
+    print(result.stderr)
+    
 def is_app_open(package_name, device):
     #Check if the app is running
     samsung_setting = "com.android.settings/com.samsung.android.settings.wifi"
@@ -200,7 +208,7 @@ def is_app_open(package_name, device):
                 elif d(text = "Close").exists:
                     d(text = "Close").click()
                 else:
-                    subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_BACK'
+                    subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_HOME'
                                     ],check=True) 
                 
         attempt += 1
@@ -284,7 +292,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             d.click(screen_width //2, screen_height // 2)
             subprocess.run([
                 "adb","-s",f"{device}","shell",
-                "input","keyevent","KEYCODE_BACK"
+                "input","keyevent","KEYCODE_HOME"
             ], check=True)
     def info_scrapper():
         try:
@@ -353,6 +361,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 toggle_dark_mode(device)
                 time.sleep(2)
                 mw_results.append(toggle_multi_window_mode(device))
+                toggle_monkey_test(device,package_name)
                 launch_result.append(l_result_list[0]) # PASS
                 print("test done")
             else:
@@ -366,6 +375,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 toggle_dark_mode(device)
                 time.sleep(2)
                 mw_results.append(toggle_multi_window_mode(device))
+                toggle_monkey_test(device,package_name)
                 launch_result.append(l_result_list[0]) # PASS
                 print ("test done")
             else:
@@ -516,7 +526,6 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 launch_result.append(l_result_list[1]) # NA
         info_scrapper()
         
-                   
         # save the result to csv file
         df.at[i, 'Running Result'] = launch_result[-1]
         df.at[i, 'Install Result'] = test_result[-1]

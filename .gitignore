@@ -1,5 +1,5 @@
 
 /myenv
-*.csv
 scheck.py
 *.xlsb
+*.csv
