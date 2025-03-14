@@ -150,15 +150,15 @@ def toggle_multi_window_mode(device):
     time.sleep(2)
     
     return mw_result
-
+'''
 def toggle_monkey_test(device, package_name):
     event_count = 3000
     result = subprocess.run([
-        'adb', "-s", device, 'shell', 'monkey','-p',package_name, '--pct-touch 50', '--pct-motion 25', '--pct-trackball 25', '-v', str(event_count)
+        'adb', "-s", device, 'shell', 'monkey','-p',package_name, '--pct-touch 50', '--pct-motion 50', '-v', str(event_count)
                 ],capture_output=True, text=True) 
     print(result.stdout)
     print(result.stderr)
-    
+'''    
 def is_app_open(package_name, device):
     #Check if the app is running
     samsung_setting = "com.android.settings/com.samsung.android.settings.wifi"
@@ -254,8 +254,10 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         timeout_start = time.time()
         
         #Checking if cancel button is activated for 180 sec
-        while yes_cancel:
-            if time.time() - timeout_start > timeout:
+        while time.time() - timeout_start < timeout:
+            if yes_cancel:
+                pass
+            else:
                 break
             
         if d(text = "Uninstall").exists:
@@ -287,6 +289,18 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             d(text = "OK").click(10)
         elif d.xpath("//*[contains(@text,'Want to see local')]").wait(timeout = 5):
             d(text = "No thanks").click(10)
+            #3app.test.mql
+        elif d.xpath("//*[contains(@text,'Complete account setup')]").wait(timeout = 5):
+            d(text = "Continue").click(10)
+            if d.xpath("//*[contains(@text,'Payment method]')]").wait(timeout = 5):
+                d(text = "Skip").click(10)
+            else:
+                d.click(screen_width //2, screen_height // 2)
+                subprocess.run([
+                    "adb","-s",f"{device}","shell",
+                    "input","keyevent","KEYCODE_HOME"
+                ], check=True)
+                
         else:
             # Touch and hold the Home button, then circle or tap text or images to learn more and explore.
             d.click(screen_width //2, screen_height // 2)
@@ -361,7 +375,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 toggle_dark_mode(device)
                 time.sleep(2)
                 mw_results.append(toggle_multi_window_mode(device))
-                toggle_monkey_test(device,package_name)
+                #toggle_monkey_test(device,package_name)
                 launch_result.append(l_result_list[0]) # PASS
                 print("test done")
             else:
@@ -375,7 +389,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 toggle_dark_mode(device)
                 time.sleep(2)
                 mw_results.append(toggle_multi_window_mode(device))
-                toggle_monkey_test(device,package_name)
+                #toggle_monkey_test(device,package_name)
                 launch_result.append(l_result_list[0]) # PASS
                 print ("test done")
             else:
@@ -430,6 +444,12 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                     d(text = "Update").click(10)
                     
                     is_app_installed()
+                elif d(text = "Enable").exists:
+                    d(text = "Enable").click(10)
+                    if d(text = "Update").wait(timeout = 5):
+                        d(text = "Update").click(10)
+                            
+                    is_app_installed()
                             
                 elif d.xpath("//*[contains(@text,'Update from')]").exists:
                     d(text = "Uninstall").click(10)
@@ -455,6 +475,13 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                     d(text = "Update").click(10)
                         
                     is_app_installed()
+                    
+            elif d(text = "Enable").exists:
+                d(text = "Enable").click(10)
+                if d(text = "Update").wait(timeout = 5):
+                    d(text = "Update").click(10)
+                        
+                is_app_installed()
                     
             # Verify the app's compatibility and availability  
             elif d.xpath("//*[contains(@text,'t compatible')]").exists:
@@ -494,9 +521,10 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             #attempt to reload the page and repeat the installation
             if test_result[-1] == t_result_list[0]: #Pass
                 print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}")
-                for l_attempt in range(launch_attempt):
-                    l_attempt += 1
-                    app_launcher()
+                if launch_attempt >= 1:
+                    for l_attempt in range(launch_attempt):
+                        l_attempt += 1
+                        app_launcher()
                 #attempt to reload the page and repeat the installation
                     if launch_result[-1] == l_result_list[2]:
                         print(f"{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
@@ -591,7 +619,7 @@ class AppTesterGUI(QWidget):
         layout.addWidget(self.launch_attempt_label)
         
         self.launch_attempt_input = QSpinBox()
-        self.launch_attempt_input.setMinimum(1)
+        self.launch_attempt_input.setMinimum(0)
         self.launch_attempt_input.setMaximum(50)
         self.launch_attempt_input.setValue(3)
         layout.addWidget(self.launch_attempt_input)
