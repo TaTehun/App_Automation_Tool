@@ -3,21 +3,6 @@ import re
 import threading
 import subprocess
 import re
-import threading
-import time
-
-def get_app_pid(device, package_names):
-    """Fetch the running process ID (PID) of the target app."""
-    try:
-        result = subprocess.run(
-            f"adb -s {device} shell pidof {package_names}",
-            shell=True, capture_output=True, text=True
-        )
-        pid = result.stdout.strip()
-        return pid if pid else None
-    except Exception as e:
-        print(f"Error getting PID: {e}")
-        return None
 
 def app_crash_detector(device, package_names):
     crash_flag = threading.Event()  # Use an Event to signal a crash detection
@@ -25,13 +10,8 @@ def app_crash_detector(device, package_names):
 
     def monitor_crashes():
         try:
-            print("Start monitoring...")
-            pid = get_app_pid(device, package_names)
-            print(pid)
-            if not pid:
-                return
             logcat_process = subprocess.Popen(
-                f"adb -s {device} logcat -v time --pid={pid}",
+                f"adb -s {device} logcat -v time",
                 shell=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
@@ -44,7 +24,7 @@ def app_crash_detector(device, package_names):
             process_death = re.compile(r"Process .* has died")
             crash_detected = False
 
-            for line in iter(logcat_process.stdout.readline, ''):
+            for line in logcat_process.stdout:
                 line = line.strip()
 
                 if crash_start.search(line):
@@ -52,7 +32,11 @@ def app_crash_detector(device, package_names):
                     crash_log.append("\n--- Crash Detected ---")
                     crash_log.append(line)
 
-                if crash_detected and process_death.search(line):
+                if crash_detected:
+                    crash_log.append(line)
+                    
+                    if process_death.search(line):
+                        crash_log.append(line)
                         crash_log.append("--- End of Crash ---\n")
                         crash_flag.set()  # Set the flag to indicate a crash
                         crash_detected = False  # Reset flag after full crash log is captured

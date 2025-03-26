@@ -1,15 +1,13 @@
-import sys
 import os
+import sys
+import time
+import re
 import threading
 import subprocess
-import uiautomator2 as u2
-import time
-import pandas as pd
-import os
 import platform
-from PyQt5.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QTextEdit, QSpinBox, QMessageBox
-)
+import uiautomator2 as u2
+import pandas as pd
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QTextEdit, QSpinBox, QMessageBox
 from threading import Lock, Event
 from google_play_scraper import app
 
@@ -99,11 +97,6 @@ def process_csv():
     app_names = df['App Name'].tolist()    
     
     return package_names, app_names, df, csv_file
-
-
-import subprocess
-import re
-import threading
 
 def app_crash_detector(device):
     crash_flag = threading.Event()  # Use an Event to signal a crash detection
