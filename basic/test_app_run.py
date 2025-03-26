@@ -156,12 +156,7 @@ def test_app_run(device, package_names, app_names, df, crash_flag, crash_log,lau
                 
                 print (f"Testing {app_name}...")
                 # Open the app
-                if crash_flag.is_set():
-                    test_result.append(t_result_list[2]) # Crash
-                    print(crash_log)
-                    crash_flag.clear() # Clear the flag when the crash ends
-                    break
-
+                
                 if d(text = "Uninstall").wait(5):
                     if d(text = "Update").exists:
                         d(text = "Update").click(10)
@@ -175,6 +170,11 @@ def test_app_run(device, package_names, app_names, df, crash_flag, crash_log,lau
                     if d(text = "Play").exists:
                         d(text = "Play").click(10)
                         time.sleep(2)
+                        if crash_flag.is_set():
+                            test_result.append(t_result_list[2]) # Crash
+                            print(crash_log)
+                            crash_flag.clear() # Clear the flag when the crash ends
+                            return
                         if is_app_open(package_name, device):
                             toggle_dark_mode(device)
                             time.sleep(2)
@@ -187,6 +187,11 @@ def test_app_run(device, package_names, app_names, df, crash_flag, crash_log,lau
 
                     elif d(text = "Open").exists:
                         d(text = "Open").click(10)
+                        if crash_flag.is_set():
+                            test_result.append(t_result_list[2]) # Crash
+                            print(crash_log)
+                            crash_flag.clear() # Clear the flag when the crash ends
+                            return
                         time.sleep(2)
                         if is_app_open(package_name, device):
                             toggle_dark_mode(device)
@@ -223,7 +228,7 @@ def test_app_run(device, package_names, app_names, df, crash_flag, crash_log,lau
                 #attempt to reload the page and repeat the installation
                 if test_result[-1] == t_result_list[2]:
                     print(f"{app_name} launch status: {test_result[-1]}, attempt: {attempt}/{launch_attempt}")
-                    break               
+                    return               
                 elif attempt <= launch_attempt -1:
                     print(f"{app_name} launch status: {test_result[-1]}, attempt: {attempt}/{launch_attempt}")
                     test_result.pop()

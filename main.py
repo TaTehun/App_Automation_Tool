@@ -100,6 +100,54 @@ def process_csv():
     
     return package_names, app_names, df, csv_file
 
+
+import subprocess
+import re
+import threading
+
+def app_crash_detector(device):
+    crash_flag = threading.Event()  # Use an Event to signal a crash detection
+    crash_log = []
+
+    def monitor_crashes():
+        try:
+            print("Start monitoring...")
+            logcat_process = subprocess.Popen(
+                f"adb -s {device} logcat -v time",
+                shell=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                encoding="utf-8",
+                errors="replace"
+            )
+
+            crash_start = re.compile(r"FATAL EXCEPTION|ANR in|Abort message:|signal \d+ \(SIG[A-Z]+\)")
+            process_death = re.compile(r"Process .* has died")
+            crash_detected = False
+
+            for line in iter(logcat_process.stdout.readline, ''):
+                line = line.strip()
+
+                if crash_start.search(line):
+                    crash_detected = True
+                    crash_log.append("\n--- Crash Detected ---")
+                    crash_log.append(line)
+
+                if crash_detected and process_death.search(line):
+                        crash_log.append("--- End of Crash ---\n")
+                        crash_flag.set()  # Set the flag to indicate a crash
+                        crash_detected = False  # Reset flag after full crash log is captured
+
+        except Exception as e:
+            print(f"Error while monitoring logcat: {e}")
+
+    # Start monitoring in a separate thread
+    crash_thread = threading.Thread(target=monitor_crashes, daemon=True)
+    crash_thread.start()
+
+    return crash_flag, crash_log  # Return flag to check crash status
+
 def toggle_dark_mode(device):
     is_dark_mode = subprocess.run(['adb', "-s", f"{device}", 'shell', 'cmd', 'uimode', 'night'
                                 ],capture_output=True, text=True, check=True)
@@ -215,7 +263,7 @@ def is_app_open(package_name, device):
     except subprocess.CalledProcessError:
         return False  # Continue if there's an issue with the adb command
 
-def test_app_install(device, package_names, app_names, df, install_attempt, launch_attempt):
+def test_app_install(device, package_names, app_names, df, install_attempt, launch_attempt, crash_flag, crash_log):
         
     d = u2.connect(device)
     total_count, attempt, l_attempt = 0, 0, 0
@@ -367,9 +415,15 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             df.at[i, 'Updated Date'] = "App is not found"
             df.at[i, 'TargetSdk'] = "App is not found"
         
-    def app_launcher():
+    def app_launcher(crash_flag, crash_log):
         if d(text = "Play").wait(timeout = 5):
             d(text = "Play").click(10)
+            if crash_flag.is_set():
+                print("yes")
+                test_result.append(t_result_list[2]) # Crash
+                print(crash_log)
+                crash_flag.clear() # Clear the flag when the crash ends
+                return
             time.sleep(2)
             if is_app_open(package_name, device):
                 toggle_dark_mode(device)
@@ -384,6 +438,12 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
 
         elif d(text = "Open").wait(timeout = 5):
             d(text = "Open").click(10)
+            if crash_flag.is_set():
+                print("yes")
+                test_result.append(t_result_list[2]) # Crash
+                print(crash_log)
+                crash_flag.clear() # Clear the flag when the crash ends
+                return
             time.sleep(2)
             if is_app_open(package_name, device):
                 toggle_dark_mode(device)
@@ -524,7 +584,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 if launch_attempt >= 1:
                     for l_attempt in range(launch_attempt):
                         l_attempt += 1
-                        app_launcher()
+                        app_launcher(crash_flag, crash_log)
                 #attempt to reload the page and repeat the installation
                     if launch_result[-1] == l_result_list[2]:
                         print(f"{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
@@ -677,10 +737,12 @@ class AppTesterGUI(QWidget):
             self.stop_button.setEnabled(True)
             self.start_button.setEnabled(False)
             
+            crash_flag, crash_log = app_crash_detector
+            
             def run_tests():
                 for device in self.device_list:
                     self.log_output.append(f"Processing device {device}...")
-                    test_app_install (device, self.package_names, self.app_names, self.df, install_attempt, launch_attempt)
+                    test_app_install (device, self.package_names, self.app_names, self.df, install_attempt, launch_attempt, crash_flag, crash_log)
                 self.log_output.append("Testing completed.")
                 self.stop_button.setEnabled(False)
                 self.start_button.setEnabled(True)

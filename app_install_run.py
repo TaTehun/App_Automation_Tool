@@ -24,13 +24,13 @@ def execute_command():
             for device in device_list:
                 print(f"Device {device} is processing...")
                 
-                crash_flag, crash_log = app_crash_detector(device)                    
+                crash_flag, crash_log = app_crash_detector(device, package_names)                    
                 lock.acquire()
                 
-                executor.submit(
-                test_app_install(device, package_names, app_names, df, install_attempt), device)
+                #executor.submit(
+                #test_app_install(device, package_names, app_names, df, install_attempt), device)
             
-                time.sleep(1)
+                #time.sleep(1)
                 executor.submit( 
                     test_app_run(device, package_names, app_names, df, crash_flag, crash_log,launch_attempt), device)
                 lock.release()
