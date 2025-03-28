@@ -1,17 +1,16 @@
-import sys
 import os
+import sys
+import time
+import re
 import threading
 import subprocess
-import uiautomator2 as u2
-import time
-import pandas as pd
 import platform
-import re
-from PyQt5.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QTextEdit, QSpinBox, QMessageBox
-)
+import uiautomator2 as u2
+import pandas as pd
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QTextEdit, QSpinBox, QMessageBox
 from threading import Lock, Event
 from google_play_scraper import app
+
 
 # device -> run.py
 # package_names, app_names -> csv_handler.py
@@ -221,7 +220,9 @@ def is_app_open(package_name, device):
 
 def test_app_install(device, package_names, app_names, df, install_attempt, launch_attempt):
     
-    crash_flag = threading.Event()  # Use an Event to signal a crash detection
+    crash_flag = threading.Event() # Use an Event to signal a crash detection
+    stop_flag = threading.Event()
+    
     d = u2.connect(device)
     total_count, attempt, l_attempt = 0, 0, 0
     remark_list, test_result, mw_results, launch_result, crash_log = [], [], [], [], []
@@ -251,15 +252,17 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         df['MW Result'] = ""
     if 'Final MW Result' not in df.columns:
         df['Final MW Result'] = ""
-    if 'Crash' not in df.columns:
-        df['Crash'] = ""
     if 'Crash log' not in df.columns:
-        df['Grash log'] = ""
+        df['Crash log'] = ""
     
         
-    def monitor_crashes(device, package_name):
+    def monitor_crashes():
+        log_lock = threading.Lock()
         try:
-            crash_flag.clear()
+            subprocess.run(
+            ["adb", "-s", device, "logcat", "-c"],
+            check=True
+            )
             
             logcat_process = subprocess.Popen(
                 f"adb -s {device} logcat -v time",
@@ -277,21 +280,27 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
 
             for line in logcat_process.stdout:
                 line = line.strip()
+                if stop_flag.is_set():
+                    logcat_process.terminate()
 
                 if crash_start.search(line):
                     crash_detected = True
-                    crash_log.append("\n--- Crash Detected ---")
-                    crash_log.append(line)
+                    with log_lock:
+                        crash_log.append("\n--- Crash Detected ---")
+                        crash_log.append(line)
 
                 if crash_detected:
-                    crash_log.append(line)
+                    with log_lock:
+                        crash_log.append(line)
                     
                     if process_death.search(line):
-                        crash_log.append(line)
-                        crash_log.append("--- End of Crash ---\n")
+                        with log_lock:
+                            crash_log.append(line)
+                            crash_log.append("--- End of Crash ---\n")
                         crash_flag.set()  # Set the flag to indicate a crash
                         crash_detected = False  # Reset flag after full crash log is captured
-
+                        break
+                    
         except Exception as e:
             print(f"Error while monitoring logcat: {e}")
             
@@ -303,9 +312,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         
         #Checking if cancel button is activated for 180 sec
         while time.time() - timeout_start < timeout:
-            if yes_cancel:
-                pass
-            else:
+            if not yes_cancel:
                 break
             
         if d(text = "Uninstall").exists:
@@ -356,6 +363,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 "adb","-s",f"{device}","shell",
                 "input","keyevent","KEYCODE_HOME"
             ], check=True)
+            
     def info_scrapper():
         try:
             app_info = app(package_name)
@@ -416,6 +424,8 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             df.at[i, 'TargetSdk'] = "App is not found"
         
     def app_launcher():
+        if crash_flag.is_set():
+            return
         if d(text = "Play").wait(timeout = 5):
             d(text = "Play").click(10)
             time.sleep(2)
@@ -471,15 +481,13 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             "-a android.intent.action.VIEW",
             "-d", f"market://details?id={package_name}"
         ], check=True)
-
+        time.sleep(2)
+        stop_flag.set()
+    
     # Navigate to the app page in google playstore
     for i, (package_name, app_name) in enumerate(zip(package_names, app_names)):
         for attempt in range(install_attempt):
             attempt += 1
-            
-                # Start monitoring in a separate thread
-            crash_thread = threading.Thread(target=monitor_crashes, daemon=True)
-            crash_thread.start()
 
             if not unlock_device(device):
                 break
@@ -577,10 +585,24 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 if launch_attempt >= 1:
                     for l_attempt in range(launch_attempt):
                         l_attempt += 1
+                        crash_thread = threading.Thread(target=monitor_crashes, daemon=True)
+                        crash_thread.start()
                         app_launcher()
-                    #attempt to reload the page and repeat the installation
+                        while not stop_flag.is_set():
+                            crash_flag.wait()
+                        if crash_flag.is_set():
+                            launch_result.append(l_result_list[2])
+                            break
+                    crash_thread.join()
+                    crash_flag.clear()
+                    stop_flag.clear()
+                        
+                    #attempt to reload the page and repeat the installation    
                     if launch_result[-1] == l_result_list[2]:
                         print(f"{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
+                        mw_results.clear()
+                        df.at[i, 'Crash log'] = "\n".join(crash_log)
+                        crash_log.clear()
                         break               
                     elif l_attempt <= launch_attempt -1:  
                         print(f"{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
@@ -589,11 +611,11 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                         print(f"{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
 
                 if mw_results:
-                    df.at[i,'MW_Result'] = ', '.join(mw_results)
+                    df.at[i,'MW Result'] = ', '.join(mw_results)
                     final_mw_result = max(set(mw_results), key=mw_results.count)
-                    df.at[i,'Final_MW_Result'] = final_mw_result
+                    df.at[i,'Final MW Result'] = final_mw_result
                     mw_results.clear()
-                break
+                    break   
 
             elif attempt <= install_attempt -1:
                 print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}")
@@ -613,7 +635,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         df.at[i, 'Install Result'] = test_result[-1]
         df.at[i, 'Remarks'] = remark_list[-1]
         install_result_df = df[['App Name','App ID','Install Result', 'Remarks', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk']]
-        launch_result_df = df[['App Name','App ID','Running Result', 'MW_Result', 'Final_MW_Result']]
+        launch_result_df = df[['App Name','App ID','Running Result', 'MW Result', 'Final MW Result', 'Crash log']]
         launch_result_df.to_csv(f'launch_result_{device}.csv', index=False)
         install_result_df.to_csv(f'Install_result_{device}.csv', index=False)
         total_count += 1
