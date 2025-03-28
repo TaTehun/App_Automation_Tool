@@ -1,10 +1,8 @@
 import subprocess
 import re
 import threading
-import subprocess
-import re
 
-def app_crash_detector(device, package_names):
+def app_crash_detector(device):
     crash_flag = threading.Event()  # Use an Event to signal a crash detection
     crash_log = []
 
