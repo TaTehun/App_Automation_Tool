@@ -14,7 +14,6 @@ from PyQt5.QtWidgets import(QApplication, QWidget, QVBoxLayout, QLabel, QPushBut
 from threading import Lock, Event
 from google_play_scraper import app, search
 
-
 # device -> run.py
 # package_names, app_names -> csv_handler.py
 
@@ -126,7 +125,7 @@ def toggle_dark_mode(device):
 def toggle_multi_window_mode(device,package_name):
     os_name = platform.system()
     d = u2.connect(device)
-    landscape = "mCurrentRotation=ROTATION_0"
+    horizontal = "mCurrentRotation=ROTATION_0"
     
     # initialize the screen size & duration
     screen_width, screen_height = d.window_size()
@@ -151,17 +150,17 @@ def toggle_multi_window_mode(device,package_name):
                         text=True
                     ).strip()
         
-        if landscape in crotation:
-             d.long_click(screen_width -1, center_y // 2, duration = 3)            
-        else:
-            # click home button
-            subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_HOME'
-                            ],check=True)
-            time.sleep(1)
-            subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_APP_SWITCH'
-                            ],check=True)
-            time.sleep(1)
-            d.long_click(center_x // 2, center_y, duration = 3)
+    if horizontal in crotation:
+        d.long_click(screen_width -1, center_y -1, duration = 3)            
+    else:
+        # click home button
+        subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_HOME'
+                        ],check=True)
+        time.sleep(1)
+        subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_APP_SWITCH'
+                        ],check=True)
+        time.sleep(1)
+        d.long_click(center_x // 2, center_y, duration = 3)
         
     toast_text = d.toast.get_message(5.0, 5.0)
     if d.xpath("//*[contains(@text,'Select app')]").wait(2):
@@ -278,6 +277,8 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         df['TargetSdk'] = "" 
     if 'Running Result' not in df.columns:
         df['Running Result'] = ""
+    if 'Final MW Result' not in df.columns:
+        df['Final MW Result'] = ""
     if 'MW Result' not in df.columns:
         df['MW Result'] = ""
     if 'Crash log' not in df.columns:
@@ -331,14 +332,14 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                     
         except Exception as e:
             print(f"Error while monitoring logcat: {e}")
-            
+    '''        
     def skip_tested_apps():
         result_csv = f'Install_result_{device}.csv'  # Add .csv extension
         
         if os.path.exists(result_csv):
             # Load the result CSV file
             df = pd.read_csv(result_csv, encoding='unicode_escape').rename(columns=lambda x: x.strip())
-            
+    '''        
 
     def is_app_installed():
         #no_cancel = not d(text = "Cancel").exists
@@ -513,7 +514,6 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         time.sleep(2)
         stop_flag.set()
     
-    skip_tested_apps()
     # Navigate to the app page in google playstore
     for i, (package_name, app_name) in enumerate(zip(package_names, app_names)):
         
@@ -654,8 +654,8 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
 
                 if mw_results:
                     df.at[i,'MW Result'] = ', '.join(mw_results)
-                    #final_mw_result = max(set(mw_results), key=mw_results.count)
-                    #df.at[i,'Final MW Result'] = final_mw_result
+                    final_mw_result = max(set(mw_results), key=mw_results.count)
+                    df.at[i,'Final MW Result'] = final_mw_result
                     mw_results.clear()
                     break   
 
@@ -676,7 +676,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         df.at[i, 'Running Result'] = launch_result[-1]
         df.at[i, 'Install Result'] = test_result[-1]
         df.at[i, 'Remarks'] = remark_list[-1]
-        test_result_df = df[['App Name','App ID','Install Result','Running Result', 'MW Result', 'Remarks', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log']]
+        test_result_df = df[['App Name','App ID','Install Result','Running Result', 'MW Result', 'Final MW Result', 'Remarks', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log']]
         test_result_df.to_csv(f'Test_result_{device}.csv', index=False)
         total_count += 1
         
@@ -796,7 +796,7 @@ class AppTesterGUI(QWidget):
         self.resume_csv_button = QPushButton('Resume "Test_result" CSV file')
         self.resume_csv_button.clicked.connect(self.resume_csv)
         mid_layout.addWidget(self.resume_csv_button)
-        
+
         # Horizontal dotted divider
         mid_divider = QFrame()
         mid_divider.setFrameShape(QFrame.HLine)  # Horizontal line
@@ -893,22 +893,16 @@ class AppTesterGUI(QWidget):
             self.display_data(self.tableWidget)
         except Exception as e:
             self.show_error(str(e))
-
-    def resume_csv(self):
+    
+    def resume_csv(self): 
         try:
-            # Scan for CSV files matching "Test_result_*.csv"
-            csv_files = glob.glob("*Test_result_*.csv")
-
-            if not csv_files:
-                QMessageBox.warning(self, "No Files Found", "No Test_result_*.csv files found.")
-                return
-
-            # Open a file selection dialog (with ellipsis button functionality)
+            # Open a file selection dialog to upload a CSV file
             file_dialog = QFileDialog()
             file_dialog.setFileMode(QFileDialog.ExistingFile)
-            file_path, _ = file_dialog.getOpenFileName(self, "Select Test Result CSV", "", "CSV Files (*.csv)")
+            file_path, _ = file_dialog.getOpenFileName(self, "Upload Test Result CSV", "", "CSV Files (*.csv)")
 
             if not file_path:
+                QMessageBox.warning(self, "No File Selected", "Please select a CSV file to proceed.")
                 return  # User canceled selection
 
             # Store the selected file path
@@ -916,15 +910,13 @@ class AppTesterGUI(QWidget):
             self.automation_file_path = None
             self.search_file_path = None
 
-            # Process the selected file (you can define the processing function)
+            # Process the selected file
             self.package_names, self.app_names, self.df, _ = process_csv(self.resume_file_path)
-            print(f"Loaded CSV file - {self.resume_file_path}")
-            # You can display the data using your display function
-            # self.display_data(self.tableWidget)
-
+            self.display_data(self.tableWidget)
+            
         except Exception as e:
-            print(f"Error: {str(e)}")
-
+            self.show_error(str(e))
+    
     def app_searcher(self):
         app_names, app_ids, free_apps,prices,num_of_installs = [],[],[],[],[]
         
@@ -1066,7 +1058,6 @@ class AppTesterGUI(QWidget):
             updated_df.to_csv(file_path, index=False)
             QMessageBox.information(self, "Success", f"CSV file saved successfully as:\n{file_path}")
 
-            # Optionally, store the file path for future direct saves (if desired)
             self.file_path = file_path
 
     def start_testing(self):

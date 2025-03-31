@@ -1,21 +1,8 @@
-App Name,App ID,Install Result,Remarks,App Category,Developer,App Version,Updated Date,TargetSdk,Running Result,MW Result,Final MW Result,Crash log
-Madoka Magica Magia Exedra,com.aniplex.magia.exedra.en,Pass,App has already been installed,GAME_ROLE_PLAYING,Aniplex Inc.,1.0.1,"Mar 14, 2025",34.0,,,,
-She fitness,com.female.inspire.workout.shefitness,Pass,App has already been installed,GAME_ROLE_PLAYING,Aniplex Inc.,1.0.1,"Mar 14, 2025",34.0,,,,
-NewsBreak,com.particlenews.newsbreak,Pass,App has already been installed,NEWS_AND_MAGAZINES,Particle Media Inc.,25.13.0,"Mar 28, 2025",34.0,,,,
-Shield: Antivirus Launcher,com.applock.launcher,Pass,App has already been installed,GAME_ROLE_PLAYING,Aniplex Inc.,1.0.1,"Mar 14, 2025",34.0,,,,
-Reddit,com.reddit.frontpage,Pass,App has already been installed,SOCIAL,reddit Inc.,2025.11.0,"Mar 26, 2025",35,Pass,"Pass, Pass, Pass",Pass,
-Uber Eats,com.ubercab.eats,Pass,App has already been installed,FOOD_AND_DRINK,"Uber Technologies, Inc.",6.263.10000,"Mar 25, 2025",34,Pass,"Pass, Pass, Pass",Pass,
-Costco Wholesale,com.costco.app.android,,,,,,,,,,,
-Nextdoor: Neighborhood network,com.nextdoor,,,,,,,,,,,
-Paper.io 2,io.voodoo.paper2,,,,,,,,,,,
-earnify,com.bp.app.bpme.global.ros,,,,,,,,,,,
-Color Pop - Fun Coloring Games,com.mwm.procolor,,,,,,,,,,,
-Spiral Drop,com.gimica.helixdash,,,,,,,,,,,
-Ring - Always Home,com.ringapp,,,,,,,,,,,
-Patreon,com.patreon.android,,,,,,,,,,,
-Crypto.com,co.mona.android,,,,,,,,,,,
-Time Warp Scan - Face Scan,timewarpscanner.facescan.timewarp.timewarpscan,,,,,,,,,,,
-Ring - Always Home,com.ringapp,,,,,,,,,,,
-Target,com.target.ui,,,,,,,,,,,
-Madoka Magica Magia Exedra,com.aniplex.magia.exedra.en,,,,,,,,,,,
-Playful Rewards: Play & Earn,com.theoremreach.wizardbucks,,,,,,,,,,,
+App Name,App ID
+Patreon,com.patreon.android
+Crypto.com,co.mona.android
+Time Warp Scan - Face Scan,timewarpscanner.facescan.timewarp.timewarpscan
+Ring - Always Home,com.ringapp
+Target,com.target.ui
+Madoka Magica Magia Exedra,com.aniplex.magia.exedra.en
+Playful Rewards: Play & Earn,com.theoremreach.wizardbucks
