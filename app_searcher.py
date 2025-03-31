@@ -4,11 +4,10 @@ import pandas as pd
 def app_searcher():
     app_names, app_ids, free_apps,prices,num_of_installs = [],[],[],[],[]
     
-    keyword = "VR apps"
+    keyword = "Top 100 apps"
     
     results = search(
-    keyword,
-    n_hits=50
+    keyword
 )
     
     for app in results:

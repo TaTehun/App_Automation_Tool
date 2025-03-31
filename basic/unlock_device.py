@@ -17,7 +17,7 @@ def is_device_unlocked(device):
             text = True,)
     elif os_name == "Windows":
         is_unlocked = subprocess.run(
-            f"adb -s {device} shell dumpsys window | findstr mDreamingLockscreen",
+            f"adb -s {device} shell dumpsys window |  mDreamingLockscreen",
             shell = True,
             capture_output = True,
             text = True,)

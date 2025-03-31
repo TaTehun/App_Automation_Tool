@@ -46,16 +46,14 @@ def crash_detector(device,pack):
                     print(line)  # Print the crash log
                 
             if crash_detected:
-
                 if process_death.search(line):
                     print(line)
+                    crash_detected = False
                     print("--- End of Crash ---\n")
                     crash_flag.set()
-                    crash_detected = False
-                    break
                 
     def heyhey():
-        time.sleep(5)
+        time.sleep(50)
         if 1 + 1 == 2:
             print("YES!")
             stop_flag.set()
