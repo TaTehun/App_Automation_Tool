@@ -309,6 +309,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 line = line.strip()
                 if stop_flag.is_set():
                     logcat_process.terminate()
+                    break
 
                 if crash_start.search(line):
                     crash_detected = True
