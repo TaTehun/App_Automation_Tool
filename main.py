@@ -1089,7 +1089,7 @@ class AppTesterGUI(QWidget):
             self.log_output.append("Starting tests...")
             
             self.stop_button.setEnabled(True)
-            self.start_all_button.setEnabled(True)
+            self.start_all_button.setEnabled(False)
             self.start_button.setEnabled(False)
             
             def run_tests():
@@ -1098,7 +1098,7 @@ class AppTesterGUI(QWidget):
                     test_app_install (device, self.package_names, self.app_names, self.df, install_attempt, launch_attempt)
                 self.log_output.append("Testing completed.")
                 self.stop_button.setEnabled(False)
-                self.start_all_button.setEnabled(False)
+                self.start_all_button.setEnabled(True)
                 self.start_button.setEnabled(True)
                 
             
