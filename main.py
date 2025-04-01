@@ -793,9 +793,9 @@ class AppTesterGUI(QWidget):
         self.load_csv_button.clicked.connect(self.load_csv)
         mid_layout.addWidget(self.load_csv_button)
         
-        self.resume_csv_button = QPushButton('Resume "Test_result" CSV file')
-        self.resume_csv_button.clicked.connect(self.resume_csv)
-        mid_layout.addWidget(self.resume_csv_button)
+        self.custom_csv_button = QPushButton('Resume "Test_result" CSV file')
+        self.custom_csv_button.clicked.connect(self.custom_csv)
+        mid_layout.addWidget(self.custom_csv_button)
 
         # Horizontal dotted divider
         mid_divider = QFrame()
@@ -893,8 +893,20 @@ class AppTesterGUI(QWidget):
             self.display_data(self.tableWidget)
         except Exception as e:
             self.show_error(str(e))
-    
-    def resume_csv(self): 
+    '''        
+    def resume_csv(self):
+        try:
+            self.resume_file_path = "test_result_{device}.csv"
+            self.search_file_path = None
+            self.resume_file_path = None
+
+            self.package_names, self.app_names, self.df, _ = process_csv(self.resume_file_path)
+            self.log_output.append(f"Loaded CSV file - {self.resume_file_path}")
+            self.display_data(self.tableWidget)
+        except Exception as e:
+            self.show_error(str(e))
+    '''
+    def custom_csv(self): 
         try:
             # Open a file selection dialog to upload a CSV file
             file_dialog = QFileDialog()
@@ -1084,6 +1096,7 @@ class AppTesterGUI(QWidget):
                 self.start_button.setEnabled(True)
             
             threading.Thread(target=run_tests, daemon=True).start()
+            
         except Exception as e:
             self.show_error(str(e))
 
