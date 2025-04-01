@@ -114,13 +114,11 @@ def toggle_dark_mode(device):
         subprocess.run(['adb', "-s", f"{device}", 'shell', 'cmd', 'uimode', 'night', 'yes'
                     ],capture_output=True, text=True, check=True)
         time.sleep(1)
-        print("dark mode!")
     else:
         # Disabling dark mode
         subprocess.run(['adb', "-s", f"{device}", 'shell', 'cmd', 'uimode', 'night', 'no'
                     ],capture_output=True, text=True, check=True)
         time.sleep(1)
-        print("Light mode!")
         
 def toggle_multi_window_mode(device,package_name):
     os_name = platform.system()
@@ -471,7 +469,6 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             mw_results.append(toggle_multi_window_mode(device,package_name))
             #toggle_monkey_test(device,package_name)
             launch_result.append(l_result_list[0]) # PASS
-            print("test done")
 
         elif d(text = "Open").wait(timeout = 5):
             d(text = "Open").click(10)
@@ -481,7 +478,6 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             mw_results.append(toggle_multi_window_mode(device,package_name))
             #toggle_monkey_test(device,package_name)
             launch_result.append(l_result_list[0]) # PASS
-            print ("test done")
 
         else: 
             print(f"app is not installed")
@@ -741,6 +737,10 @@ class AppTesterGUI(QWidget):
         self.start_button.clicked.connect(self.start_testing)
         left_layout.addWidget(self.start_button)
 
+        self.start_all_button = QPushButton("Start Testing all")
+        self.start_all_button.clicked.connect(self.start_testing_all)
+        left_layout.addWidget(self.start_all_button)
+
         self.stop_button = QPushButton("Stop Testing")
         self.stop_button.clicked.connect(self.stop_testing)
         self.stop_button.setEnabled(False)
@@ -793,7 +793,7 @@ class AppTesterGUI(QWidget):
         self.load_csv_button.clicked.connect(self.load_csv)
         mid_layout.addWidget(self.load_csv_button)
         
-        self.custom_csv_button = QPushButton('Resume "Test_result" CSV file')
+        self.custom_csv_button = QPushButton('Select CSV file')
         self.custom_csv_button.clicked.connect(self.custom_csv)
         mid_layout.addWidget(self.custom_csv_button)
 
@@ -1074,8 +1074,11 @@ class AppTesterGUI(QWidget):
 
     def start_testing(self):
         try:
-            if not self.device_list or not self.package_names:
-                self.log_output.append("Error: Devices not connected or CSV not loaded.")
+            if not self.device_list:
+                self.log_output.append("Error: Devices not connected")
+                
+            elif not self.package_names:
+                self.log_output.append("Error: CSV not loaded.")
                 return
             
             install_attempt = self.install_attempt_input.value()
@@ -1085,6 +1088,7 @@ class AppTesterGUI(QWidget):
             self.log_output.append("Starting tests...")
             
             self.stop_button.setEnabled(True)
+            self.start_all_button.setEnabled(True)
             self.start_button.setEnabled(False)
             
             def run_tests():
@@ -1093,10 +1097,53 @@ class AppTesterGUI(QWidget):
                     test_app_install (device, self.package_names, self.app_names, self.df, install_attempt, launch_attempt)
                 self.log_output.append("Testing completed.")
                 self.stop_button.setEnabled(False)
+                self.start_all_button.setEnabled(False)
                 self.start_button.setEnabled(True)
+                
             
             threading.Thread(target=run_tests, daemon=True).start()
             
+        except Exception as e:
+            self.show_error(str(e))
+
+    def start_testing_all(self):
+        try:
+            if not self.device_list:
+                self.log_output.append("Error: Devices not connected")
+                
+            elif not self.package_names:
+                self.log_output.append("Error: CSV not loaded.")
+                return
+            
+            install_attempt = self.install_attempt_input.value()
+            launch_attempt = self.launch_attempt_input.value()
+            self.stop_testing_event.clear()
+            
+            self.log_output.append("Starting tests...")
+            
+            self.stop_button.setEnabled(True)
+            self.start_all_button.setEnabled(False)
+            self.start_button.setEnabled(False)
+            def run_tests_for_device(device):
+                self.log_output.append(f"Processing device {device}...")
+                test_app_install(device, self.package_names, self.app_names, self.df, install_attempt, launch_attempt)
+
+            def run_all_tests():
+                threads = []
+                for device in self.device_list:
+                    t = threading.Thread(target=run_tests_for_device, args=(device,), daemon=True)
+                    threads.append(t)
+                    t.start()
+
+                for t in threads:
+                    t.join()
+
+                self.log_output.append("Testing completed.")
+                self.stop_button.setEnabled(False)
+                self.start_all_button.setEnabled(True)
+                self.start_button.setEnabled(True)
+
+            threading.Thread(target=run_all_tests, daemon=True).start()
         except Exception as e:
             self.show_error(str(e))
 
@@ -1106,6 +1153,7 @@ class AppTesterGUI(QWidget):
             #self.log_output.append("Testing stopped by user.")
             self.stop_button.setEnabled(False)
             self.start_button.setEnabled(True)
+            self.start_all_button.setEnabled(True)
         except Exception as e:
             self.show_error(str(e))
 
