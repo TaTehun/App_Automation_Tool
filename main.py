@@ -8,7 +8,6 @@ import platform
 import uiautomator2 as u2
 import pandas as pd
 import random
-import glob
 from PyQt5.QtWidgets import(QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QTableWidget, 
     QTableWidgetItem, QFileDialog, QMessageBox, QTextEdit, QSpinBox, QHBoxLayout, QLineEdit, QFrame)
 from threading import Lock, Event
@@ -871,7 +870,6 @@ class AppTesterGUI(QWidget):
         self.package_names = []
         self.app_names = []
         self.df = None
-        self.stop_testing_event = Event()
         
     def show_error(self, message):
         QMessageBox.critical(self, "Error", message)
@@ -1091,6 +1089,10 @@ class AppTesterGUI(QWidget):
             self.stop_button.setEnabled(True)
             self.start_all_button.setEnabled(False)
             self.start_button.setEnabled(False)
+            self.search_button.setEnabled(False)
+            self.load_search_data.setEnabled(False)
+            self.load_csv_button.setEnabled(False)
+            self.custom_csv_button.setEnabled(False)
             
             def run_tests():
                 for device in self.device_list:
@@ -1100,7 +1102,10 @@ class AppTesterGUI(QWidget):
                 self.stop_button.setEnabled(False)
                 self.start_all_button.setEnabled(True)
                 self.start_button.setEnabled(True)
-                
+                self.search_button.setEnabled(True)
+                self.load_search_data.setEnabled(True)
+                self.load_csv_button.setEnabled(True)
+                self.custom_csv_button.setEnabled(True)
             
             threading.Thread(target=run_tests, daemon=True).start()
             
@@ -1125,6 +1130,11 @@ class AppTesterGUI(QWidget):
             self.stop_button.setEnabled(True)
             self.start_all_button.setEnabled(False)
             self.start_button.setEnabled(False)
+            self.search_button.setEnabled(False)
+            self.load_search_data.setEnabled(False)
+            self.load_csv_button.setEnabled(False)
+            self.custom_csv_button.setEnabled(False)
+            
             def run_tests_for_device(device):
                 self.log_output.append(f"Processing device {device}...")
                 test_app_install(device, self.package_names, self.app_names, self.df, install_attempt, launch_attempt)
@@ -1143,6 +1153,12 @@ class AppTesterGUI(QWidget):
                 self.stop_button.setEnabled(False)
                 self.start_all_button.setEnabled(True)
                 self.start_button.setEnabled(True)
+                self.start_all_button.setEnabled(True)
+                self.start_button.setEnabled(True)
+                self.search_button.setEnabled(True)
+                self.load_search_data.setEnabled(True)
+                self.load_csv_button.setEnabled(True)
+                self.custom_csv_button.setEnabled(True)
 
             threading.Thread(target=run_all_tests, daemon=True).start()
         except Exception as e:
@@ -1153,8 +1169,15 @@ class AppTesterGUI(QWidget):
             os._exit(0)
             #self.log_output.append("Testing stopped by user.")
             self.stop_button.setEnabled(False)
+            self.stop_button.setEnabled(False)
+            self.start_all_button.setEnabled(True)
             self.start_button.setEnabled(True)
             self.start_all_button.setEnabled(True)
+            self.start_button.setEnabled(True)
+            self.search_button.setEnabled(True)
+            self.load_search_data.setEnabled(True)
+            self.load_csv_button.setEnabled(True)
+            self.custom_csv_button.setEnabled(True)
         except Exception as e:
             self.show_error(str(e))
 
