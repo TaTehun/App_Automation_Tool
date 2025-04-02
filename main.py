@@ -515,7 +515,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         
         if 'Install Result' in df.columns:
             if pd.notna(df.at[i, 'Install Result']) and df.at[i, 'Install Result'].strip():
-                continue 
+                continue
         
         for attempt in range(install_attempt):
             attempt += 1
@@ -1082,7 +1082,6 @@ class AppTesterGUI(QWidget):
             
             install_attempt = self.install_attempt_input.value()
             launch_attempt = self.launch_attempt_input.value()
-            self.stop_testing_event.clear()
             
             self.log_output.append("Starting tests...")
             
@@ -1123,7 +1122,6 @@ class AppTesterGUI(QWidget):
             
             install_attempt = self.install_attempt_input.value()
             launch_attempt = self.launch_attempt_input.value()
-            self.stop_testing_event.clear()
             
             self.log_output.append("Starting tests...")
             

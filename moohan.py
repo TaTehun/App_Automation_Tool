@@ -280,6 +280,8 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         df['MW Result'] = ""
     if 'Crash log' not in df.columns:
         df['Crash log'] = ""
+    if 'Final' not in df.columns:
+        df['Final'] = ""
     
         
     def monitor_crashes():
@@ -463,21 +465,23 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             return
         if d(text = "Play").wait(timeout = 5):
             d(text = "Play").click(10)
-            time.sleep(2)
-            toggle_dark_mode(device)
-            time.sleep(2)
-            mw_results.append(toggle_multi_window_mode(device,package_name))
+            if is_app_open:
+            #time.sleep(2)
+            #toggle_dark_mode(device)
+            #time.sleep(2)
+            #mw_results.append(toggle_multi_window_mode(device,package_name))
             #toggle_monkey_test(device,package_name)
-            launch_result.append(l_result_list[0]) # PASS
+                launch_result.append(l_result_list[0]) # PASS
 
         elif d(text = "Open").wait(timeout = 5):
             d(text = "Open").click(10)
-            time.sleep(2)
-            toggle_dark_mode(device)
-            time.sleep(2)
-            mw_results.append(toggle_multi_window_mode(device,package_name))
+            if is_app_open:
+            #time.sleep(2)
+            #toggle_dark_mode(device)
+            #time.sleep(2)
+            #mw_results.append(toggle_multi_window_mode(device,package_name))
             #toggle_monkey_test(device,package_name)
-            launch_result.append(l_result_list[0]) # PASS
+                launch_result.append(l_result_list[0]) # PASS
 
         else: 
             print(f"app is not installed")
@@ -512,16 +516,17 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     
     # Navigate to the app page in google playstore
     for i, (package_name, app_name) in enumerate(zip(package_names, app_names)):
-        
-        if 'Install Result' in df.columns:
-            if pd.notna(df.at[i, 'Install Result']) and df.at[i, 'Install Result'].strip():
-                continue 
-        
+
+                
         for attempt in range(install_attempt):
             attempt += 1
-
-            if not unlock_device(device):
+            if pd.notna(df.at[i, 'Final']) and df.at[i, 'Final'].strip():
                 break
+            
+            if pd.notna(df.at[i, 'Install Result']) and df.at[i, 'Install Result'].strip().lower() and df.at[i, 'Launch Result'].strip().lower() == "pass":
+                test_result.append(t_result_list[0]) #Pass
+                break
+
                 
             subprocess.run([
                 "adb", "-s", device, "shell",
@@ -660,17 +665,11 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                             launch_result[-1] == l_result_list[1]
                     else:
                         print(f"{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
-                
-                if mw_results:
-                    df.at[i,'MW Result'] = ', '.join(mw_results)
-                    final_mw_result = max(set(mw_results), key=mw_results.count)
-                    df.at[i,'Final MW Result'] = final_mw_result
-                    mw_results.clear()
                 break
 
             elif attempt <= install_attempt -1:
                 print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}")
-                handle_popup()
+                #handle_popup()
                 test_result.pop()
                 remark_list.pop()
             else:
@@ -683,12 +682,24 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         
         # save the result to csv file
         df.at[i, 'Running Result'] = launch_result[-1] if launch_result else None
-        df.at[i, 'Install Result'] = test_result[-1] if test_result else None
-        df.at[i, 'Remarks'] = remark_list[-1] if remark_list else None
-        test_result_df = df[['App Name','App ID','Install Result','Running Result', 'MW Result', 'Final MW Result', 'Remarks', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log']]
+        df.at[i, 'Final'] = test_result[-1] if test_result else None
+        if remark_list:
+            df.at[i, 'Remarks'] = remark_list[-1]
+        test_result_df = df[['App Name','App ID','Final','Running Result', 'Install Result', 'Launch Result', 'Remarks', 'App Category', 'Developer', 'App Version', 'Updated Date', 'Crash log']]
         test_result_df.to_csv(f'Test_result_{device}.csv', index=False)
-        total_count += 1
+        remark_list.clear()
+
+        subprocess.run([
+                "adb", "-s", device, "shell",
+                "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
+                "-a android.intent.action.VIEW",
+                "-d", f"market://details?id={package_name}"
+            ], check=True)
         
+        if d(text = "Uninstall").wait(timeout = 10):
+            d(text = "Uninstall").click(10)
+            print("Uninstalled")
+        total_count += 1
     print(f"Total {total_count} app testing is completed")
 
 
@@ -1095,7 +1106,6 @@ class AppTesterGUI(QWidget):
             
             install_attempt = self.install_attempt_input.value()
             launch_attempt = self.launch_attempt_input.value()
-            self.stop_testing_event.clear()
             
             self.log_output.append("Starting tests...")
             
@@ -1136,7 +1146,6 @@ class AppTesterGUI(QWidget):
             
             install_attempt = self.install_attempt_input.value()
             launch_attempt = self.launch_attempt_input.value()
-            self.stop_testing_event.clear()
             
             self.log_output.append("Starting tests...")
             
