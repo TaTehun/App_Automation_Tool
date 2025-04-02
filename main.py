@@ -648,13 +648,13 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                             launch_result[-1] == l_result_list[1]
                     else:
                         print(f"{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
-
+                
                 if mw_results:
                     df.at[i,'MW Result'] = ', '.join(mw_results)
                     final_mw_result = max(set(mw_results), key=mw_results.count)
                     df.at[i,'Final MW Result'] = final_mw_result
                     mw_results.clear()
-                    break   
+                break
 
             elif attempt <= install_attempt -1:
                 print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}")
@@ -670,9 +670,9 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         info_scrapper()
         
         # save the result to csv file
-        df.at[i, 'Running Result'] = launch_result[-1]
-        df.at[i, 'Install Result'] = test_result[-1]
-        df.at[i, 'Remarks'] = remark_list[-1]
+        df.at[i, 'Running Result'] = launch_result[-1] if launch_result else None
+        df.at[i, 'Install Result'] = test_result[-1] if test_result else None
+        df.at[i, 'Remarks'] = remark_list[-1] if remark_list else None
         test_result_df = df[['App Name','App ID','Install Result','Running Result', 'MW Result', 'Final MW Result', 'Remarks', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log']]
         test_result_df.to_csv(f'Test_result_{device}.csv', index=False)
         total_count += 1
