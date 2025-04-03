@@ -20,22 +20,12 @@ from google_play_scraper import app, search
 # ({'mask': 1, 'childOrSibling': [], 'childOrSiblingSelector': [], 'text': 'Open'},))
 
 def is_device_unlocked(device):
-    os_name = platform.system()
 
-    if os_name in ["Linux", "Darwin"]:  # macOS and Linux
-        is_unlocked = subprocess.run(
-            f"adb -s {device} shell dumpsys window | grep mDreamingLockscreen",
-            shell = True,
-            capture_output = True,
-            text = True,)
-    elif os_name == "Windows":
-        is_unlocked = subprocess.run(
-            f"adb -s {device} shell dumpsys window | findstr mDreamingLockscreen",
-            shell = True,
-            capture_output = True,
-            text = True,)
-    else:
-        print(f"Unsupported OS: {os_name}")
+    is_unlocked = subprocess.run(
+        f"adb -s {device} shell dumpsys window | findstr mDreamingLockscreen",
+        shell = True,
+        capture_output = True,
+        text = True,)
 
     if "mShowingDream=false" and "mDreamingLockscreen=false" in is_unlocked.stdout:
         return True
@@ -342,6 +332,12 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     '''        
 
     def is_app_installed():
+        subprocess.run([
+            "adb", "-s", device, "shell",
+            "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
+            "-a android.intent.action.VIEW",
+            "-d", f"market://details?id={package_name}"
+        ], check=True)
         #no_cancel = not d(text = "Cancel").exists
         yes_cancel = d(text = "Cancel").exists
         timeout = 180
@@ -499,9 +495,10 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             else:
                 subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_BACK'
                                 ],check=True)
-                
-        # Press home button
-        subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_HOME'
+        
+        time.sleep(5)        
+        # stop app
+        subprocess.run(['adb', "-s", f"{device}", 'shell', 'am', 'force-stop', f"{package_name}"
                     ],check=True)
                 
         # open the app from google playstore
@@ -517,9 +514,13 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     # Navigate to the app page in google playstore
     for i, (package_name, app_name) in enumerate(zip(package_names, app_names)):
 
-                
         for attempt in range(install_attempt):
             attempt += 1
+            
+            if not is_device_unlocked:
+                while not is_device_unlocked:
+                    print("Device is not connected")
+            
             if pd.notna(df.at[i, 'Final']) and df.at[i, 'Final'].strip():
                 break
             
@@ -677,6 +678,18 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 if launch_result:
                     launch_result.pop()
                 launch_result.append(l_result_list[1]) # NA
+                
+        os.system(f"adb -s R32Y30002QZ uninstall {package_name}")
+        
+        subprocess.run([
+            "adb", "-s", device, "shell",
+            "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
+            "-a android.intent.action.VIEW",
+            "-d", f"market://details?id={package_name}"
+        ], check=True)
+        
+        if d(text = "Install").wait(10):
+            print("Uninstalled")
         
         info_scrapper()
         
@@ -689,16 +702,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         test_result_df.to_csv(f'Test_result_{device}.csv', index=False)
         remark_list.clear()
 
-        subprocess.run([
-                "adb", "-s", device, "shell",
-                "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
-                "-a android.intent.action.VIEW",
-                "-d", f"market://details?id={package_name}"
-            ], check=True)
-        
-        if d(text = "Uninstall").wait(timeout = 10):
-            d(text = "Uninstall").click(10)
-            print("Uninstalled")
+
         total_count += 1
     print(f"Total {total_count} app testing is completed")
 
@@ -1118,9 +1122,9 @@ class AppTesterGUI(QWidget):
             self.custom_csv_button.setEnabled(False)
             
             def run_tests():
-                for device in self.device_list:
-                    self.log_output.append(f"Processing device {device}...")
-                    test_app_install (device, self.package_names, self.app_names, self.df, install_attempt, launch_attempt)
+                device = "R32Y30002QZ"
+                self.log_output.append(f"Processing device {device}...")
+                test_app_install (device, self.package_names, self.app_names, self.df, install_attempt, launch_attempt)
                 self.log_output.append("Testing completed.")
                 self.stop_button.setEnabled(False)
                 self.start_all_button.setEnabled(True)
