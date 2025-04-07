@@ -513,12 +513,11 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     # Navigate to the app page in google playstore
     for i, (package_name, app_name) in enumerate(zip(package_names, app_names)):
         
-        if 'Install Result' in df.columns:
-            if pd.notna(df.at[i, 'Install Result']) and df.at[i, 'Install Result'].strip():
-                continue
-        
         for attempt in range(install_attempt):
             attempt += 1
+            
+            if pd.notna(df.at[i, 'Install Result']) and df.at[i, 'Install Result'].strip():
+                break
 
             if not unlock_device(device):
                 break
@@ -1075,7 +1074,8 @@ class AppTesterGUI(QWidget):
         try:
             if not self.device_list:
                 self.log_output.append("Error: Devices not connected")
-                
+                return
+            
             elif not self.package_names:
                 self.log_output.append("Error: CSV not loaded.")
                 return
@@ -1115,6 +1115,7 @@ class AppTesterGUI(QWidget):
         try:
             if not self.device_list:
                 self.log_output.append("Error: Devices not connected")
+                return
                 
             elif not self.package_names:
                 self.log_output.append("Error: CSV not loaded.")
