@@ -188,47 +188,19 @@ def is_app_open(package_name, device):
     
     try:
         for attempt in range(3):
-            if os_name in ["Linux", "Darwin"]:  # macOS and Linux
-                result = subprocess.check_output(
-                    f"adb -s {device} shell dumpsys activity activities | grep ResumedActivity",
-                    shell=True,
-                    text=True
-                ).strip()
-            elif os_name == "Windows":
-                result = subprocess.check_output(
-                    f"adb -s {device} shell dumpsys activity activities | findstr ResumedActivity",
-                    shell=True,
-                    text=True
-                ).strip()
-            else:
-                print(f"Unsupported OS: {os_name}")
+
+            result = subprocess.check_output(
+                f"adb -s {device} shell dumpsys activity activities | findstr ResumedActivity",
+                shell=True,
+                text=True
+            ).strip()
+
                 
             if package_name in result:
                 return True
-            elif samsung_setting in result:
-                if d(text = "Not now").exists:
-                    d(text = "Not now").click(10)
-                    time.sleep(1)
-            elif android_permission in result:
-                if d(text = "While using the app").exists:
-                    d(text = "While using the app").click()
-                elif d(text = "Allow").exists:
-                    d(text = "Allow").click()
             else:
-                print("is app running? : ", result)
-                if d(text = "Allow").exists:
-                    d(text = "Allow").click()
-                elif d(text = "Cancel").exists:
-                    d(text = "Cancel").click()
-                elif d(text = "OK").exists:
-                    d(text = "OK").click()
-                elif d(text = "Not now").exists:
-                    d(text = "Not now").click()
-                elif d(text = "Close").exists:
-                    d(text = "Close").click()
-                else:
-                    subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_HOME'
-                                    ],check=True) 
+                subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_HOME'
+                                ],check=True) 
                 
         attempt += 1
     except subprocess.CalledProcessError:
@@ -461,6 +433,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             return
         if d(text = "Play").wait(timeout = 5):
             d(text = "Play").click(10)
+            time.sleep(5)
             if is_app_open:
             #time.sleep(2)
             #toggle_dark_mode(device)
@@ -471,6 +444,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
 
         elif d(text = "Open").wait(timeout = 5):
             d(text = "Open").click(10)
+            time.sleep(5)
             if is_app_open:
             #time.sleep(2)
             #toggle_dark_mode(device)
