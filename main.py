@@ -92,15 +92,15 @@ def connect_devices(): # source code from Hyeonjun An.
     lines = result.stdout.split('\n')[1:]  # Skip the first line which is a header
     device_ids = [line.split('\t')[0] for line in lines if '\tdevice' in line]
 
-    device_list = []
+    device_map = {}
     
-    for device_idd in device_ids:
+    for device_id in device_ids:
         serial = subprocess.check_output(
-            ["adb", "-s", device_idd, "shell", "getprop", "ro.serialno"]
+            ["adb", "-s", device_id, "shell", "getprop", "ro.serialno"]
             ).decode().strip()
-        device_list.append(serial)
+        device_map[device_id] = serial
         
-    return device_list, device_ids
+    return device_map
 
 def process_csv(csv_filename):
     csv_file = os.path.abspath(csv_filename)
@@ -252,7 +252,7 @@ def is_app_open(package_name, device):
     except subprocess.CalledProcessError:
         return False  # Continue if there's an issue with the adb command
 
-def test_app_install(device, package_names, app_names, df, install_attempt, launch_attempt):
+def test_app_install(device, package_names, app_names, df, install_attempt, launch_attempt, serial):
     
     crash_flag = threading.Event() # Use an Event to signal a crash detection
     stop_flag = threading.Event()
@@ -677,13 +677,11 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         info_scrapper()
         
         # save the result to csv file
-        print(device,launch_result)
-        print(device, test_result)
         df.at[i, 'Running Result'] = launch_result[-1] if launch_result else None
         df.at[i, 'Install Result'] = test_result[-1] if test_result else None
         df.at[i, 'Remarks'] = remark_list[-1] if remark_list else None
         test_result_df = df[['App Name','App ID','Install Result','Running Result', 'MW Result', 'Final MW Result', 'Remarks', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log']]
-        test_result_df.to_csv(f'Test_result_{device}.csv', index=False)
+        test_result_df.to_csv(f'Test_result_{serial}.csv', index=False)
         total_count += 1
         
     print(f"Total {total_count} app testing is completed")
@@ -876,8 +874,7 @@ class AppTesterGUI(QWidget):
         self.setWindowTitle("App Installation Tester")
         self.setGeometry(300, 300, 1000, 400) 
         
-        self.device_list = []
-        self.device_ids = []
+        self.device_map = {}
         self.package_names = []
         self.app_names = []
         self.df = None
@@ -887,8 +884,8 @@ class AppTesterGUI(QWidget):
 
     def connect_devices(self):
         try:
-            self.device_list, self.device_ids = connect_devices()
-            self.device_label.setText(f"Connected Devices: {', '.join(self.device_list)}")
+            self.device_map = connect_devices()
+            self.device_label.setText(f"Connected Devices: {', '.join(self.device_map.values())}")
         except Exception as e:
             self.show_error(str(e))
             
@@ -1084,7 +1081,7 @@ class AppTesterGUI(QWidget):
 
     def start_testing(self):
         try:
-            if not self.device_list:
+            if not self.device_map:
                 self.log_output.append("Error: Devices not connected")
                 return
             
@@ -1106,9 +1103,10 @@ class AppTesterGUI(QWidget):
             self.custom_csv_button.setEnabled(False)
             
             def run_tests():
-                for device in self.device_ids:
-                    self.log_output.append(f"Processing device {device}...")
-                    test_app_install (device, self.package_names, self.app_names, self.df, install_attempt, launch_attempt)
+                for device in self.device_map:
+                    serial = self.device_map[device]
+                    self.log_output.append(f"Processing device {serial}...")
+                    test_app_install (device, self.package_names, self.app_names, self.df, install_attempt, launch_attempt, serial)
                 self.log_output.append("Testing completed.")
                 self.stop_button.setEnabled(False)
                 self.start_all_button.setEnabled(True)
@@ -1125,7 +1123,7 @@ class AppTesterGUI(QWidget):
 
     def start_testing_all(self):
         try:
-            if not self.device_list:
+            if not self.device_map:
                 self.log_output.append("Error: Devices not connected")
                 return
                 
@@ -1146,15 +1144,16 @@ class AppTesterGUI(QWidget):
             self.load_csv_button.setEnabled(False)
             self.custom_csv_button.setEnabled(False)
             
-            def run_tests_for_device(device):
-                self.log_output.append(f"Processing device {device}...")
+            def run_tests_for_device(device, serial):
+                self.log_output.append(f"Processing device {serial}...")
                 local_df = self.df.copy()
-                test_app_install(device, self.package_names, self.app_names, local_df, install_attempt, launch_attempt)
+                test_app_install(device, self.package_names, self.app_names, local_df, install_attempt, launch_attempt, serial)
 
             def run_all_tests():
                 threads = []
-                for device in self.device_ids:
-                    t = threading.Thread(target=run_tests_for_device, args=(device,), daemon=True)
+                for device in self.device_map:
+                    serial = self.device_map[device]
+                    t = threading.Thread(target=run_tests_for_device, args=(device,serial), daemon=True)
                     threads.append(t)
                     t.start()
 
