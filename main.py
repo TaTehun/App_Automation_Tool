@@ -90,8 +90,16 @@ def connect_devices(): # source code from Hyeonjun An.
         ['adb', 'devices'], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                             universal_newlines=True)
     lines = result.stdout.split('\n')[1:]  # Skip the first line which is a header
-    device_list = [line.split('\t')[0] for line in lines if '\tdevice' in line]
+    device_ids = [line.split('\t')[0] for line in lines if '\tdevice' in line]
 
+    device_list = []
+    
+    for device_id in device_ids:
+        serial = subprocess.check_output(
+            ["adb", "-s", device_id, "shell", "getprop", "ro.serialno"]
+            ).decode().strip()
+        device_list.append(serial)
+        
     return device_list
 
 def process_csv(csv_filename):
