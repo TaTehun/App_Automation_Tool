@@ -619,6 +619,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                         crash_thread.start()
                         app_launcher()
                         while not stop_flag.is_set():
+                            print("Crash flag not set")
                             crash_flag.wait()
                         if crash_flag.is_set():
                             launch_result.append(l_result_list[2])
@@ -668,6 +669,8 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         info_scrapper()
         
         # save the result to csv file
+        print(device,launch_result)
+        print(device, test_result)
         df.at[i, 'Running Result'] = launch_result[-1] if launch_result else None
         df.at[i, 'Install Result'] = test_result[-1] if test_result else None
         df.at[i, 'Remarks'] = remark_list[-1] if remark_list else None

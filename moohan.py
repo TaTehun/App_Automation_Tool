@@ -320,6 +320,13 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             if not yes_cancel:
                 break
             
+        subprocess.run([
+            "adb", "-s", device, "shell",
+            "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
+            "-a android.intent.action.VIEW",
+            "-d", f"market://details?id={package_name}"
+        ], check=True)
+            
         if d(text = "Uninstall").exists:
             test_result.append(t_result_list[0]) # Pass
             remark_list.append("App is successfully Installed")
@@ -494,14 +501,14 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             if not is_device_unlocked:
                 while not is_device_unlocked:
                     print("Device is not connected")
-            
+            '''
             if pd.notna(df.at[i, 'Final']) and df.at[i, 'Final'].strip():
                 break
             
-            if pd.notna(df.at[i, 'Install Result']) and df.at[i, 'Install Result'].strip().lower() and df.at[i, 'Launch Result'].strip().lower() == "pass":
+            if pd.notna(df.at[i, 'Install and df.at[i, 'Launch Result'].strip().lower() = Result']) and df.at[i, 'Install Result'].strip().lower()= "pass":
                 test_result.append(t_result_list[0]) #Pass
                 break
-
+            '''
                 
             subprocess.run([
                 "adb", "-s", device, "shell",
@@ -652,7 +659,8 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 if launch_result:
                     launch_result.pop()
                 launch_result.append(l_result_list[1]) # NA
-                
+        
+        '''        
         os.system(f"adb -s R32Y30002QZ uninstall {package_name}")
         
         subprocess.run([
@@ -664,7 +672,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         
         if d(text = "Install").wait(10):
             print("Uninstalled")
-        
+        '''
         info_scrapper()
         
         # save the result to csv file
@@ -672,7 +680,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         df.at[i, 'Final'] = test_result[-1] if test_result else None
         if remark_list:
             df.at[i, 'Remarks'] = remark_list[-1]
-        test_result_df = df[['App Name','App ID','Final','Running Result', 'Install Result', 'Launch Result', 'Remarks', 'App Category', 'Developer', 'App Version', 'Updated Date', 'Crash log']]
+        test_result_df = df[['App Name','App ID','Final','Running Result', 'Install Result', 'Remarks', 'App Category', 'Developer', 'App Version', 'Updated Date', 'Crash log']]
         test_result_df.to_csv(f'Test_result_{device}.csv', index=False)
         remark_list.clear()
 
