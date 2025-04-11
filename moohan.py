@@ -1144,8 +1144,9 @@ class AppTesterGUI(QWidget):
             self.custom_csv_button.setEnabled(False)
             
             def run_tests_for_device(device):
+                local_df = self.df.copy()
                 self.log_output.append(f"Processing device {device}...")
-                test_app_install(device, self.package_names, self.app_names, self.df, install_attempt, launch_attempt)
+                test_app_install(device, self.package_names, self.app_names, local_df, install_attempt, launch_attempt)
 
             def run_all_tests():
                 threads = []
