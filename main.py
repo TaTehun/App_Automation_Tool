@@ -94,13 +94,13 @@ def connect_devices(): # source code from Hyeonjun An.
 
     device_list = []
     
-    for device_id in device_ids:
+    for device_idd in device_ids:
         serial = subprocess.check_output(
-            ["adb", "-s", device_id, "shell", "getprop", "ro.serialno"]
+            ["adb", "-s", device_idd, "shell", "getprop", "ro.serialno"]
             ).decode().strip()
         device_list.append(serial)
         
-    return device_list
+    return device_list, device_ids
 
 def process_csv(csv_filename):
     csv_file = os.path.abspath(csv_filename)
@@ -877,6 +877,7 @@ class AppTesterGUI(QWidget):
         self.setGeometry(300, 300, 1000, 400) 
         
         self.device_list = []
+        self.device_ids = []
         self.package_names = []
         self.app_names = []
         self.df = None
@@ -886,7 +887,7 @@ class AppTesterGUI(QWidget):
 
     def connect_devices(self):
         try:
-            self.device_list = connect_devices()
+            self.device_list, self.device_ids = connect_devices()
             self.device_label.setText(f"Connected Devices: {', '.join(self.device_list)}")
         except Exception as e:
             self.show_error(str(e))
@@ -1105,7 +1106,7 @@ class AppTesterGUI(QWidget):
             self.custom_csv_button.setEnabled(False)
             
             def run_tests():
-                for device in self.device_list:
+                for device in self.device_ids:
                     self.log_output.append(f"Processing device {device}...")
                     test_app_install (device, self.package_names, self.app_names, self.df, install_attempt, launch_attempt)
                 self.log_output.append("Testing completed.")
@@ -1147,11 +1148,12 @@ class AppTesterGUI(QWidget):
             
             def run_tests_for_device(device):
                 self.log_output.append(f"Processing device {device}...")
-                test_app_install(device, self.package_names, self.app_names, self.df, install_attempt, launch_attempt)
+                local_df = self.df.copy()
+                test_app_install(device, self.package_names, self.app_names, local_df, install_attempt, launch_attempt)
 
             def run_all_tests():
                 threads = []
-                for device in self.device_list:
+                for device in self.device_ids:
                     t = threading.Thread(target=run_tests_for_device, args=(device,), daemon=True)
                     threads.append(t)
                     t.start()
