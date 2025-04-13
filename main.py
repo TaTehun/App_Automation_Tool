@@ -93,13 +93,26 @@ def connect_devices(): # source code from Hyeonjun An.
     device_ids = [line.split('\t')[0] for line in lines if '\tdevice' in line]
 
     device_map = {}
+    serial_device = {}
     
     for device_id in device_ids:
         serial = subprocess.check_output(
-            ["adb", "-s", device_id, "shell", "getprop", "ro.serialno"]
-            ).decode().strip()
+        ["adb", "-s", device_id, "shell", "getprop", "ro.serialno"]
+        ).decode().strip()
+            
+        if serial not in serial_device:
+            serial_device[serial] = device_id
+        else:
+            # USB connection preferred over Wireless
+            c_id = serial_device[serial]
+            if ":" in device_id and ":" not in c_id:
+                continue
+            elif ":" not in device_id and ":" in c_id:
+                serial_device[serial] = device_id
+    # Reverse mapping
+    for serial, device_id in serial_device.items():
         device_map[device_id] = serial
-        
+                    
     return device_map
 
 def process_csv(csv_filename):
