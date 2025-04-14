@@ -120,8 +120,8 @@ def process_csv(csv_filename):
     
     df = pd.read_csv(csv_file, encoding='unicode_escape').rename(columns=lambda x: x.strip())
     
+    app_names = df["App Name"].dropna().tolist() or "None"
     package_names = df['App ID'].tolist()
-    app_names = df['App Name'].tolist()    
     
     return package_names, app_names, df, csv_file
     
@@ -423,6 +423,15 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     def info_scrapper():
         try:
             app_info = app(package_name)
+            
+            # Sync App name
+            is_appname = app_info.get('title', [])
+            if is_appname:
+                print(is_appname)
+                app_name = is_appname
+            else:
+                app_name = "Unknown"
+            df.at[i, 'App Name'] = app_name
                         
             # Sync category
             is_category = app_info.get('categories', [])
@@ -435,7 +444,6 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
 
             # Sync developer
             is_developer = app_info.get('developer', 'No developer found').strip()
-                    
             df.at[i, 'Developer'] = is_developer if is_developer else "Unknown"
                     
             # Sync updated date
