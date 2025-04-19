@@ -11,7 +11,7 @@ import random
 from PyQt5.QtWidgets import(QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QTableWidget, 
     QTableWidgetItem, QFileDialog, QMessageBox, QTextEdit, QSpinBox, QHBoxLayout, QLineEdit, QFrame)
 from threading import Lock, Event
-from google_play_scraper import app, search
+from google_play_scraper import app, search, permissions
 
 # device -> run.py
 # package_names, app_names -> csv_handler.py
@@ -301,7 +301,8 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         df['MW Result'] = ""
     if 'Crash log' not in df.columns:
         df['Crash log'] = ""
-    
+    if 'Camera_p' not in df.columns:
+        df['Camera_p'] = ""
         
     def monitor_crashes():
         log_lock = threading.Lock()
@@ -338,12 +339,12 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                         crash_log.append(line)
 
                 if crash_detected:
-                    with log_lock:
-                        crash_log.append(line)
+                    #with log_lock:
+                        #crash_log.append(line)
                     
                     if process_death.search(line):
                         with log_lock:
-                            crash_log.append(line)
+                            #crash_log.append(line)
                             crash_log.append("--- End of Crash ---\n")
                         crash_flag.set()  # Set the flag to indicate a crash
                         crash_detected = False  # Reset flag after full crash log is captured
@@ -423,11 +424,10 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     def info_scrapper():
         try:
             app_info = app(package_name)
-            
+            #per_info = permissions(package_name)
             # Sync App name
             is_appname = app_info.get('title', [])
             if is_appname:
-                print(is_appname)
                 app_name = is_appname
             else:
                 app_name = "Unknown"
@@ -441,6 +441,11 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             else:
                 category_id = "Unknown"
             df.at[i, 'App Category'] = category_id
+            
+            #is_camera = per_info.get('Camera', 'No permission found').strip()
+            #print(is_camera)
+            #print(per_info)
+            #df.at[i, 'Camera_p'] = is_camera if is_camera else "Unknown"
 
             # Sync developer
             is_developer = app_info.get('developer', 'No developer found').strip()
@@ -659,14 +664,14 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                         
                     #attempt to reload the page and repeat the installation    
                     if launch_result[-1] == l_result_list[2]:
-                        print(f"{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
+                        print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
                         mw_results.clear()
                         df.at[i, 'Crash log'] = "\n".join(crash_log)
                         crash_log.clear()
                         break
 
                     elif l_attempt <= launch_attempt -1:
-                        print(f"{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
+                        print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
                         launch_result.pop()
                         
                     elif launch_result[-1] == l_result_list[1]:
@@ -675,7 +680,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                         else:
                             launch_result[-1] == l_result_list[1]
                     else:
-                        print(f"{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
+                        print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
                 
                 if mw_results:
                     df.at[i,'MW Result'] = ', '.join(mw_results)
@@ -701,7 +706,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         df.at[i, 'Running Result'] = launch_result[-1] if launch_result else None
         df.at[i, 'Install Result'] = test_result[-1] if test_result else None
         df.at[i, 'Remarks'] = remark_list[-1] if remark_list else None
-        test_result_df = df[['App Name','App ID','Install Result','Running Result', 'MW Result', 'Final MW Result', 'Remarks', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log']]
+        test_result_df = df[['App Name','App ID','Install Result','Running Result', 'MW Result', 'Final MW Result', 'Remarks', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Camera_p']]
         test_result_df.to_csv(f'Test_result_{serial}.csv', index=False)
         total_count += 1
         

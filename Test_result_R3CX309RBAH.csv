@@ -1,0 +1,5 @@
+App Name,App ID,Install Result,Running Result,MW Result,Final MW Result,Remarks,App Category,Developer,App Version,Updated Date,TargetSdk,Crash log,Camera_p
+"Scoopz: Real Life, Real Video",com.localaiapp.scoops,Pass,Pass,"Pass, Pass, Pass",Pass,App has already been installed,ENTERTAINMENT,"Local AI, Inc.",3.7.2,"Apr 11, 2025",34,,
+Talkie: Creative AI Community,com.weaver.app.prod,Pass,Pass,"Pass, Pass, Pass",Pass,App has already been installed,ENTERTAINMENT,SUBSUP,2.19.002,"Apr 12, 2025",34,,
+Chase Mobile,com.chase.sig.android,Pass,Pass,"Not supportive, Not supportive, Not supportive",Not supportive,App has already been installed,FINANCE,JPMorgan Chase,4.632,"Apr 11, 2025",34,,
+Paramount+,com.cbs.app,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,ENTERTAINMENT,"CBS Interactive, Inc.",15.0.64,"Apr 9, 2025",34,,

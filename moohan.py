@@ -11,7 +11,7 @@ import random
 from PyQt5.QtWidgets import(QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QTableWidget, 
     QTableWidgetItem, QFileDialog, QMessageBox, QTextEdit, QSpinBox, QHBoxLayout, QLineEdit, QFrame)
 from threading import Lock, Event
-from google_play_scraper import app, search
+from google_play_scraper import app, search, permissions
 
 # device -> run.py
 # package_names, app_names -> csv_handler.py
@@ -244,6 +244,8 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         df['Crash log'] = ""
     if 'Final' not in df.columns:
         df['Final'] = ""
+    if 'Camera_p' not in df.columns:
+        df['Camera_p'] = ""
     
         
     def monitor_crashes():
@@ -379,6 +381,8 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     def info_scrapper():
         try:
             app_info = app(package_name)
+            
+            per_info = permissions(package_name)
                         
             # Sync category
             is_category = app_info.get('categories', [])
@@ -393,6 +397,14 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             is_developer = app_info.get('developer', 'No developer found').strip()
                     
             df.at[i, 'Developer'] = is_developer if is_developer else "Unknown"
+                    
+                    
+            # Camera permission
+            
+            is_camera = per_info.get('Camera', 'No permission found').strip()
+            print(is_camera)
+            print(per_info)
+            df.at[i, 'Camera_p'] = is_camera if is_camera else "Unknown"
                     
             # Sync updated date
             is_updated = app_info.get('lastUpdatedOn', 'No lastUpdatedOn found').strip()
@@ -680,7 +692,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         df.at[i, 'Final'] = test_result[-1] if test_result else None
         if remark_list:
             df.at[i, 'Remarks'] = remark_list[-1]
-        test_result_df = df[['App Name','App ID','Final','Running Result', 'Install Result', 'Remarks', 'App Category', 'Developer', 'App Version', 'Updated Date', 'Crash log']]
+        test_result_df = df[['App Name','App ID','Final','Running Result', 'Install Result', 'Remarks', 'App Category', 'Developer', 'App Version', 'Updated Date', 'Crash log', 'Camera_p']]
         test_result_df.to_csv(f'Test_result_{device}.csv', index=False)
         remark_list.clear()
 
