@@ -1,5 +1,6 @@
-App Name,App ID,Install Result,Running Result,MW Result,Final MW Result,Remarks,App Category,Developer,App Version,Updated Date,TargetSdk,Crash log,Camera_p
-"Scoopz: Real Life, Real Video",com.localaiapp.scoops,Pass,Pass,"Pass, Pass, Pass",Pass,App has already been installed,ENTERTAINMENT,"Local AI, Inc.",3.7.2,"Apr 11, 2025",34,,
-Talkie: Creative AI Community,com.weaver.app.prod,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,ENTERTAINMENT,SUBSUP,2.19.002,"Apr 12, 2025",34,,
-Chase Mobile,com.chase.sig.android,Pass,Pass,"Not supportive, Not supportive, Not supportive",Not supportive,App is successfully Installed,FINANCE,JPMorgan Chase,4.632,"Apr 11, 2025",34,,
-Paramount+,com.cbs.app,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,ENTERTAINMENT,"CBS Interactive, Inc.",15.0.64,"Apr 9, 2025",34,,
+App Name,App ID,Install Result,Running Result,MW Result,Final MW Result,Remarks,App Category,Developer,App Version,Updated Date,TargetSdk,Crash log
+testerup - earn money,de.empfohlen,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,FINANCE,aestimium GmbH,1.9.997,"Oct 5, 2024",34,
+Blood Pressure Tracker,com.cactus.tracker.bloodpressure,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,HEALTH_AND_FITNESS,AT Technologyy,1.11.0,"Apr 8, 2025",34,
+Yuka - Food & Cosmetic Scanner,io.yuka.android,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,HEALTH_AND_FITNESS,Yuka App,4.49.2,"Apr 14, 2025",34,
+Cash Giraffe - Play and earn,cashgiraffe.app,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,LIFESTYLE,Cash Giraffe,5.2.1-CashGiraffe,"Apr 2, 2025",34,
+MeloShort-Movies&Dramas,com.drama.happy.look,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,ENTERTAINMENT,HALOFUN PTE. LTD.,2.24.01,"Apr 15, 2025",34,
