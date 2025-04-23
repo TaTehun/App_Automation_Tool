@@ -194,21 +194,29 @@ def toggle_multi_window_mode(device,package_name):
 
 def toggle_monkey_test(device, package_name):
     d = u2.connect(device)
+    event_count = 500
+    throttle = 100
+    
+    subprocess.run([
+        'adb', '-s', device, 'shell', 'monkey', '-p', package_name, 
+        '--throttle', str(throttle), '--pct-touch', '100', str(event_count)
+    ], stdout = subprocess.DEVNULL, stderr= subprocess.DEVNULL)
+    '''
     screen_width, screen_height = d.window_size()    
-    event_count = 100
+    event_count = 1000
     th_height = screen_height // 2
     
     for _ in range(event_count):
         # Randomly generate X-coordinate within screen width
         x = random.randint(0, screen_width)
         # Generate Y-coordinate within the bottom half of the screen
-        y = random.randint(0, th_height)
+        y = random.randint(0, screen_height)
 
         # Run the monkey command with touch event at (x, y)
         subprocess.run([
             'adb', '-s', device, 'shell', 'input', 'tap', str(x), str(y)
         ], capture_output=True, text=True)
-
+    '''
 def is_app_open(package_name, device):
     #Check if the app is running
     samsung_setting = "com.android.settings/com.samsung.android.settings.wifi"
@@ -501,7 +509,6 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             toggle_dark_mode(device)
             time.sleep(2)
             mw_results.append(toggle_multi_window_mode(device,package_name))
-            #toggle_monkey_test(device,package_name)
             launch_result.append(l_result_list[0]) # PASS
 
         elif d(text = "Open").wait(timeout = 5):
@@ -510,7 +517,6 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             toggle_dark_mode(device)
             time.sleep(2)
             mw_results.append(toggle_multi_window_mode(device,package_name))
-            #toggle_monkey_test(device,package_name)
             launch_result.append(l_result_list[0]) # PASS
 
         else: 
@@ -541,6 +547,8 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             "-a android.intent.action.VIEW",
             "-d", f"market://details?id={package_name}"
         ], check=True)
+        time.sleep(1)
+        toggle_monkey_test(device,package_name)
         time.sleep(2)
         stop_flag.set()
     
