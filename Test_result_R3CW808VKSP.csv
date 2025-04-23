@@ -1,39 +1,6 @@
 App Name,App ID,Install Result,Running Result,MW Result,Final MW Result,Remarks,App Category,Developer,App Version,Updated Date,TargetSdk,Crash log,Camera_p
-Pizza Hut - Delivery & Takeout,com.yum.pizzahut,Pass,NT/NA,Pass,Pass,App has already been installed,FOOD_AND_DRINK,Pizza Hut Inc.,6.0.13,"Apr 10, 2025",34,,
-Greenlight Kids & Teen Banking,me.greenlight,Pass,NT/NA,Not supportive,Not supportive,App is successfully Installed,FINANCE,"Greenlight Financial Technology, Inc.",7.4.0,"Apr 17, 2025",34,,
-Apartments.com Rental Search,com.apartments.mobile.android,Pass,Crash,,,App is successfully Installed,HOUSE_AND_HOME,Costar - Apartments Admin,13.4.1,"Apr 2, 2025",34,"
+Apartments.com Rental Search,com.apartments.mobile.android,Pass,Crash,,,App has already been installed,HOUSE_AND_HOME,Costar - Apartments Admin,13.4.1,"Apr 2, 2025",34,"
 --- Crash Detected ---
-04-23 10:36:44.547 E/AndroidRuntime(20298): FATAL EXCEPTION: main
+04-23 14:39:47.960 E/AndroidRuntime( 8565): FATAL EXCEPTION: main
 --- End of Crash ---
 ",
-Hudl,com.hudl.hudroid,,,,,,,,,,,,
-Life360,com.life360.android.safetymapd,,,,,,,,,,,,
-Doordash,com.dd.doordash,,,,,,,,,,,,
-Instabridge: WiFi Hotspot Map,com.instabridge.android,,,,,,,,,,,,
-Weight Loss Walking: WalkFit,com.walkfit.weightloss.steptracker.pedometer,,,,,,,,,,,,
-Talkie: Creative AI Community,com.weaver.app.prod,,,,,,,,,,,,
-TikTok,com.zhiliaoapp.musically,,,,,,,,,,,,
-CapCut - Video Editor,com.lemon.lvoverseas,,,,,,,,,,,,
-Genius: AI Photo Generator,com.artgenerator.texttoimage.aiart.outpaiting,,,,,,,,,,,,
-DramaBox - Stream Drama Shorts,com.storymatrix.drama,,,,,,,,,,,,
-Zoom Workplace,us.zoom.videomeetings,,,,,,,,,,,,
-Music Player & MP3 - MMusic,com.musicplayer.mp3.audio.mymusic.player,,,,,,,,,,,,
-PolyBuzz: Chat with AI Friends,ai.socialapps.speakmaster,,,,,,,,,,,,
-Upside: Cash Back - Gas & Food,com.upside.consumer.android,,,,,,,,,,,,
-Facebook Lite,com.facebook.lite,,,,,,,,,,,,
-KashKick: Get paid to have fun,com.kashkick.kashkickapp,,,,,,,,,,,,
-Move to iOS,com.apple.movetoios,,,,,,,,,,,,
-AliExpress - Shopping App,com.alibaba.aliexpresshd,,,,,,,,,,,,
-Pandora - Music & Podcasts,com.pandora.android,,,,,,,,,,,,
-Lemon8 - Lifestyle Community,com.bd.nproject,,,,,,,,,,,,
-Fetch: Americas Rewards App,com.fetchrewards.fetchrewards.hop,,,,,,,,,,,,
-Waze Navigation & Live Traffic,com.waze,,,,,,,,,,,,
-ESPN,com.espn.score_center,,,,,,,,,,,,
-Chase Mobile,com.chase.sig.android,,,,,,,,,,,,
-AI Chatbot - Nova,com.scaleup.chatai,,,,,,,,,,,,
-Color Block Jam,com.GybeGames.ColorBlockJam,,,,,,,,,,,,
-testerup - earn money,de.empfohlen,,,,,,,,,,,,
-Blood Pressure Tracker,com.cactus.tracker.bloodpressure,,,,,,,,,,,,
-Yuka - Food & Cosmetic Scanner,io.yuka.android,,,,,,,,,,,,
-Cash Giraffe - Play and earn,cashgiraffe.app,,,,,,,,,,,,
-MeloShort-Movies&Dramas,com.drama.happy.look,,,,,,,,,,,,

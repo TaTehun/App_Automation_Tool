@@ -1,6 +1,6 @@
 App Name,App ID,Install Result,Running Result,MW Result,Final MW Result,Remarks,App Category,Developer,App Version,Updated Date,TargetSdk,Crash log,Camera_p
 Apartments.com Rental Search,com.apartments.mobile.android,Pass,Crash,,,App is successfully Installed,HOUSE_AND_HOME,Costar - Apartments Admin,13.4.1,"Apr 2, 2025",34,"
 --- Crash Detected ---
-04-23 14:51:00.241 E/AndroidRuntime(23183): FATAL EXCEPTION: main
+04-23 14:50:49.836 E/AndroidRuntime(32019): FATAL EXCEPTION: main
 --- End of Crash ---
 ",
