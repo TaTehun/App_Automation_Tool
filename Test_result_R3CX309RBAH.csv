@@ -1,6 +1,24 @@
-App Name,App ID,Install Result,Running Result,MW Result,Final MW Result,Remarks,App Category,Developer,App Version,Updated Date,TargetSdk,Crash log,Camera_p
-Apartments.com Rental Search,com.apartments.mobile.android,Pass,Crash,,,App is successfully Installed,HOUSE_AND_HOME,Costar - Apartments Admin,13.4.1,"Apr 2, 2025",34,"
---- Crash Detected ---
-04-23 14:50:49.836 E/AndroidRuntime(32019): FATAL EXCEPTION: main
---- End of Crash ---
-",
+App Name,App ID,Install Result,Running Result,MW Result,Final MW Result,Remarks,App Category,Developer,App Version,Updated Date,TargetSdk,Crash log
+The CW,com.cw.fullepisodes.android,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,ENTERTAINMENT,The CW Network,4.25.2,"Apr 24, 2025",34,
+Shipt Snack & Grocery Delivery,com.shipt.groceries,Pass,Pass,"Pass, Pass, Pass",Pass,App has already been installed,FOOD_AND_DRINK,Shipt,2.267.0,"Apr 25, 2025",34,
+Temu: Shop Like a Billionaire,com.einnovation.temu,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,SHOPPING,Temu,3.53.1,"Apr 28, 2025",34,
+WhatsApp Messenger,com.whatsapp,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,COMMUNICATION,WhatsApp LLC,2.25.12.74,"Apr 21, 2025",35,
+SHEIN-Shopping Online,com.zzkko,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,SHOPPING,Roadget Business PTE. LTD.,12.6.2,"Apr 22, 2025",34,
+Telegram,org.telegram.messenger,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,COMMUNICATION,Telegram FZ-LLC,11.9.0,"Mar 23, 2025",34,
+Snapchat,com.snapchat.android,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,COMMUNICATION,Snap Inc,13.38.1.0,"Apr 23, 2025",34,
+Walmart: Shopping & Savings,com.walmart.android,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,SHOPPING,Walmart,25.15.2,"Apr 24, 2025",34,
+Tubi: Free Movies & Live TV,com.tubitv,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,ENTERTAINMENT,Tubi TV,9.16.0,"Apr 22, 2025",34,
+TextNow: Call + Text Unlimited,com.enflick.android.TextNow,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,COMMUNICATION,"TextNow, Inc.",25.15.0.4,"Apr 24, 2025",34,
+"Whatnot: Shop, Sell, Connect",com.whatnot_mobile,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,SHOPPING,Whatnot Inc.,25.17.5,"Apr 24, 2025",34,
+T-Life,com.tmobile.tuesdays,Pass,Pass,"Pass, Pass, Pass",Pass,App has already been installed,LIFESTYLE,T-Mobile USA,10.7.1,"Apr 15, 2025",34,
+Shop: All your favorite brands,com.shopify.arrive,Pass,Pass,"Not supportive, Not supportive, Not supportive",Not supportive,App is successfully Installed,SHOPPING,Shopify Inc.,2.199.1,"Apr 25, 2025",34,
+Venmo,com.venmo,Pass,Pass,"Not supportive, Not supportive, Not supportive",Not supportive,App is successfully Installed,FINANCE,Venmo,10.63.0,"Apr 16, 2025",34,
+Spotify: Music and Podcasts,com.spotify.music,Pass,Pass,"Pass, Pass, Pass",Pass,App has already been installed,MUSIC_AND_AUDIO,Spotify AB,9.0.36.697,"Apr 28, 2025",35,
+Uber - Request a ride,com.ubercab,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,MAPS_AND_NAVIGATION,"Uber Technologies, Inc.",4.575.10001,"Apr 28, 2025",34,
+The Roku App (Official),com.roku.remote,Pass,Pass,"Pass, Pass, Pass",Pass,App has already been installed,ENTERTAINMENT,"Roku, Inc. & its affiliates",12.4.1.5358154,"Apr 17, 2025",34,
+PlutoTV: Live TV & Free Movies,tv.pluto.android,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,ENTERTAINMENT,"Pluto, Inc.",5.54.0,"Apr 24, 2025",35,
+X,com.twitter.android,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,NEWS_AND_MAGAZINES,X Corp.,10.94.0-release.0,"Apr 22, 2025",34,
+QR & Barcode Scanner,com.gamma.scan,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,TOOLS,Gamma Play,2.2.65,"Feb 27, 2025",34,
+Reddit,com.reddit.frontpage,Pass,Pass,"Pass, Pass, Pass",Pass,App has already been installed,SOCIAL,reddit Inc.,2025.16.0,"Apr 21, 2025",35,
+Vetra VPN  Fast VPN,secure.vetra.free.vpn,,,,,,,,,,,
+Rewarded Play: Earn Gift Cards,com.affinity.rewarded_play,,,,,,,,,,,

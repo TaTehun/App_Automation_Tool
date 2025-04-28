@@ -1,6 +1,24 @@
-App Name,App ID,Install Result,Running Result,MW Result,Final MW Result,Remarks,App Category,Developer,App Version,Updated Date,TargetSdk,Crash log,Camera_p
-Apartments.com Rental Search,com.apartments.mobile.android,Pass,Crash,,,App is successfully Installed,HOUSE_AND_HOME,Costar - Apartments Admin,13.4.1,"Apr 2, 2025",34,"
---- Crash Detected ---
-04-23 14:51:00.241 E/AndroidRuntime(23183): FATAL EXCEPTION: main
---- End of Crash ---
-",
+App Name,App ID,Install Result,Running Result,MW Result,Final MW Result,Remarks,App Category,Developer,App Version,Updated Date,TargetSdk,Crash log
+The CW,com.cw.fullepisodes.android,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,ENTERTAINMENT,The CW Network,4.25.2,"Apr 24, 2025",34,
+Shipt Snack & Grocery Delivery,com.shipt.groceries,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,FOOD_AND_DRINK,Shipt,2.267.0,"Apr 25, 2025",34,
+Temu: Shop Like a Billionaire,com.einnovation.temu,Pass,Pass,"Pass, Pass, Pass",Pass,App is successfully Installed,SHOPPING,Temu,3.53.1,"Apr 28, 2025",34,
+WhatsApp Messenger,com.whatsapp,Pass,Pass,"Pass, Pass, Pass",Pass,App has already been installed,COMMUNICATION,WhatsApp LLC,2.25.12.74,"Apr 21, 2025",35,
+SHEIN-Shopping Online,com.zzkko,,,,,,,,,,,
+Telegram,org.telegram.messenger,,,,,,,,,,,
+Snapchat,com.snapchat.android,,,,,,,,,,,
+Walmart: Shopping & Savings,com.walmart.android,,,,,,,,,,,
+Tubi: Free Movies & Live TV,com.tubitv,,,,,,,,,,,
+TextNow: Call + Text Unlimited,com.enflick.android.TextNow,,,,,,,,,,,
+"Whatnot: Shop, Sell, Connect",com.whatnot_mobile,,,,,,,,,,,
+T-Life,com.tmobile.tuesdays,,,,,,,,,,,
+Shop: All your favorite brands,com.shopify.arrive,,,,,,,,,,,
+Venmo,com.venmo,,,,,,,,,,,
+Spotify: Music and Podcasts,com.spotify.music,,,,,,,,,,,
+Uber - Request a ride,com.ubercab,,,,,,,,,,,
+The Roku App (Official),com.roku.remote,,,,,,,,,,,
+PlutoTV: Live TV & Free Movies,tv.pluto.android,,,,,,,,,,,
+X,com.twitter.android,,,,,,,,,,,
+QR & Barcode Scanner,com.gamma.scan,,,,,,,,,,,
+Reddit,com.reddit.frontpage,,,,,,,,,,,
+Vetra VPN  Fast VPN,secure.vetra.free.vpn,,,,,,,,,,,
+Rewarded Play: Earn Gift Cards,com.affinity.rewarded_play,,,,,,,,,,,

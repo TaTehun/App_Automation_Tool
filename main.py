@@ -499,6 +499,102 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             df.at[i, 'App Version'] = "App is not found"
             df.at[i, 'Updated Date'] = "App is not found"
             df.at[i, 'TargetSdk'] = "App is not found"
+    def app_installer():
+        for attempt in range(install_attempt):
+            attempt += 1
+            
+            if pd.notna(df.at[i, 'Install Result']) and df.at[i, 'Install Result'].strip():
+                break
+
+            if not unlock_device(device):
+                break
+                
+            subprocess.run([
+                "adb", "-s", device, "shell",
+                "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
+                "-a android.intent.action.VIEW",
+                "-d", f"market://details?id={package_name}"
+            ], check=True)
+            
+            # Verify if the app is pre-installed
+            if d(text = "Uninstall").wait(timeout = 10):
+                if d(text = "Update").exists:
+                    d(text = "Update").click(10)
+                    
+                    is_app_installed()
+                elif d(text = "Enable").exists:
+                    d(text = "Enable").click(10)
+                    if d(text = "Update").wait(timeout = 5):
+                        d(text = "Update").click(10)
+                            
+                    is_app_installed()
+                            
+                elif d.xpath("//*[contains(@text,'Update from')]").exists:
+                    d(text = "Uninstall").click(10)
+                    if d(text = "Uninstall").exists:
+                        d(text = "Uninstall").click(10)
+                        if d(text = "Install").wait(10):
+                            d(text = "Install").click(10)
+                            continue
+                            
+                        else:
+                            test_result.append(t_result_list[1]) # Fail
+                            remark_list.append("Install button is not found")
+                                    
+                    # wait until open
+                    is_app_installed()
+                else: 
+                    test_result.append(t_result_list[0]) #Pass
+                    remark_list.append("App has already been installed")
+                    
+            # Verify if the app is updatable
+            elif d(text = "Update").exists:
+                if d(text = "Open").exists:
+                    d(text = "Update").click(10)
+                        
+                    is_app_installed()
+                    
+            elif d(text = "Enable").exists:
+                d(text = "Enable").click(10)
+                if d(text = "Update").wait(timeout = 5):
+                    d(text = "Update").click(10)
+                        
+                is_app_installed()
+                    
+            # Verify the app's compatibility and availability  
+            elif d.xpath("//*[contains(@text,'t compatible')]").exists:
+                test_result.append(t_result_list[2]) # NT/NA
+                remark_list.append("App is not compatible for this device")
+                        
+            elif d.xpath("//*[contains(@text,'t available')]").exists:
+                test_result.append(t_result_list[2]) # NT/NA
+                remark_list.append("App is not available for this device")
+                        
+            elif d.xpath("//*[contains(@text,'t found')]").exists:
+                test_result.append(t_result_list[2]) # NT/NA
+                remark_list.append("App is not found")
+                    
+            elif d.xpath("//*[contains(@text,'re offline')]").exists:
+                test_result.append(t_result_list[2]) # NT/NA
+                remark_list.append("Internet is not connected")
+                
+            # Verify if the app is Paid-app
+            elif d.xpath("//*[contains(@text,'$')]").wait(timeout = 5) and not d(text = "Install").exists:
+                test_result.append(t_result_list[2]) # NT/NA
+                remark_list.append("App is a Paid App")
+                        
+            # Verify if the app is installable
+            elif d(text = "Install").exists and not d(text = "Open").exists:
+                d(text = "Install").click(10)
+
+                if d.xpath("//*[contains(@text,'When Wi')]").wait(timeout = 5):
+                    d(text = "OK").click(10)
+                        
+                is_app_installed()
+                
+            else:
+                test_result.append(t_result_list[1]) # Fail
+                remark_list.append("App is failed to install within the timeout")
         
     def app_launcher():
         if crash_flag.is_set():
@@ -550,6 +646,26 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         time.sleep(1)
         toggle_monkey_test(device,package_name)
         time.sleep(2)
+        
+        os.system(f"adb -s {device} uninstall {package_name}")
+            
+        subprocess.run([
+            "adb", "-s", device, "shell",
+            "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
+            "-a android.intent.action.VIEW",
+            "-d", f"market://details?id={package_name}"
+            ], check=True)
+            
+        if d(text = "Install").wait(10):
+            print("Uninstalled")
+            d(text = "Install").click(10)
+            
+        else: 
+            print("App is not deleted")
+        
+        is_app_installed()
+            
+            
         stop_flag.set()
     
     # Navigate to the app page in google playstore

@@ -1,28 +1,11 @@
 App Name,App ID,Install Result,Running Result,MW Result,Final MW Result,Remarks,App Category,Developer,App Version,Updated Date,TargetSdk,Crash log,Camera_p
-StardustTV - Movies & Dramas,com.shdj.test,Pass,NT/NA,Pass,Pass,App has already been installed,ENTERTAINMENT,StardustTV,2.19.4,"Apr 22, 2025",34,,
-Royal Kingdom,com.dreamgames.royalkingdom,Pass,NT/NA,Not supportive,Not supportive,App has already been installed,GAME_PUZZLE,"Dream Games, Ltd.",17824,"Apr 22, 2025",34,,
-Disney Solitaire,com.superplaystudios.disneysolitairedreams,Pass,NT/NA,Not supportive,Not supportive,App has already been installed,GAME_CARD,SuperPlay.,1.0.2,"Apr 22, 2025",34,,
-Capital One Mobile,com.konylabs.capitalone,Pass,Crash,,,App has already been installed,FINANCE,"Capital One Services, LLC",6.23.12,"Apr 11, 2025",34,"
---- Crash Detected ---
-04-24 14:48:58.098 E/AndroidRuntime(12438): FATAL EXCEPTION: main
---- End of Crash ---
-",
-Google Wallet,com.google.android.apps.walletnfcrel,Pass,NT/NA,Not supportive,Not supportive,App has already been installed,FINANCE,Google LLC,25.15.749847794,"Apr 23, 2025",35,,
-T-Life,com.tmobile.tuesdays,Pass,NT/NA,Not supportive,Not supportive,App has already been installed,LIFESTYLE,T-Mobile USA,10.7.1,"Apr 15, 2025",34,,
-The Roku App (Official),com.roku.remote,Pass,NT/NA,Not supportive,Not supportive,App is successfully Installed,ENTERTAINMENT,"Roku, Inc. & its affiliates",12.4.1.5358154,"Apr 17, 2025",34,,
-"Concepts: Sketch, Note, Draw",com.tophatch.concepts,Pass,NT/NA,Not supportive,Not supportive,App has already been installed,ART_AND_DESIGN,"TopHatch, Inc.",2025.03.4,"Apr 11, 2025",34,,
-NewsBreak: Local News & Alerts,com.particlenews.newsbreak,Pass,NT/NA,Not supportive,Not supportive,App has already been installed,NEWS_AND_MAGAZINES,Particle Media Inc.,25.16.1,"Apr 23, 2025",34,,
 CollX: Sports Card Scanner,app.collx.android,Pass,Crash,,,App has already been installed,SPORTS,CollX,2.2.31,"Apr 17, 2025",34,"
 --- Crash Detected ---
-04-24 15:06:09.439 E/AndroidRuntime(27185): FATAL EXCEPTION: main
+04-24 15:57:39.423 E/AndroidRuntime( 8513): FATAL EXCEPTION: main
 --- End of Crash ---
 ",
-Sofascore - Live sports scores,com.sofascore.results,Pass,NT/NA,Pass,Pass,App has already been installed,SPORTS,Sofascore,25.03.26,"Apr 14, 2025",35,,
-Reddit,com.reddit.frontpage,Pass,NT/NA,Pass,Pass,App has already been installed,SOCIAL,reddit Inc.,2025.16.0,"Apr 21, 2025",35,,
-Uber Eats: Food Delivery,com.ubercab.eats,Pass,NT/NA,Not supportive,Not supportive,App has already been installed,FOOD_AND_DRINK,"Uber Technologies, Inc.",6.267.10000,"Apr 21, 2025",34,,
-Speak & Learn English: Learna,com.codeway.aitutor,Pass,NT/NA,Not supportive,Not supportive,App has already been installed,EDUCATION,Codeway Dijital,1.4.0,"Apr 10, 2025",35,,
-Finch: Self-Care Pet,com.finch.finch,Pass,NT/NA,Pass,Pass,App has already been installed,HEALTH_AND_FITNESS,Finch Care Public Benefit Corporation,3.73.7,"Apr 23, 2025",35,,
-DHgate-online wholesale stores,com.dhgate.buyermob,Pass,NT/NA,Not supportive,Not supportive,App has already been installed,SHOPPING,dhgate.com,6.7.3,"Apr 23, 2025",34,,
-Google Authenticator,com.google.android.apps.authenticator2,Pass,NT/NA,Fail,Fail,App has already been installed,TOOLS,Google LLC,7.0,"Jan 29, 2025",35,,
-Annoying Uncle Punch Game,com.gtsy.annoying.punch.game,Pass,NT/NA,Not supportive,Not supportive,App has already been installed,GAME_ACTION,GOOD TO SEE YOU,0.2.9,"Mar 4, 2025",34,,
-My Water Tracker & Reminder,com.water.tracker.remind,Pass,NT/NA,Pass,Pass,App has already been installed,HEALTH_AND_FITNESS,Reminders & Alarms,1.5.1,"Apr 17, 2025",34,,
+Capital One Mobile,com.konylabs.capitalone,Pass,Crash,,,App has already been installed,FINANCE,"Capital One Services, LLC",6.23.12,"Apr 11, 2025",34,"
+--- Crash Detected ---
+04-24 15:58:53.441 E/AndroidRuntime( 9950): FATAL EXCEPTION: main
+--- End of Crash ---
+",
