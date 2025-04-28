@@ -656,14 +656,14 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             "-d", f"market://details?id={package_name}"
             ], check=True)
             
-        if d(text = "Install").wait(10):
-            print("Uninstalled")
-            d(text = "Install").click(10)
+        #if d(text = "Install").wait(10):
+            #print("Uninstalled")
+            #d(text = "Install").click(10)
             
-        else: 
-            print("App is not deleted")
+        #else: 
+            #print("App is not deleted")
         
-        is_app_installed()
+        #is_app_installed()
             
             
         stop_flag.set()
