@@ -644,17 +644,17 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             "-d", f"market://details?id={package_name}"
         ], check=True)
         time.sleep(1)
-        toggle_monkey_test(device,package_name)
-        time.sleep(2)
+        #toggle_monkey_test(device,package_name)
+        #time.sleep(2)
         
-        os.system(f"adb -s {device} uninstall {package_name}")
+        #os.system(f"adb -s {device} uninstall {package_name}")
             
-        subprocess.run([
-            "adb", "-s", device, "shell",
-            "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
-            "-a android.intent.action.VIEW",
-            "-d", f"market://details?id={package_name}"
-            ], check=True)
+        #subprocess.run([
+            #"adb", "-s", device, "shell",
+            #"am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
+            #"-a android.intent.action.VIEW",
+            #"-d", f"market://details?id={package_name}"
+            #], check=True)
             
         #if d(text = "Install").wait(10):
             #print("Uninstalled")
