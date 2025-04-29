@@ -309,8 +309,10 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         df['MW Result'] = ""
     if 'Crash log' not in df.columns:
         df['Crash log'] = ""
-    if 'Camera_p' not in df.columns:
-        df['Camera_p'] = ""
+    if 'Is Camera' not in df.columns:
+        df['Is Camera'] = ""
+    if 'Permissions' not in df.columns:
+        df['Permissions'] = ""
         
     def monitor_crashes():
         log_lock = threading.Lock()
@@ -432,7 +434,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     def info_scrapper():
         try:
             app_info = app(package_name)
-            #per_info = permissions(package_name)
+            per_info = permissions(package_name)
             # Sync App name
             is_appname = app_info.get('title', [])
             if is_appname:
@@ -450,10 +452,13 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 category_id = "Unknown"
             df.at[i, 'App Category'] = category_id
             
-            #is_camera = per_info.get('Camera', 'No permission found').strip()
-            #print(is_camera)
-            #print(per_info)
-            #df.at[i, 'Camera_p'] = is_camera if is_camera else "Unknown"
+            per_key = list(per_info.keys())
+            per_key_l = ' , '.join(per_key)
+            df.at[i, 'Permissions'] = per_key_l
+            if "Camera" in per_key_l:
+                df.at[i, 'Is Camera'] = "O"
+            else:
+                df.at[i, 'Is Camera'] = "X"
 
             # Sync developer
             is_developer = app_info.get('developer', 'No developer found').strip()
@@ -631,7 +636,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             else:
                 subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_BACK'
                                 ],check=True)
-                
+
         # Press home button
         subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_HOME'
                     ],check=True)
@@ -643,29 +648,28 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             "-a android.intent.action.VIEW",
             "-d", f"market://details?id={package_name}"
         ], check=True)
+        
         time.sleep(1)
-        #toggle_monkey_test(device,package_name)
-        #time.sleep(2)
+        toggle_monkey_test(device,package_name)
+        time.sleep(2)
         
-        #os.system(f"adb -s {device} uninstall {package_name}")
+        if l_attempt < launch_attempt / 2:
+            os.system(f"adb -s {device} uninstall {package_name}")
             
-        #subprocess.run([
-            #"adb", "-s", device, "shell",
-            #"am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
-            #"-a android.intent.action.VIEW",
-            #"-d", f"market://details?id={package_name}"
-            #], check=True)
+            subprocess.run([
+                "adb", "-s", device, "shell",
+                "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
+                "-a android.intent.action.VIEW",
+                "-d", f"market://details?id={package_name}"
+                ], check=True)
             
-        #if d(text = "Install").wait(10):
-            #print("Uninstalled")
-            #d(text = "Install").click(10)
-            
-        #else: 
-            #print("App is not deleted")
-        
-        #is_app_installed()
-            
-            
+            if d(text = "Install").wait(10):
+                print("Uninstalled")
+                d(text = "Install").click(10)
+            else: 
+                print("App is not deleted")
+                    
+            is_app_installed()
         stop_flag.set()
     
     # Navigate to the app page in google playstore
@@ -830,7 +834,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         df.at[i, 'Running Result'] = launch_result[-1] if launch_result else None
         df.at[i, 'Install Result'] = test_result[-1] if test_result else None
         df.at[i, 'Remarks'] = remark_list[-1] if remark_list else None
-        test_result_df = df[['App Name','App ID','Install Result','Running Result', 'MW Result', 'Final MW Result', 'Remarks', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Camera_p']]
+        test_result_df = df[['App Name','App ID','Install Result','Running Result', 'MW Result', 'Final MW Result', 'Remarks', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']]
         test_result_df.to_csv(f'Test_result_{serial}.csv', index=False)
         total_count += 1
         

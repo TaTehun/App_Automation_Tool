@@ -19,19 +19,18 @@ def info_sync():
             df['Updated Date'] = ""
         if 'TargetSdk' not in df.columns:
             df['TargetSdk'] = ""
-        if 'Camera_p' not in df.columns:
-            df['Camera_p'] = ""
+        if 'Permissions' not in df.columns:
+            df['Permissions'] = ""
             
         df['App Category'] = df.get('App Category', '').astype(str)
         df['Developer'] = df.get('Developer', '').astype(str)
         df['App Version'] = df.get('App Version', '').astype(str)
         df['Updated Date'] = df.get('App Version', '').astype(str)
         df['TargetSdk'] = df.get('TargetSdk', '').astype(str)
-        df['Camera_p'] = df.get('Camera_p', '').astype(str)
+        df['Permissions'] = df.get('Permissions', '').astype(str)
         
         for i, package_name in enumerate(package_names):
             try:
-                print(package_name)
                 # Fetch app details for the current package name
                 app_info = app(package_name)
                 per_info = permissions(package_name)
@@ -43,17 +42,11 @@ def info_sync():
                 else:
                     category_id = "Unknown"
                 df.at[i, 'App Category'] = category_id
-                
-                
-                is_camera = per_info.get('Camera', [])
-                
-                if is_camera:
-                    camera_p = is_camera
-                    print(camera_p)
-                else:
-                    camera_p = "Unknown"
-                df.at[i, 'Camera_p'] = camera_p
 
+                per_key = list(per_info.keys())
+                per_key_l = ','.join(per_key)
+                df.at[i, 'Permissions'] = per_key_l
+                
                 # Sync developer
                 is_developer = app_info.get('developer', 'No developer found').strip()
                 df.at[i, 'Developer'] = is_developer if is_developer else "Unknown"
