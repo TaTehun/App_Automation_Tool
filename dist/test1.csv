@@ -1,37 +1,4 @@
 App Name,App ID
-Pandora - Music & Podcasts,com.pandora.android
-Hulu: Stream TV shows & movies,com.hulu.plus
-Disney+,com.disney.disneyplus
-Cash App,com.squareup.cash
-DoorDash - Food Delivery,com.dd.doordash
-The Roku App (Official),com.roku.remote
-DoorDash - Dasher,com.doordash.driverapp
-Amazon Music: Songs & Podcasts,com.amazon.mp3
-McDonald's,com.mcdonalds.app
-TextNow: Call + Text Unlimited,com.enflick.android.TextNow
-Ring - Always Home,com.ringapp
-Chase Mobile,com.chase.sig.android
-PlutoTV: Live TV & Free Movies,tv.pluto.android
-Uber Eats: Food Delivery,com.ubercab.eats
-Uber - Driver: Drive & Deliver,com.ubercab.driver
-Venmo,com.venmo
-Bank of America Mobile Banking,com.infonow.bofa
-Target,com.target.ui
-OfferUp: Buy. Sell. Simple.,com.offerup
-MyChart,epic.mychart.android
-Robinhood: Investing for All,com.robinhood.android
-Amazon Alexa,com.amazon.dee.app
-The Home Depot,com.thehomedepot
-Google Wallet,com.google.android.apps.walletnfcrel
-Instacart: Get Food Delivery,com.instacart.client
-"iHeart: Music, Radio, Podcasts",com.clearchannel.iheartradio.controller
-Bumble Dating App: Meet & Date,com.bumble.app
-Domino's Pizza USA,com.dominospizza
-Google Voice,com.google.android.apps.googlevoice
-Poshmark - Sell & Shop Online,com.poshmark.app
-CallApp: Caller ID & Block,com.callapp.contacts
-Kroger,com.kroger.mobile
-Instacart: Earn money to shop,com.instacart.shopper
 Xfinity Stream,com.xfinity.cloudtvr
 Dollar General-Digital Coupons,com.dollargeneral.android
 American Airlines,com.aa.android
@@ -39,7 +6,7 @@ Grubhub: Food Delivery,com.grubhub.android
 Klarna | Shop now. Pay later.,com.myklarnamobile
 T-Mobile Visual Voicemail,com.tmobile.vvm.application
 Plenty of Fish Dating App,com.pof.android
-Subway�,com.subway.mobile.subwayapp03
+SubwayÂ®,com.subway.mobile.subwayapp03
 Mercari: Buy and Sell App,com.mercariapp.mercari
 Credit One Bank Mobile,com.creditonebank.mobile
 U.S. Bank Mobile Banking,com.usbank.mobilebanking
@@ -55,24 +22,24 @@ PNC Mobile,com.pnc.ecommerce.mobile
 Safeway Deals & Delivery,com.safeway.client.android.safeway
 myAT&T,com.att.myWireless
 SONIC Drive-In - Order Online,com.sonic.sonicdrivein
-Ad It Up�Save on Your Bills,com.adfone.aditup
+Ad It UpÂSave on Your Bills,com.adfone.aditup
 Amex,com.americanexpress.android.acctsvcs.us
 Text Free: Second Call Number,com.pinger.textfree
 discovery+ | Stream TV Shows,com.discovery.discoveryplus.mobile
 Rumble,com.rumble.battles
-OnePay � Mobile Banking,com.onefinance.one
+OnePay Â Mobile Banking,com.onefinance.one
 Experian,com.experian.android
 Fubo: Watch Live TV & Sports,tv.fubo.mobile
 BJ's Wholesale Club,com.brandingbrand.reactnative.and.bjs
 Pizza Hut - Delivery & Takeout,com.yum.pizzahut
 Ulta Beauty: Makeup & Skincare,com.ulta
-Groupon � Deals & Coupons,com.groupon
+Groupon Â Deals & Coupons,com.groupon
 GEICO Mobile - Car Insurance,com.geico.mobile
 Redfin Houses for Sale & Rent,com.redfin.android
-State Farm�,com.statefarm.pocketagent
+State FarmÂ®,com.statefarm.pocketagent
 Yahoo Sports: Scores & News,com.yahoo.mobile.client.android.sportacular
 Android Auto,com.google.android.projection.gearhead
-FreeStyle Libre 3 � US,com.freestylelibre3.app.us
+FreeStyle Libre 3 Â US,com.freestylelibre3.app.us
 "Notes Launcher: Notepad, To-do",com.notes.todolist.notebook.checklist.notepad.android
 Canvas Student,com.instructure.candroid
 Chewy: Pet Shopping & Delivery,com.chewy.android
@@ -116,7 +83,7 @@ Carnival HUB,com.carnival.android
 Rocket Money - Bills & Budgets,com.truebill
 Taimi - LGBTQ+ Dating and Chat,com.takimi.android
 ParentSquare,com.parentsquare.psapp
-Turo � Car rental marketplace,com.relayrides.android.relayrides
+Turo Â Car rental marketplace,com.relayrides.android.relayrides
 Scanner Radio - Police Scanner,com.scannerradio
 Kasa Smart,com.tplink.kasa_android
 ???-????????,com.xingin.xhs
@@ -144,7 +111,7 @@ GTL | GettingOut,com.telmate.TelmateGettingout
 Geeni,com.merkuryinnovations.geeni
 Telemundo: Series y TV en vivo,com.telemundo.awe
 Grubhub for Drivers,com.grubhub.driver
-Popeyes� App,com.emn8.mobilem8.nativeapp.popeyes
+PopeyesÂ® App,com.emn8.mobilem8.nativeapp.popeyes
 Marco Polo - Video Messenger,co.happybits.marcopolo
 Wawa,com.wawa.android.appv2
 Dave - Fast Cash & Banking,com.dave
@@ -157,5 +124,5 @@ CBS,com.cbs.tve
 Chipotle,com.chipotle.ordering
 Tesla,com.teslamotors.tesla
 Hily Dating app: Meet & Date,com.hily.app
-ShutEye�: Sleep Tracker,health.sleep.sounds.tracker.alarm.calm
+ShutEyeÂ®: Sleep Tracker,health.sleep.sounds.tracker.alarm.calm
 healow,com.ecw.healow
