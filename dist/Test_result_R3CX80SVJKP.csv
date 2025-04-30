@@ -1,33 +1,20 @@
 App Name,App ID,Install Result,Running Result,MW Result,Final MW Result,Remarks,App Category,Developer,App Version,Updated Date,TargetSdk,Crash log,Is Camera,Permissions
-Roku Smart Home,com.roku.rokuhome,Pass,NT/NA,"Pass, Pass",Pass,App is successfully Installed,HOUSE_AND_HOME,"Roku, Inc. & its affiliates",3.3.0.469,"Apr 23, 2025",34,,O,"Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
-Brightest Flashlight Launcher,com.flashlight.bright.led.light,Fail,NT/NA,Pass,Pass,Timeout,TOOLS,AtomApplications,3.3.0,"Apr 30, 2025",,,O,"Location , Camera , Other , Uncategorized"
-Local News: Headlines & Alerts,com.opera.app.news.local,Pass,NT/NA,"Pass, Pass",Pass,App is successfully Installed,NEWS_AND_MAGAZINES,Opera,12.8.2254.76952,"Apr 1, 2025",34,,O,"Location , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Other , Uncategorized"
-UnitedHealthcare,com.mobile.uhc,Fail,NT/NA,Pass,Pass,Timeout,MEDICAL,"UNITED HEALTHCARE SERVICES, INC.",2.79.0,"Apr 23, 2025",,,O,"Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
-Webull: Investing & Trading,org.dayup.stocks,Pass,NT/NA,"Pass, Pass",Pass,App is successfully Installed,FINANCE,Webull Technologies Pte. Ltd.,11.0.8.76,"Apr 23, 2025",34,,O,"Device & app history , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
-Truth Social,com.truthsocial.android.app,Pass,NT/NA,"Pass, Pass",Pass,App is successfully Installed,SOCIAL,T Media Tech LLC,1.17.3,"Apr 25, 2025",35,,X,"Photos/Media/Files , Storage , Other , Uncategorized"
-Live Weather Radar Launcher,com.weatherradarhome.weather.forecast.live.radar.aqi.android,Fail,NT/NA,Pass,Pass,Timeout,WEATHER,AtomApplications,3.1.2,"Apr 21, 2025",,,X,"Location , Wi-Fi connection information , Other , Uncategorized"
-"Priceline: Hotel, Flight & Car",com.priceline.android.negotiator,Pass,NT/NA,"Pass, Pass",Pass,App is successfully Installed,TRAVEL_AND_LOCAL,priceline.com,12.2.335,"Apr 29, 2025",34,,X,"Location , Microphone , Wi-Fi connection information , Other , Uncategorized"
-hoopla Digital,com.hoopladigital.android,Pass,NT/NA,"Pass, Pass",Pass,App is successfully Installed,BOOKS_AND_REFERENCE,Midwest Tape LLC,4.80.1,"Apr 17, 2025",34,,X,"Location , Photos/Media/Files , Storage , Microphone , Wi-Fi connection information , Other , Uncategorized"
-craigslist,org.craigslist.CraigslistMobile,NT/NA,NT/NA,,,App is not compatible for this device,SHOPPING,craigslist.org,1.23.0,"Mar 27, 2025",,,O,"Location , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Other , Uncategorized"
-Paylocity,com.paylocity.paylocitymobile,Pass,NT/NA,Pass,Pass,App is successfully Installed,BUSINESS,Paylocity,25.4.3,"Apr 22, 2025",35,,O,"Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
-Hilton Honors: Book Hotels,com.hilton.android.hhonors,Pass,NT/NA,"Pass, Pass",Pass,App is successfully Installed,TRAVEL_AND_LOCAL,Hilton,2025.4.15,"Apr 28, 2025",34,,X,"Contacts , Location , Phone , Photos/Media/Files , Storage , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
-Rewarded Play: Earn Gift Cards,com.affinity.rewarded_play,Pass,NT/NA,"Pass, Pass",Pass,App is successfully Installed,LIFESTYLE,"Influence Mobile, Inc.",12.19.1,"Apr 23, 2025",35,,O,"Location , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
 ESPN Tournament Challenge,com.espn.droid.bracket_bound,Pass,NT/NA,"Not supportive, Not supportive",Not supportive,App is successfully Installed,SPORTS,Disney,13.0.1,"Feb 20, 2025",35,,X,"Location , Phone , Photos/Media/Files , Storage , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
 Govee Home,com.govee.home,Pass,NT/NA,"Not supportive, Not supportive",Not supportive,App is successfully Installed,TOOLS,Govee,6.7.11,"Apr 28, 2025",35,,O,"Location , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
-Inbox Homescreen,com.eet.email.launcher,,,,,,,,,,,,,
-TD Bank (US),com.tdbank,,,,,,,,,,,,,
-Royal Caribbean International,com.rccl.royalcaribbean,,,,,,,,,,,,,
-Text Me: Second Phone Number,com.textmeinc.textme,,,,,,,,,,,,,
-Dutch Bros,com.dutchbros.loyalty,,,,,,,,,,,,,
-Big Keyboard: Easy Launcher,com.bigkeyboardeasylauncher.biggerkeybuttonandroidlauncherapp,,,,,,,,,,,,,
-BET+,com.viacom.betplus,,,,,,,,,,,,,
+Inbox Homescreen,com.eet.email.launcher,Pass,NT/NA,"Fail, Pass",Pass,App is successfully Installed,COMMUNICATION,Homescreen Apps,1.1.59,"Apr 22, 2025",34,,X,"Contacts , Location , Phone , Photos/Media/Files , Storage , Wi-Fi connection information , Other , Uncategorized"
+TD Bank (US),com.tdbank,Pass,NT/NA,"Pass, Pass",Pass,App is successfully Installed,FINANCE,"TD Bank, N.A.",25.5.0.16,"Apr 3, 2025",34,,O,"Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Other , Uncategorized"
+Royal Caribbean International,com.rccl.royalcaribbean,Pass,NT/NA,"Not supportive, Not supportive",Not supportive,App is successfully Installed,TRAVEL_AND_LOCAL,Royal Caribbean Cruises Ltd.,1.63.4,"Apr 9, 2025",34,,O,"Location , Phone , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Text Me: Second Phone Number,com.textmeinc.textme,Pass,NT/NA,"Pass, Pass",Pass,App is successfully Installed,SOCIAL,"TextMe, Inc.",3.48.0,"Apr 17, 2025",35,,O,"Identity , Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Dutch Bros,com.dutchbros.loyalty,Pass,NT/NA,"Pass, Pass",Pass,App is successfully Installed,FOOD_AND_DRINK,Dutch Bros Coffee,3.5.0,"Mar 31, 2025",35,,O,"Contacts , Location , Camera , Other , Uncategorized"
+Big Keyboard: Easy Launcher,com.bigkeyboardeasylauncher.biggerkeybuttonandroidlauncherapp,Pass,NT/NA,"Pass, Pass",Pass,App is successfully Installed,PERSONALIZATION,SwipeTap Apps,1.0.90,"Apr 28, 2025",34,,O,"Camera , Wi-Fi connection information , Other"
+BET+,com.viacom.betplus,Pass,NT/NA,"Pass, Pass",Pass,App is successfully Installed,ENTERTAINMENT,BET Networks,181.102.0,"Apr 29, 2025",34,,X,"Wi-Fi connection information , Other , Uncategorized"
 MoneyLion: Bank & Earn Rewards,com.moneylion,,,,,,,,,,,,,
 "Hard Rock Bet: Betting, Casino",com.hardrockdigital.client,,,,,,,,,,,,,
 GTL | GettingOut,com.telmate.TelmateGettingout,,,,,,,,,,,,,
 Geeni,com.merkuryinnovations.geeni,,,,,,,,,,,,,
 Telemundo: Series y TV en vivo,com.telemundo.awe,,,,,,,,,,,,,
 Grubhub for Drivers,com.grubhub.driver,,,,,,,,,,,,,
-Popeyes® App,com.emn8.mobilem8.nativeapp.popeyes,,,,,,,,,,,,,
+PopeyesÂ® App,com.emn8.mobilem8.nativeapp.popeyes,,,,,,,,,,,,,
 Marco Polo - Video Messenger,co.happybits.marcopolo,,,,,,,,,,,,,
 Wawa,com.wawa.android.appv2,,,,,,,,,,,,,
 Dave - Fast Cash & Banking,com.dave,,,,,,,,,,,,,
@@ -40,5 +27,5 @@ CBS,com.cbs.tve,,,,,,,,,,,,,
 Chipotle,com.chipotle.ordering,,,,,,,,,,,,,
 Tesla,com.teslamotors.tesla,,,,,,,,,,,,,
 Hily Dating app: Meet & Date,com.hily.app,,,,,,,,,,,,,
-ShutEye®: Sleep Tracker,health.sleep.sounds.tracker.alarm.calm,,,,,,,,,,,,,
+ShutEyeÂ®: Sleep Tracker,health.sleep.sounds.tracker.alarm.calm,,,,,,,,,,,,,
 healow,com.ecw.healow,,,,,,,,,,,,,
