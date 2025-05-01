@@ -1,24 +1,161 @@
-App Name,App ID,Install Result,Running Result,MW Result,Final MW Result,Remarks,App Category,Developer,App Version,Updated Date,TargetSdk,Crash log,Camera_p
-The CW,com.cw.fullepisodes.android,Pass,NT/NA,Pass,Pass,App has already been installed,ENTERTAINMENT,The CW Network,Varies with device,"Apr 24, 2025",,,
-Shipt Snack & Grocery Delivery,com.shipt.groceries,Pass,NT/NA,Pass,Pass,App has already been installed,FOOD_AND_DRINK,Shipt,2.267.0,"Apr 25, 2025",,,
-Temu: Shop Like a Billionaire,com.einnovation.temu,Pass,NT/NA,Pass,Pass,App has already been installed,SHOPPING,Temu,3.53.1,"Apr 28, 2025",,,
-WhatsApp Messenger,com.whatsapp,Pass,NT/NA,Pass,Pass,App has already been installed,COMMUNICATION,WhatsApp LLC,Varies with device,"Apr 21, 2025",,,
-SHEIN-Shopping Online,com.zzkko,Pass,NT/NA,Pass,Pass,App has already been installed,SHOPPING,Roadget Business PTE. LTD.,12.6.2,"Apr 22, 2025",,,
-Telegram,org.telegram.messenger,Pass,NT/NA,Pass,Pass,App has already been installed,COMMUNICATION,Telegram FZ-LLC,11.9.0,"Mar 23, 2025",,,
-Snapchat,com.snapchat.android,Pass,NT/NA,Pass,Pass,App has already been installed,COMMUNICATION,Snap Inc,13.38.1.0,"Apr 23, 2025",,,
-Walmart: Shopping & Savings,com.walmart.android,Pass,NT/NA,Pass,Pass,App has already been installed,SHOPPING,Walmart,25.15.2,"Apr 24, 2025",,,
-Tubi: Free Movies & Live TV,com.tubitv,Pass,NT/NA,Pass,Pass,App has already been installed,ENTERTAINMENT,Tubi TV,Varies with device,"Apr 22, 2025",,,
-TextNow: Call + Text Unlimited,com.enflick.android.TextNow,Pass,NT/NA,Pass,Pass,App has already been installed,COMMUNICATION,"TextNow, Inc.",Varies with device,"Apr 24, 2025",,,
-"Whatnot: Shop, Sell, Connect",com.whatnot_mobile,Pass,NT/NA,Pass,Pass,App is successfully Installed,SHOPPING,Whatnot Inc.,25.17.0,"Apr 28, 2025",,,
-T-Life,com.tmobile.tuesdays,Pass,NT/NA,Pass,Pass,App has already been installed,LIFESTYLE,T-Mobile USA,Varies with device,"Apr 15, 2025",,,
-Shop: All your favorite brands,com.shopify.arrive,Pass,NT/NA,Not supportive,Not supportive,App is successfully Installed,SHOPPING,Shopify Inc.,2.199.1,"Apr 25, 2025",,,
-Venmo,com.venmo,Pass,NT/NA,Not supportive,Not supportive,App is successfully Installed,FINANCE,Venmo,10.63.0,"Apr 16, 2025",,,
-Spotify: Music and Podcasts,com.spotify.music,Pass,NT/NA,Pass,Pass,App has already been installed,MUSIC_AND_AUDIO,Spotify AB,Varies with device,"Apr 28, 2025",,,
-Uber - Request a ride,com.ubercab,Pass,NT/NA,Pass,Pass,App is successfully Installed,MAPS_AND_NAVIGATION,"Uber Technologies, Inc.",Varies with device,"Apr 28, 2025",,,
-The Roku App (Official),com.roku.remote,Pass,NT/NA,Pass,Pass,App has already been installed,ENTERTAINMENT,"Roku, Inc. & its affiliates",12.4.1.5358154,"Apr 17, 2025",,,
-PlutoTV: Live TV & Free Movies,tv.pluto.android,Pass,NT/NA,Not supportive,Not supportive,App is successfully Installed,ENTERTAINMENT,"Pluto, Inc.",Varies with device,"Apr 24, 2025",,,
-X,com.twitter.android,Pass,NT/NA,Not supportive,Not supportive,App is successfully Installed,NEWS_AND_MAGAZINES,X Corp.,10.94.0-release.0,"Apr 22, 2025",,,
-QR & Barcode Scanner,com.gamma.scan,Pass,NT/NA,Pass,Pass,App is successfully Installed,TOOLS,Gamma Play,2.2.65,"Feb 27, 2025",,,
-Reddit,com.reddit.frontpage,Pass,NT/NA,Pass,Pass,App has already been installed,SOCIAL,reddit Inc.,Varies with device,"Apr 21, 2025",,,
-Vetra VPN – Fast VPN,secure.vetra.free.vpn,Pass,NT/NA,Pass,Pass,App is successfully Installed,TOOLS,BornaTeam,1.204-PS,"Mar 2, 2025",,,
-Rewarded Play: Earn Gift Cards,com.affinity.rewarded_play,Pass,NT/NA,Pass,Pass,App is successfully Installed,LIFESTYLE,"Influence Mobile, Inc.",12.19.0,"Apr 23, 2025",,,
+App Name,App ID,Install Result,Remarks,Running Result,MW Result,Final MW Result,App Category,Developer,App Version,Updated Date,TargetSdk,Crash log,Is Camera,Permissions
+Pandora - Music & Podcasts,com.pandora.android,Pass,App is successfully Installed,,,,MUSIC_AND_AUDIO,Pandora,2503.1,"Mar 31, 2025",35,,X,"Identity , Contacts , Phone , Photos/Media/Files , Storage , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Hulu: Stream TV shows & movies,com.hulu.plus,Pass,App is successfully Installed,,,,ENTERTAINMENT,Disney,6.2.0+11390633-google,"Apr 22, 2025",35,,X,"Location , Wi-Fi connection information , Other , Uncategorized"
+Disney+,com.disney.disneyplus,Pass,App is successfully Installed,,,,ENTERTAINMENT,Disney,4.5.0-rc4-2025.04.18,"Apr 22, 2025",35,,X,"Location , Microphone , Other , Uncategorized"
+Cash App,com.squareup.cash,Pass,App is successfully Installed,,,,FINANCE,"Block, Inc.",4.97.0,"Apr 25, 2025",34,,O,"Identity , Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+"DoorDash: Food, Grocery, More",com.dd.doordash,Pass,App is successfully Installed,,,,FOOD_AND_DRINK,DoorDash,15.219.10,"Apr 29, 2025",34,,O,"Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+The Roku App (Official),com.roku.remote,Pass,App is successfully Installed,,,,ENTERTAINMENT,"Roku, Inc. & its affiliates",12.4.1.5358154,"Apr 17, 2025",34,,O,"Location , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
+DoorDash - Dasher,com.doordash.driverapp,Pass,App is successfully Installed,,,,BUSINESS,DoorDash,8.25.10,"Apr 30, 2025",34,,O,"Identity , Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Amazon Music: Songs & Podcasts,com.amazon.mp3,Pass,App is successfully Installed,,,,MUSIC_AND_AUDIO,Amazon Mobile LLC,25.8.1,"Apr 29, 2025",35,,O,"Identity , Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+McDonald's,com.mcdonalds.app,Pass,App is successfully Installed,,,,FOOD_AND_DRINK,"McDonalds USA, LLC",9.104.1,"Apr 26, 2025",34,,O,"Device & app history , Location , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Other , Uncategorized"
+TextNow: Call + Text Unlimited,com.enflick.android.TextNow,Pass,App is successfully Installed,,,,COMMUNICATION,"TextNow, Inc.",25.15.0.4,"Apr 29, 2025",34,,O,"Device & app history , Identity , Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Ring - Always Home,com.ringapp,Pass,App is successfully Installed,,,,LIFESTYLE,Ring.com,3.84.0,"Apr 11, 2025",35,,O,"Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Chase Mobile,com.chase.sig.android,Pass,App is successfully Installed,,,,FINANCE,JPMorgan Chase,4.636,"Apr 23, 2025",34,,O,"Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+PlutoTV: Live TV & Free Movies,tv.pluto.android,Pass,App is successfully Installed,,,,ENTERTAINMENT,"Pluto, Inc.",5.54.0,"Apr 24, 2025",35,,X,"Wi-Fi connection information , Other , Uncategorized"
+Uber Eats: Food Delivery,com.ubercab.eats,Pass,App is successfully Installed,,,,FOOD_AND_DRINK,"Uber Technologies, Inc.",6.268.10000,"Apr 28, 2025",34,,O,"Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
+Uber - Driver: Drive & Deliver,com.ubercab.driver,Pass,App is successfully Installed,,,,BUSINESS,"Uber Technologies, Inc.",4.524.10001,"Apr 28, 2025",34,,O,"Identity , Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Venmo,com.venmo,Pass,App is successfully Installed,,,,FINANCE,Venmo,10.63.1,"Apr 29, 2025",34,,O,"Identity , Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Bank of America Mobile Banking,com.infonow.bofa,Pass,App is successfully Installed,,,,FINANCE,Bank of America,25.04.02,"Apr 7, 2025",34,,O,"Identity , Calendar , Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Target,com.target.ui,Pass,App is successfully Installed,,,,SHOPPING,Target Corporation,2025.16.0,"Apr 24, 2025",34,,O,"Location , Phone , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+OfferUp: Buy. Sell. Simple.,com.offerup,Pass,App is successfully Installed,,,,SHOPPING,OfferUp Inc.,2025.17.0,"Apr 24, 2025",34,,O,"Calendar , Location , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
+MyChart,epic.mychart.android,Pass,App is successfully Installed,,,,MEDICAL,Epic Systems Corporation,11.3.3,"Apr 8, 2025",35,,O,"Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Other , Uncategorized"
+Robinhood - FinTech SuperApp,com.robinhood.android,Pass,App is successfully Installed,,,,FINANCE,Robinhood,2025.17.1,"Apr 28, 2025",34,,O,"Identity , Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Amazon Alexa,com.amazon.dee.app,Pass,App is successfully Installed,,,,LIFESTYLE,Amazon Mobile LLC,2.2.620613.0,"Apr 23, 2025",34,,O,"Identity , Contacts , Location , SMS , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+The Home Depot,com.thehomedepot,Pass,App is successfully Installed,,,,SHOPPING,"The Home Depot, Inc",7.47,"Apr 15, 2025",34,,O,"Identity , Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Google Wallet,com.google.android.apps.walletnfcrel,Pass,App is successfully Installed,,,,FINANCE,Google LLC,25.15.749847794,"Apr 30, 2025",35,,O,"Identity , Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Instacart: Get Food Delivery,com.instacart.client,Pass,App is successfully Installed,,,,FOOD_AND_DRINK,Instacart,8.64.2,"Apr 29, 2025",34,,O,"Location , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
+"iHeart: Music, Radio, Podcasts",com.clearchannel.iheartradio.controller,Pass,App is successfully Installed,,,,MUSIC_AND_AUDIO,"iHeartMedia, Inc.",10.51.0,"Apr 23, 2025",35,,X,"Calendar , Contacts , Location , Phone , Photos/Media/Files , Storage , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Bumble Dating App: Meet & Date,com.bumble.app,Pass,App is successfully Installed,,,,DATING,Bumble Holding Limited,5.416.0,"Apr 25, 2025",34,,O,"Identity , Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Domino's Pizza USA,com.dominospizza,Pass,App is successfully Installed,,,,FOOD_AND_DRINK,Domino's Pizza LLC,12.4.0,"Apr 24, 2025",35,,X,"Location , Phone , Photos/Media/Files , Storage , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Google Voice,com.google.android.apps.googlevoice,Pass,App is successfully Installed,,,,COMMUNICATION,Google LLC,2025.04.20.749619103,"Apr 25, 2025",35,,O,"Identity , Contacts , Phone , Photos/Media/Files , Storage , Camera , Microphone , Device ID & call information , Other , Uncategorized"
+Poshmark - Sell & Shop Online,com.poshmark.app,Pass,App is successfully Installed,,,,SHOPPING,"Poshmark, Inc",9.14.02,"Apr 22, 2025",35,,O,"Contacts , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+CallApp: Caller ID & Block,com.callapp.contacts,Pass,App is successfully Installed,,,,COMMUNICATION,"CallApp Caller ID, Call Recorder & Spam Blocker",2.218,"Apr 21, 2025",35,,X,"Identity , Calendar , Contacts , Location , SMS , Phone , Photos/Media/Files , Storage , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Kroger,com.kroger.mobile,Pass,App is successfully Installed,,,,SHOPPING,The Kroger Co.,81.4,"Apr 29, 2025",34,,O,"Location , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Other , Uncategorized"
+Instacart: Earn money to shop,com.instacart.shopper,Pass,App is successfully Installed,,,,SHOPPING,Instacart,4.438.6-p,"Apr 29, 2025",35,,O,"Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Xfinity Stream,com.xfinity.cloudtvr,Pass,App is successfully Installed,,,,ENTERTAINMENT,Comcast,8.9.0.0,"Apr 28, 2025",34,,O,"Location , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Other , Uncategorized"
+Dollar General-Digital Coupons,com.dollargeneral.android,,,,,,,,,,,,,
+American Airlines,com.aa.android,,,,,,,,,,,,,
+Grubhub: Food Delivery,com.grubhub.android,,,,,,,,,,,,,
+Klarna | Shop now. Pay later.,com.myklarnamobile,,,,,,,,,,,,,
+T-Mobile Visual Voicemail,com.tmobile.vvm.application,,,,,,,,,,,,,
+Plenty of Fish Dating App,com.pof.android,,,,,,,,,,,,,
+Subway®,com.subway.mobile.subwayapp03,,,,,,,,,,,,,
+Mercari: Buy and Sell App,com.mercariapp.mercari,,,,,,,,,,,,,
+Credit One Bank Mobile,com.creditonebank.mobile,,,,,,,,,,,,,
+U.S. Bank Mobile Banking,com.usbank.mobilebanking,,,,,,,,,,,,,
+Sling: Live TV + Freestream,com.sling,,,,,,,,,,,,,
+VIZIO | WatchFree+,com.vizio.vue.launcher,,,,,,,,,,,,,
+Discover Mobile,com.discoverfinancial.mobile,,,,,,,,,,,,,
+myQ Garage & Access Control,com.chamberlain.android.liftmaster.myq,,,,,,,,,,,,,
+STARZ,com.bydeluxe.d3.android.program.starz,,,,,,,,,,,,,
+Macy's: Online Shopping & Save,com.macys.android,,,,,,,,,,,,,
+USAA Mobile,com.usaa.mobile.android.usaa,,,,,,,,,,,,,
+Fidelity Investments,com.fidelity.android,,,,,,,,,,,,,
+PNC Mobile,com.pnc.ecommerce.mobile,,,,,,,,,,,,,
+Safeway Deals & Delivery,com.safeway.client.android.safeway,,,,,,,,,,,,,
+myAT&T,com.att.myWireless,,,,,,,,,,,,,
+SONIC Drive-In - Order Online,com.sonic.sonicdrivein,,,,,,,,,,,,,
+Ad It UpSave on Your Bills,com.adfone.aditup,,,,,,,,,,,,,
+Amex,com.americanexpress.android.acctsvcs.us,,,,,,,,,,,,,
+Text Free: Second Call Number,com.pinger.textfree,,,,,,,,,,,,,
+discovery+ | Stream TV Shows,com.discovery.discoveryplus.mobile,,,,,,,,,,,,,
+Rumble,com.rumble.battles,,,,,,,,,,,,,
+OnePay  Mobile Banking,com.onefinance.one,,,,,,,,,,,,,
+Experian,com.experian.android,,,,,,,,,,,,,
+Fubo: Watch Live TV & Sports,tv.fubo.mobile,,,,,,,,,,,,,
+BJ's Wholesale Club,com.brandingbrand.reactnative.and.bjs,,,,,,,,,,,,,
+Pizza Hut - Delivery & Takeout,com.yum.pizzahut,,,,,,,,,,,,,
+Ulta Beauty: Makeup & Skincare,com.ulta,,,,,,,,,,,,,
+Groupon  Deals & Coupons,com.groupon,,,,,,,,,,,,,
+GEICO Mobile - Car Insurance,com.geico.mobile,,,,,,,,,,,,,
+Redfin Houses for Sale & Rent,com.redfin.android,,,,,,,,,,,,,
+State Farm®,com.statefarm.pocketagent,,,,,,,,,,,,,
+Yahoo Sports: Scores & News,com.yahoo.mobile.client.android.sportacular,,,,,,,,,,,,,
+Android Auto,com.google.android.projection.gearhead,,,,,,,,,,,,,
+FreeStyle Libre 3  US,com.freestylelibre3.app.us,,,,,,,,,,,,,
+"Notes Launcher: Notepad, To-do",com.notes.todolist.notebook.checklist.notepad.android,,,,,,,,,,,,,
+Canvas Student,com.instructure.candroid,,,,,,,,,,,,,
+Chewy: Pet Shopping & Delivery,com.chewy.android,,,,,,,,,,,,,
+Remind: School Communication,com.remind101,,,,,,,,,,,,,
+Vivint,com.vivint.vivintsky,,,,,,,,,,,,,
+Yahoo News: Daily News For You,com.yahoo.mobile.client.android.yahoo,,,,,,,,,,,,,
+CarGurus: Used & New Cars,com.cargurus.mobileApp,,,,,,,,,,,,,
+Bath & Body Works,com.bathandbody.bbw,,,,,,,,,,,,,
+My H-E-B,com.heb.myheb,,,,,,,,,,,,,
+All-in-one Calculator Launcher,com.tip.calculator.unit.converter.android,,,,,,,,,,,,,
+Fandango at Home,air.com.vudu.air.DownloaderTablet,,,,,,,,,,,,,
+Paycom,com.paycom.mobile.ess,,,,,,,,,,,,,
+Amazon Freevee: Free Movies/TV,com.amazon.imdb.tv.mobile.app,,,,,,,,,,,,,
+Roku Smart Home,com.roku.rokuhome,,,,,,,,,,,,,
+Brightest Flashlight Launcher,com.flashlight.bright.led.light,,,,,,,,,,,,,
+Local News: Headlines & Alerts,com.opera.app.news.local,,,,,,,,,,,,,
+UnitedHealthcare,com.mobile.uhc,,,,,,,,,,,,,
+Webull: Investing & Trading,org.dayup.stocks,,,,,,,,,,,,,
+Truth Social,com.truthsocial.android.app,,,,,,,,,,,,,
+Live Weather Radar Launcher,com.weatherradarhome.weather.forecast.live.radar.aqi.android,,,,,,,,,,,,,
+"Priceline: Hotel, Flight & Car",com.priceline.android.negotiator,,,,,,,,,,,,,
+hoopla Digital,com.hoopladigital.android,,,,,,,,,,,,,
+craigslist,org.craigslist.CraigslistMobile,,,,,,,,,,,,,
+Paylocity,com.paylocity.paylocitymobile,,,,,,,,,,,,,
+Hilton Honors: Book Hotels,com.hilton.android.hhonors,,,,,,,,,,,,,
+Rewarded Play: Earn Gift Cards,com.affinity.rewarded_play,,,,,,,,,,,,,
+Me@Walmart,com.walmart.squiggly,,,,,,,,,,,,,
+Ibotta: Save & Earn Cash Back,com.ibotta.android,,,,,,,,,,,,,
+My Water Tracker & Reminder,com.water.tracker.remind,,,,,,,,,,,,,
+TouchTunes: Live Bar Jukebox,com.touchtunes.android,,,,,,,,,,,,,
+Little Caesars,com.littlecaesars,,,,,,,,,,,,,
+Arlo Secure: Home Security,com.arlo.app,,,,,,,,,,,,,
+"iFunny?video memes, meme maker",mobi.ifunny,,,,,,,,,,,,,
+Dexcom G7,com.dexcom.g7,,,,,,,,,,,,,
+ESPN Fantasy Sports,com.espn.fantasy.lm.football,,,,,,,,,,,,,
+Truist Mobile,com.truist.mobile,,,,,,,,,,,,,
+Metro,com.nuance.nmc.sihome.metropcs,,,,,,,,,,,,,
+Meijer - Delivery & Pickup,com.meijer.mobile.meijer,,,,,,,,,,,,,
+BetMGM - Online Sports Betting,com.playmgm.nj.sports,,,,,,,,,,,,,
+Carnival HUB,com.carnival.android,,,,,,,,,,,,,
+Rocket Money - Bills & Budgets,com.truebill,,,,,,,,,,,,,
+Taimi - LGBTQ+ Dating and Chat,com.takimi.android,,,,,,,,,,,,,
+ParentSquare,com.parentsquare.psapp,,,,,,,,,,,,,
+Turo  Car rental marketplace,com.relayrides.android.relayrides,,,,,,,,,,,,,
+Scanner Radio - Police Scanner,com.scannerradio,,,,,,,,,,,,,
+Kasa Smart,com.tplink.kasa_android,,,,,,,,,,,,,
+???-????????,com.xingin.xhs,,,,,,,,,,,,,
+Schwab Mobile,com.schwab.mobile,,,,,,,,,,,,,
+SoFi - Banking & Investing,com.sofi.mobile,,,,,,,,,,,,,
+Publix,com.publix.main,,,,,,,,,,,,,
+"Calm - Sleep, Meditate, Relax",com.calm.android,,,,,,,,,,,,,
+My Disney Experience,com.disney.wdw.android,,,,,,,,,,,,,
+"Zip - Buy Now, Pay Later",com.quadpay.quadpay,,,,,,,,,,,,,
+Depop - Buy & Sell Clothes App,com.depop,,,,,,,,,,,,,
+Wizz App - chat now,info.wizzapp,,,,,,,,,,,,,
+Ancestry: Family History & DNA,com.ancestry.android.apps.ancestry,,,,,,,,,,,,,
+ESPN Tournament Challenge,com.espn.droid.bracket_bound,,,,,,,,,,,,,
+Govee Home,com.govee.home,,,,,,,,,,,,,
+Inbox Homescreen,com.eet.email.launcher,,,,,,,,,,,,,
+TD Bank (US),com.tdbank,,,,,,,,,,,,,
+Royal Caribbean International,com.rccl.royalcaribbean,,,,,,,,,,,,,
+Text Me: Second Phone Number,com.textmeinc.textme,,,,,,,,,,,,,
+Dutch Bros,com.dutchbros.loyalty,,,,,,,,,,,,,
+Big Keyboard: Easy Launcher,com.bigkeyboardeasylauncher.biggerkeybuttonandroidlauncherapp,,,,,,,,,,,,,
+BET+,com.viacom.betplus,,,,,,,,,,,,,
+MoneyLion: Bank & Earn Rewards,com.moneylion,,,,,,,,,,,,,
+"Hard Rock Bet: Betting, Casino",com.hardrockdigital.client,,,,,,,,,,,,,
+GTL | GettingOut,com.telmate.TelmateGettingout,,,,,,,,,,,,,
+Geeni,com.merkuryinnovations.geeni,,,,,,,,,,,,,
+Telemundo: Series y TV en vivo,com.telemundo.awe,,,,,,,,,,,,,
+Grubhub for Drivers,com.grubhub.driver,,,,,,,,,,,,,
+Popeyes® App,com.emn8.mobilem8.nativeapp.popeyes,,,,,,,,,,,,,
+Marco Polo - Video Messenger,co.happybits.marcopolo,,,,,,,,,,,,,
+Wawa,com.wawa.android.appv2,,,,,,,,,,,,,
+Dave - Fast Cash & Banking,com.dave,,,,,,,,,,,,,
+Okta Verify,com.okta.android.auth,,,,,,,,,,,,,
+myChevrolet,com.gm.chevrolet.nomad.ownership,,,,,,,,,,,,,
+Benjamin - Earn Cash Rewards,com.benjaminone.client,,,,,,,,,,,,,
+Western Union Send Money Now,com.westernunion.android.mtapp,,,,,,,,,,,,,
+MyRadar Weather Radar,com.acmeaom.android.myradar,,,,,,,,,,,,,
+CBS,com.cbs.tve,,,,,,,,,,,,,
+Chipotle,com.chipotle.ordering,,,,,,,,,,,,,
+Tesla,com.teslamotors.tesla,,,,,,,,,,,,,
+Hily Dating app: Meet & Date,com.hily.app,,,,,,,,,,,,,
+ShutEye®: Sleep Tracker,health.sleep.sounds.tracker.alarm.calm,,,,,,,,,,,,,
+healow,com.ecw.healow,,,,,,,,,,,,,
