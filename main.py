@@ -396,6 +396,8 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         else:
             test_result.append(t_result_list[2]) # Fail
             remark_list.append("App is failed to install")
+        
+        info_scrapper()
     
     def is_app_already_installed():
         app_check = subprocess.run([
@@ -589,19 +591,35 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     
     # Navigate to the app page in google playstore
     for i, (package_name, app_name) in enumerate(zip(package_names, app_names)):
-        for attempt in range(install_attempt):
-            attempt += 1
+        
+        if not unlock_device(device):
+            print("Device is off")
+            break
+        
+        skip_app = False
             
-            if os.path.exists(f"Test_result_{serial}.csv"):
-                result_df = pd.read_csv(f"Test_result_{serial}.csv", encoding='unicode_escape').rename(columns=lambda x: x.strip())
-                if pd.notna(result_df.at[i, 'Install Result']) and result_df.at[i, 'Install Result'].strip():
-                    break
+        if os.path.exists(f"Test_result_{serial}_temp.csv"):
+            temp_df = pd.read_csv(f"Test_result_{serial}_temp.csv", encoding='unicode_escape').rename(columns=lambda x: x.strip())
+
+            # set 0 index
+            temp_df = temp_df.reset_index(drop=True)
+
+            if i < len(temp_df): # In case the lenth of list are not matching
+                temp_package_name = temp_df.at[i, 'App ID']
+                install_result = temp_df.at[i, 'Install Result']
+
+                if temp_package_name == package_name:
+                    if pd.notna(install_result) and str(install_result).strip():
+                        skip_app = True
+                        continue 
             else:
                 continue
-            
-            if not unlock_device(device):
-                break
-                
+        else:
+            continue
+        
+        for attempt in range(install_attempt):
+            attempt += 1
+                        
             subprocess.run([
                 "adb", "-s", device, "shell",
                 "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
@@ -724,16 +742,19 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                     launch_result.pop()
                 launch_result.append(l_result_list[1]) # NA
         
-            info_scrapper()
-        
+        if skip_app:
+            continue        
         # save the result to csv file
-        df.at[i, 'Running Result'] = launch_result[-1] if launch_result else None
-        df.at[i, 'Install Result'] = test_result[-1] if test_result else None
-        df.at[i, 'Remarks'] = remark_list[-1] if remark_list else None
+        if launch_result:
+            df.at[i, 'Running Result'] = launch_result[-1]
+        if test_result:
+            df.at[i, 'Install Result'] = test_result[-1]
+        if remark_list:
+            df.at[i, 'Remarks'] = remark_list[-1]
         test_result_df = df[['App Name','App ID','Install Result','Remarks','Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']]
-        test_result_df.to_csv(f'Test_result_{serial}.csv', index=False)
+        test_result_df.to_csv(f'Test_result_{serial}_temp.csv', index=False)
         total_count += 1
-        
+    test_result_df.to_csv(f'Test_result_{serial}.csv', index=False)
     print(f"Total {total_count} app testing is completed")
 
 

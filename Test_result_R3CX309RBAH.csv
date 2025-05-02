@@ -1,38 +1,34 @@
 App Name,App ID,Install Result,Remarks,Running Result,MW Result,Final MW Result,App Category,Developer,App Version,Updated Date,TargetSdk,Crash log,Is Camera,Permissions
-Verizon Cloud,com.vcast.mediamanager,Pass,App is successfully Installed,Crash,,,,,,,,"
---- Crash Detected ---
-05-01 17:16:42.889 E/AndroidRuntime(22636): FATAL EXCEPTION: main
---- End of Crash ---
-",,
-Little Caesars,com.littlecaesars,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-WeHealth,com.amerihealth.wehealthnew,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Venmo,com.venmo,Pass,App is successfully Installed,NT/NA,"Not supportive, Not supportive",Not supportive,,,,,,,,
-Hudl,com.hudl.hudroid,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Reddit,com.reddit.frontpage,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Uber Eats,com.ubercab.eats,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Doordash,com.dd.doordash,NT/NA,App is failed to install,NT/NA,Pass,Pass,,,,,,,,
-ChatGPT,com.openai.chatgpt,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-WhatsApp Messenger,com.whatsapp,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Easy Homescreen,easy.launcher,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Snapchat,com.snapchat.android,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Cash App,com.squareup.cash,Pass,App is successfully Installed,NT/NA,"Not supportive, Not supportive",Not supportive,,,,,,,,
-Telegram,org.telegram.messenger,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Messenger,com.facebook.orca,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Indeed Job Search,com.indeed.android.jobsearch,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Microsoft Teams,com.microsoft.teams,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Walmart: Shopping & Savings,com.walmart.android,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-"Max: Stream HBO, TV, & Movies",com.wbd.stream,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Intuit Credit Karma,com.creditkarma.mobile,Pass,App is successfully Installed,NT/NA,"Not supportive, Not supportive",Not supportive,,,,,,,,
-"PayPal - Pay, Send, Save",com.paypal.android.p2pmobile,Pass,App is successfully Installed,NT/NA,"Not supportive, Not supportive",Not supportive,,,,,,,,
-Tubi: Free Movies & Live TV,com.tubitv,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-TextNow: Call + Text Unlimited,com.enflick.android.TextNow,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-MeloShort-Movies&Dramas,com.drama.happy.look,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-McDonald's,com.mcdonalds.app,,,,,,,,,,,,,
-Chime  Mobile Banking,com.onedebit.chime,,,,,,,,,,,,,
-"Whatnot: Shop, Sell, Connect",com.whatnot_mobile,,,,,,,,,,,,,
-Life360: Stay Connected & Safe,com.life360.android.safetymapd,,,,,,,,,,,,,
-Temu: Shop Like a Billionaire,com.einnovation.temu,,,,,,,,,,,,,
-"Discord - Talk, Play, Hang Out",com.discord,,,,,,,,,,,,,
-PDF Reader - PDF Viewer,pdf.pdfreader.viewer.editor.free,,,,,,,,,,,,,
-Netflix,com.netflix.mediaclient,,,,,,,,,,,,,
-DoorDash - Food Delivery,com.dd.doordash,,,,,,,,,,,,,
+Verizon Cloud,com.vcast.mediamanager,,,,,,,,,,,,,
+Little Caesars,com.littlecaesars,,,,,,,,,,,,,
+WeHealth,com.amerihealth.wehealthnew,,,,,,,,,,,,,
+Venmo,com.venmo,,,,,,,,,,,,,
+Hudl,com.hudl.hudroid,,,,,,,,,,,,,
+Reddit,com.reddit.frontpage,,,,,,,,,,,,,
+Uber Eats,com.ubercab.eats,,,,,,,,,,,,,
+Doordash,com.dd.doordash,,,,,,,,,,,,,
+ChatGPT,com.openai.chatgpt,,,,,,,,,,,,,
+WhatsApp Messenger,com.whatsapp,,,,,,,,,,,,,
+Easy Homescreen,easy.launcher,,,,,,,,,,,,,
+Snapchat,com.snapchat.android,,,,,,,,,,,,,
+Cash App,com.squareup.cash,,,,,,,,,,,,,
+Telegram,org.telegram.messenger,,,,,,,,,,,,,
+Messenger,com.facebook.orca,,,,,,,,,,,,,
+Indeed Job Search,com.indeed.android.jobsearch,,,,,,,,,,,,,
+Microsoft Teams,com.microsoft.teams,,,,,,,,,,,,,
+Walmart: Shopping & Savings,com.walmart.android,,,,,,,,,,,,,
+"Max: Stream HBO, TV, & Movies",com.wbd.stream,,,,,,,,,,,,,
+Intuit Credit Karma,com.creditkarma.mobile,,,,,,,,,,,,,
+"PayPal - Pay, Send, Save",com.paypal.android.p2pmobile,,,,,,,,,,,,,
+Tubi: Free Movies & Live TV,com.tubitv,,,,,,,,,,,,,
+TextNow: Call + Text Unlimited,com.enflick.android.TextNow,,,,,,,,,,,,,
+MeloShort-Movies&Dramas,com.drama.happy.look,,,,,,,,,,,,,
+McDonald's,com.mcdonalds.app,Pass,App is successfully Installed,NT/NA,"Not supportive, Not supportive",Not supportive,FOOD_AND_DRINK,"McDonalds USA, LLC",9.104.1,"Apr 26, 2025",34,,O,"Device & app history , Location , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Other , Uncategorized"
+Chime – Mobile Banking,com.onedebit.chime,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,FINANCE,Chime,5.271.0,"Apr 30, 2025",35,,O,"Identity , Contacts , Location , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
+"Whatnot: Shop, Sell, Connect",com.whatnot_mobile,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,SHOPPING,Whatnot Inc.,25.18.5,"May 1, 2025",34,,O,"Calendar , Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Life360: Stay Connected & Safe,com.life360.android.safetymapd,Pass,App is successfully Installed,NT/NA,"Not supportive, Not supportive",Not supportive,LIFESTYLE,Life360,25.16.0,"Apr 30, 2025",34,,O,"Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
+Temu: Shop Like a Billionaire,com.einnovation.temu,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,SHOPPING,Temu,3.54.0,"Apr 28, 2025",34,,X,"Location , Wi-Fi connection information , Other , Uncategorized"
+"Discord - Talk, Play, Hang Out",com.discord,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,COMMUNICATION,Discord Inc.,277.13 - Stable,"Apr 30, 2025",34,,O,"Contacts , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
+PDF Reader - PDF Viewer,pdf.pdfreader.viewer.editor.free,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,PRODUCTIVITY,QR Code Scanner.,1.8.1,"Apr 23, 2025",34,,O,"Photos/Media/Files , Storage , Camera , Other , Uncategorized"
+Netflix,com.netflix.mediaclient,Pass,App is successfully Installed,NT/NA,"Not supportive, Not supportive",Not supportive,ENTERTAINMENT,"Netflix, Inc.",9.13.0 build 5 62532,"May 1, 2025",34,,X,"Photos/Media/Files , Storage , Microphone , Wi-Fi connection information , Other , Uncategorized"
+"DoorDash: Food, Grocery, More",com.dd.doordash,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,FOOD_AND_DRINK,DoorDash,15.219.10,"Apr 29, 2025",34,,O,"Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
