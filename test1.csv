@@ -1,161 +1,34 @@
 App Name,App ID
-Pandora - Music & Podcasts,com.pandora.android
-Hulu: Stream TV shows & movies,com.hulu.plus
-Disney+,com.disney.disneyplus
-Cash App,com.squareup.cash
-DoorDash - Food Delivery,com.dd.doordash
-The Roku App (Official),com.roku.remote
-DoorDash - Dasher,com.doordash.driverapp
-Amazon Music: Songs & Podcasts,com.amazon.mp3
-McDonald's,com.mcdonalds.app
-TextNow: Call + Text Unlimited,com.enflick.android.TextNow
-Ring - Always Home,com.ringapp
-Chase Mobile,com.chase.sig.android
-PlutoTV: Live TV & Free Movies,tv.pluto.android
-Uber Eats: Food Delivery,com.ubercab.eats
-Uber - Driver: Drive & Deliver,com.ubercab.driver
-Venmo,com.venmo
-Bank of America Mobile Banking,com.infonow.bofa
-Target,com.target.ui
-OfferUp: Buy. Sell. Simple.,com.offerup
-MyChart,epic.mychart.android
-Robinhood: Investing for All,com.robinhood.android
-Amazon Alexa,com.amazon.dee.app
-The Home Depot,com.thehomedepot
-Google Wallet,com.google.android.apps.walletnfcrel
-Instacart: Get Food Delivery,com.instacart.client
-"iHeart: Music, Radio, Podcasts",com.clearchannel.iheartradio.controller
-Bumble Dating App: Meet & Date,com.bumble.app
-Domino's Pizza USA,com.dominospizza
-Google Voice,com.google.android.apps.googlevoice
-Poshmark - Sell & Shop Online,com.poshmark.app
-CallApp: Caller ID & Block,com.callapp.contacts
-Kroger,com.kroger.mobile
-Instacart: Earn money to shop,com.instacart.shopper
-Xfinity Stream,com.xfinity.cloudtvr
-Dollar General-Digital Coupons,com.dollargeneral.android
-American Airlines,com.aa.android
-Grubhub: Food Delivery,com.grubhub.android
-Klarna | Shop now. Pay later.,com.myklarnamobile
-T-Mobile Visual Voicemail,com.tmobile.vvm.application
-Plenty of Fish Dating App,com.pof.android
-Subway®,com.subway.mobile.subwayapp03
-Mercari: Buy and Sell App,com.mercariapp.mercari
-Credit One Bank Mobile,com.creditonebank.mobile
-U.S. Bank Mobile Banking,com.usbank.mobilebanking
-Sling: Live TV + Freestream,com.sling
-VIZIO | WatchFree+,com.vizio.vue.launcher
-Discover Mobile,com.discoverfinancial.mobile
-myQ Garage & Access Control,com.chamberlain.android.liftmaster.myq
-STARZ,com.bydeluxe.d3.android.program.starz
-Macy's: Online Shopping & Save,com.macys.android
-USAA Mobile,com.usaa.mobile.android.usaa
-Fidelity Investments,com.fidelity.android
-PNC Mobile,com.pnc.ecommerce.mobile
-Safeway Deals & Delivery,com.safeway.client.android.safeway
-myAT&T,com.att.myWireless
-SONIC Drive-In - Order Online,com.sonic.sonicdrivein
-Ad It Up—Save on Your Bills,com.adfone.aditup
-Amex,com.americanexpress.android.acctsvcs.us
-Text Free: Second Call Number,com.pinger.textfree
-discovery+ | Stream TV Shows,com.discovery.discoveryplus.mobile
-Rumble,com.rumble.battles
-OnePay – Mobile Banking,com.onefinance.one
-Experian,com.experian.android
-Fubo: Watch Live TV & Sports,tv.fubo.mobile
-BJ's Wholesale Club,com.brandingbrand.reactnative.and.bjs
-Pizza Hut - Delivery & Takeout,com.yum.pizzahut
-Ulta Beauty: Makeup & Skincare,com.ulta
-Groupon – Deals & Coupons,com.groupon
-GEICO Mobile - Car Insurance,com.geico.mobile
-Redfin Houses for Sale & Rent,com.redfin.android
-State Farm®,com.statefarm.pocketagent
-Yahoo Sports: Scores & News,com.yahoo.mobile.client.android.sportacular
-Android Auto,com.google.android.projection.gearhead
-FreeStyle Libre 3 – US,com.freestylelibre3.app.us
-"Notes Launcher: Notepad, To-do",com.notes.todolist.notebook.checklist.notepad.android
-Canvas Student,com.instructure.candroid
-Chewy: Pet Shopping & Delivery,com.chewy.android
-Remind: School Communication,com.remind101
-Vivint,com.vivint.vivintsky
-Yahoo News: Daily News For You,com.yahoo.mobile.client.android.yahoo
-CarGurus: Used & New Cars,com.cargurus.mobileApp
-Bath & Body Works,com.bathandbody.bbw
-My H-E-B,com.heb.myheb
-All-in-one Calculator Launcher,com.tip.calculator.unit.converter.android
-Fandango at Home,air.com.vudu.air.DownloaderTablet
-Paycom,com.paycom.mobile.ess
-Amazon Freevee: Free Movies/TV,com.amazon.imdb.tv.mobile.app
-Roku Smart Home,com.roku.rokuhome
-Brightest Flashlight Launcher,com.flashlight.bright.led.light
-Local News: Headlines & Alerts,com.opera.app.news.local
-UnitedHealthcare,com.mobile.uhc
-Webull: Investing & Trading,org.dayup.stocks
-Truth Social,com.truthsocial.android.app
-Live Weather Radar Launcher,com.weatherradarhome.weather.forecast.live.radar.aqi.android
-"Priceline: Hotel, Flight & Car",com.priceline.android.negotiator
-hoopla Digital,com.hoopladigital.android
-craigslist,org.craigslist.CraigslistMobile
-Paylocity,com.paylocity.paylocitymobile
-Hilton Honors: Book Hotels,com.hilton.android.hhonors
-Rewarded Play: Earn Gift Cards,com.affinity.rewarded_play
-Me@Walmart,com.walmart.squiggly
-Ibotta: Save & Earn Cash Back,com.ibotta.android
-My Water Tracker & Reminder,com.water.tracker.remind
-TouchTunes: Live Bar Jukebox,com.touchtunes.android
+Verizon Cloud,com.vcast.mediamanager
 Little Caesars,com.littlecaesars
-Arlo Secure: Home Security,com.arlo.app
-"iFunny?video memes, meme maker",mobi.ifunny
-Dexcom G7,com.dexcom.g7
-ESPN Fantasy Sports,com.espn.fantasy.lm.football
-Truist Mobile,com.truist.mobile
-Metro,com.nuance.nmc.sihome.metropcs
-Meijer - Delivery & Pickup,com.meijer.mobile.meijer
-BetMGM - Online Sports Betting,com.playmgm.nj.sports
-Carnival HUB,com.carnival.android
-Rocket Money - Bills & Budgets,com.truebill
-Taimi - LGBTQ+ Dating and Chat,com.takimi.android
-ParentSquare,com.parentsquare.psapp
-Turo — Car rental marketplace,com.relayrides.android.relayrides
-Scanner Radio - Police Scanner,com.scannerradio
-Kasa Smart,com.tplink.kasa_android
-???-????????,com.xingin.xhs
-Schwab Mobile,com.schwab.mobile
-SoFi - Banking & Investing,com.sofi.mobile
-Publix,com.publix.main
-"Calm - Sleep, Meditate, Relax",com.calm.android
-My Disney Experience,com.disney.wdw.android
-"Zip - Buy Now, Pay Later",com.quadpay.quadpay
-Depop - Buy & Sell Clothes App,com.depop
-Wizz App - chat now,info.wizzapp
-Ancestry: Family History & DNA,com.ancestry.android.apps.ancestry
-ESPN Tournament Challenge,com.espn.droid.bracket_bound
-Govee Home,com.govee.home
-Inbox Homescreen,com.eet.email.launcher
-TD Bank (US),com.tdbank
-Royal Caribbean International,com.rccl.royalcaribbean
-Text Me: Second Phone Number,com.textmeinc.textme
-Dutch Bros,com.dutchbros.loyalty
-Big Keyboard: Easy Launcher,com.bigkeyboardeasylauncher.biggerkeybuttonandroidlauncherapp
-BET+,com.viacom.betplus
-MoneyLion: Bank & Earn Rewards,com.moneylion
-"Hard Rock Bet: Betting, Casino",com.hardrockdigital.client
-GTL | GettingOut,com.telmate.TelmateGettingout
-Geeni,com.merkuryinnovations.geeni
-Telemundo: Series y TV en vivo,com.telemundo.awe
-Grubhub for Drivers,com.grubhub.driver
-Popeyes® App,com.emn8.mobilem8.nativeapp.popeyes
-Marco Polo - Video Messenger,co.happybits.marcopolo
-Wawa,com.wawa.android.appv2
-Dave - Fast Cash & Banking,com.dave
-Okta Verify,com.okta.android.auth
-myChevrolet,com.gm.chevrolet.nomad.ownership
-Benjamin - Earn Cash Rewards,com.benjaminone.client
-Western Union Send Money Now,com.westernunion.android.mtapp
-MyRadar Weather Radar,com.acmeaom.android.myradar
-CBS,com.cbs.tve
-Chipotle,com.chipotle.ordering
-Tesla,com.teslamotors.tesla
-Hily Dating app: Meet & Date,com.hily.app
-ShutEye®: Sleep Tracker,health.sleep.sounds.tracker.alarm.calm
-healow,com.ecw.healow
+WeHealth,com.amerihealth.wehealthnew
+Venmo,com.venmo
+Hudl,com.hudl.hudroid
+Reddit,com.reddit.frontpage
+Uber Eats,com.ubercab.eats
+Doordash,com.dd.doordash
+ChatGPT,com.openai.chatgpt
+WhatsApp Messenger,com.whatsapp
+Easy Homescreen,easy.launcher
+Snapchat,com.snapchat.android
+Cash App,com.squareup.cash
+Telegram,org.telegram.messenger
+Messenger,com.facebook.orca
+Indeed Job Search,com.indeed.android.jobsearch
+Microsoft Teams,com.microsoft.teams
+Walmart: Shopping & Savings,com.walmart.android
+"Max: Stream HBO, TV, & Movies",com.wbd.stream
+Intuit Credit Karma,com.creditkarma.mobile
+"PayPal - Pay, Send, Save",com.paypal.android.p2pmobile
+Tubi: Free Movies & Live TV,com.tubitv
+TextNow: Call + Text Unlimited,com.enflick.android.TextNow
+MeloShort-Movies&Dramas,com.drama.happy.look
+McDonald's,com.mcdonalds.app
+Chime – Mobile Banking,com.onedebit.chime
+"Whatnot: Shop, Sell, Connect",com.whatnot_mobile
+Life360: Stay Connected & Safe,com.life360.android.safetymapd
+Temu: Shop Like a Billionaire,com.einnovation.temu
+"Discord - Talk, Play, Hang Out",com.discord
+PDF Reader - PDF Viewer,pdf.pdfreader.viewer.editor.free
+Netflix,com.netflix.mediaclient
+DoorDash - Food Delivery,com.dd.doordash
