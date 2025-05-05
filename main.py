@@ -119,7 +119,6 @@ def process_csv(csv_filename):
     csv_file = os.path.abspath(csv_filename)
     
     df = pd.read_csv(csv_file, encoding='unicode_escape').rename(columns=lambda x: x.strip())
-    
     app_names = df["App Name"].dropna().tolist() or "None"
     package_names = df['App ID'].tolist()
     
@@ -382,20 +381,23 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             if not yes_cancel:
                 break
 
-        app_check = subprocess.run([
-            "adb", "-s", device, "shell", "pm", "list", "packages", package_name
-        ], 
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
-        )
-        
-        if f"package:{package_name}" in app_check.stdout:
-            test_result.append(t_result_list[0]) # Pass
-            remark_list.append("App is successfully Installed")
+        if is_app_already_installed():
+            if d(text = "Uninstall").wait(timeout = 3):
+                test_result.append(t_result_list[0]) # Pass
+                remark_list.append("App is successfully Installed")
+                            
+            elif d(text = "Open").exists:
+                test_result.append(t_result_list[2]) # NT/NA
+                remark_list.append("App needs to be verified again")
+                                
+            elif d(text = "Play").exists:
+                test_result.append(t_result_list[2]) # NT/NA
+                remark_list.append("App needs to be verified again")
         else:
-            test_result.append(t_result_list[1]) #Fail
-            remark_list.append("App is not installed")
+            test_result.append(t_result_list[2]) # Fail
+            remark_list.append("App is failed to install")
+        
+        info_scrapper()
     
     def is_app_already_installed():
         app_check = subprocess.run([
@@ -590,15 +592,34 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     # Navigate to the app page in google playstore
     for i, (package_name, app_name) in enumerate(zip(package_names, app_names)):
         
+        if not unlock_device(device):
+            print("Device is off")
+            break
+        
+        skip_app = False
+            
+        if os.path.exists(f"Test_result_{serial}_temp.csv"):
+            temp_df = pd.read_csv(f"Test_result_{serial}_temp.csv", encoding='unicode_escape').rename(columns=lambda x: x.strip())
+
+            # set 0 index
+            temp_df = temp_df.reset_index(drop=True)
+
+            if i < len(temp_df): # In case the lenth of list are not matching
+                temp_package_name = temp_df.at[i, 'App ID']
+                install_result = temp_df.at[i, 'Install Result']
+
+                if temp_package_name == package_name:
+                    if pd.notna(install_result) and str(install_result).strip():
+                        skip_app = True
+                        continue 
+            else:
+                continue
+        else:
+            continue
+        
         for attempt in range(install_attempt):
             attempt += 1
-            
-            if pd.notna(df.at[i, 'Install Result']) and df.at[i, 'Install Result'].strip():
-                break
-
-            if not unlock_device(device):
-                break
-                
+                        
             subprocess.run([
                 "adb", "-s", device, "shell",
                 "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
@@ -609,12 +630,12 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             if is_app_already_installed():
             
                 # Verify if the app is pre-installed
-                if d(text = "Update").exists:
+                if d(text = "Update").wait(timeout = 2):
                     d(text = "Update").click(10)
                     
                 elif d(text = "Enable").exists:
                     d(text = "Enable").click(10)
-                    if d(text = "Update").wait(timeout = 5):
+                    if d(text = "Update").wait(timeout = 2):
                         d(text = "Update").click(10)
                             
                 elif d.xpath("//*[contains(@text,'Update from')]").exists:
@@ -721,16 +742,19 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                     launch_result.pop()
                 launch_result.append(l_result_list[1]) # NA
         
-        info_scrapper()
-        
+        if skip_app:
+            continue        
         # save the result to csv file
-        df.at[i, 'Running Result'] = launch_result[-1] if launch_result else None
-        df.at[i, 'Install Result'] = test_result[-1] if test_result else None
-        df.at[i, 'Remarks'] = remark_list[-1] if remark_list else None
+        if launch_result:
+            df.at[i, 'Running Result'] = launch_result[-1]
+        if test_result:
+            df.at[i, 'Install Result'] = test_result[-1]
+        if remark_list:
+            df.at[i, 'Remarks'] = remark_list[-1]
         test_result_df = df[['App Name','App ID','Install Result','Remarks','Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']]
-        test_result_df.to_csv(f'Test_result_{serial}.csv', index=False)
+        test_result_df.to_csv(f'Test_result_{serial}_temp.csv', index=False)
         total_count += 1
-        
+    test_result_df.to_csv(f'Test_result_{serial}.csv', index=False)
     print(f"Total {total_count} app testing is completed")
 
 

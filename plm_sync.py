@@ -24,38 +24,18 @@ def plm_category(row):
 
 def plm_checker():
     try:
-        issue_list = []  # To store the new rows for issues
         issue_list_total = []
-        devices = connect_devices()
                 
         for package_name in package_names:
             # PLM checker
             for i, row in sf.iterrows():
-                if row['App ID'] == package_name:
+                if str(row['App ID']).strip() == package_name:
                     if row['Issue Status'] in ["Open", "Closed - Not Fixed"]:
                         plm_cat = plm_category(row)
                         issue_list_total.append(plm_cat)
-                        
             if issue_list_total:
                 new_df_total = pd.DataFrame(issue_list_total)
                 new_df_total.to_csv(f"plm_list_total.csv", index=False)
-                
-        for device in devices:
-            pass_csv_file = f'Pass_{device}_result.csv'
-            pf = pd.read_csv(pass_csv_file, encoding='unicode_escape').rename(columns=lambda x: x.strip())
-            pass_package_names = pf['App ID'].tolist()
-            
-            for package_name in pass_package_names:
-                # PLM checker by device
-                for i, row in sf.iterrows():
-                    if row['App ID'] == package_name:
-                        if row['Issue Status'] in ["Open", "Closed - Not Fixed"]:
-                            plm_cat = plm_category(row)
-                            issue_list.append(plm_cat)
-            if issue_list:
-                new_df = pd.DataFrame(issue_list)
-                new_df.to_csv(f"plm_list_{device}.csv", index=False)
-                issue_list.clear()
 
     except Exception as e:
         print(f"Error: {e}")
