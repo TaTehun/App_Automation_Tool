@@ -473,15 +473,11 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             per_info = permissions(package_name)
             # Sync App name
             is_appname = app_info.get('title', [])
-            print(app_name)
             if pd.isna(app_name) or str(app_name).strip() == "":
-                print("NO NAME")
                 if is_appname:
-                    print("I GOT THE NAME")
                     new_appname = is_appname
                 else:
                     new_appname = "Unknown"
-                print("NEW name", new_appname)
                 target_df.at[i, 'App Name'] = new_appname
 
             # Sync category
@@ -525,7 +521,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                     # d_target = {'versionCode': '10910200', 'minSdk'com.waze: '27', 'targetSdk': '35'}
                             
                     if "targetSdk" in d_target:
-                        target_df.at[i, 'TargetSdk'] = d_target['targetSdk']
+                        target_df.at[i, 'TargetSdk'] = int(d_target['targetSdk'])
                     else:
                         target_df.at[i, 'TargetSdk'] = "No data"
 
@@ -638,14 +634,11 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 app_info_result = temp_df.at[i, 'App Category']
 
                 if temp_package_name == package_name:
-                    print(i, package_name, "1")
                     if pd.notna(install_result) and str(install_result).strip() == "Pass":
-                        print(i, package_name, "2")
                         if pd.isna(app_info_result) or str(app_info_result).strip() == "App is not found":
-                            print(i, package_name, "YEssssss")
                             info_scrapper()
-                            test_result_df = target_df[['App Name','App ID','Install Result','Remarks','Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']]
-                            test_result_df.to_csv(f'Test_result_{serial}_temp.csv', index=False, encoding = 'utf-8')
+                            target_df[['App Name','App ID','Install Result','Remarks','Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']]
+                            target_df.to_csv(f'Test_result_{serial}_temp.csv', index=False, encoding = 'utf-8')
                         continue
         
         for attempt in range(install_attempt):
@@ -781,10 +774,10 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             target_df.at[i, 'Install Result'] = test_result[-1]
         if remark_list:
             target_df.at[i, 'Remarks'] = remark_list[-1]
-        test_result_df = target_df[['App Name','App ID','Install Result','Remarks','Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']]
-        test_result_df.to_csv(f'Test_result_{serial}_temp.csv', index=False, encoding = 'utf-8')
+        target_df[['App Name','App ID','Install Result','Remarks','Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']]
+        target_df.to_csv(f'Test_result_{serial}_temp.csv', index=False, encoding = 'utf-8')
         total_count += 1
-    test_result_df.to_csv(f'Test_result_{serial}.csv', index=False, encoding = 'utf-8')
+    target_df.to_csv(f'Test_result_{serial}.csv', index=False, encoding = 'utf-8')
     print(f"Total {total_count} app testing is completed")
 
 
