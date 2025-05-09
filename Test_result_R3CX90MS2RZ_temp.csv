@@ -1,34 +1,40 @@
 App Name,App ID,Install Result,Remarks,Running Result,MW Result,Final MW Result,App Category,Developer,App Version,Updated Date,TargetSdk,Crash log,Is Camera,Permissions
-Verizon Cloud,com.vcast.mediamanager,,,,,,,,,,,,,
-Little Caesars,com.littlecaesars,,,,,,,,,,,,,
-WeHealth,com.amerihealth.wehealthnew,,,,,,,,,,,,,
-Venmo,com.venmo,,,,,,,,,,,,,
-Hudl,com.hudl.hudroid,,,,,,,,,,,,,
-Reddit,com.reddit.frontpage,,,,,,,,,,,,,
-Uber Eats,com.ubercab.eats,,,,,,,,,,,,,
-Doordash,com.dd.doordash,,,,,,,,,,,,,
-ChatGPT,com.openai.chatgpt,,,,,,,,,,,,,
-WhatsApp Messenger,com.whatsapp,,,,,,,,,,,,,
-Easy Homescreen,easy.launcher,,,,,,,,,,,,,
-Snapchat,com.snapchat.android,,,,,,,,,,,,,
+Reddit,com.reddit.frontpage,Pass,App is successfully Installed,NT/NA,"Pass, Fail",Pass,SOCIAL,reddit Inc.,2025.18.1,"May 6, 2025",35,,O,"Location , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
+,com.konylabs.capitalone,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,"Capital One Services, LLC",6.24.1,"May 1, 2025",34.0,,O,"Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+X,com.twitter.android,Pass,App is successfully Installed,NT/NA,"Fail, Fail",Fail,,X Corp.,10.96.0-release.0,"May 5, 2025",34.0,,O,"Identity , Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+TwinSpires Horse Race Betting,com.twinspires.android,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,Churchill Downs Technology Initiatives Company,3.32.1,"May 2, 2025",34.0,,O,"Location , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Other , Uncategorized"
+Peacock TV: Stream TV & Movies,com.peacocktv.peacockandroid,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,Peacock TV LLC,6.5.11,"May 7, 2025",34.0,,X,"Identity , Contacts , Location , Wi-Fi connection information , Other , Uncategorized"
+PlutoTV: Live TV & Free Movies,tv.pluto.android,Pass,App is successfully Installed,Pass,"Pass, Pass, Pass",Pass,,"Pluto, Inc.",5.55.0,24-Apr-25,35.0,,X,"Wi-Fi connection information , Other , Uncategorized"
+Photo Recovery & File Recovery,wiac.gpak.nvqe.allrecovery,Fail,App is failed to install,NT/NA,,,,,,,,,,
+SHEIN-Shopping Online,com.zzkko,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
+Google Translate,com.google.android.apps.translate,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
+"Scoopz: Real Life, Real Video",com.localaiapp.scoops,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
+Pandora - Music & Podcasts,com.pandora.android,Pass,App is successfully Installed,NT/NA,"Not supportive, Not supportive",Not supportive,,,,,,,,
+Grok - AI Assistant,ai.x.grok,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
+"Expedia: Hotels, Flights, Cars",com.expedia.bookings,Pass,App is successfully Installed,NT/NA,"Not supportive, Not supportive",Not supportive,,,,,,,,
+"DuckDuckGo Browser, Search, AI",com.duckduckgo.mobile.android,,,,,,,,,,,,,
+Soda Reels - Drama & show,com.sodareels.drama.short,,,,,,,,,,,,,
+Block Blast!,com.block.juggle,,,,,,,,,,,,,
+Delta Force,com.proxima.dfm,,,,,,,,,,,,,
+Roblox,com.roblox.client,,,,,,,,,,,,,
+MONOPOLY GO!,com.scopely.monopolygo,,,,,,,,,,,,,
+Kingshot,com.run.tower.defense,,,,,,,,,,,,,
 Cash App,com.squareup.cash,,,,,,,,,,,,,
-Telegram,org.telegram.messenger,,,,,,,,,,,,,
-Messenger,com.facebook.orca,,,,,,,,,,,,,
-Indeed Job Search,com.indeed.android.jobsearch,,,,,,,,,,,,,
-Microsoft Teams,com.microsoft.teams,,,,,,,,,,,,,
-Walmart: Shopping & Savings,com.walmart.android,,,,,,,,,,,,,
-"Max: Stream HBO, TV, & Movies",com.wbd.stream,,,,,,,,,,,,,
-Intuit Credit Karma,com.creditkarma.mobile,,,,,,,,,,,,,
+Chime - Mobile Banking,com.onedebit.chime,,,,,,,,,,,,,
 "PayPal - Pay, Send, Save",com.paypal.android.p2pmobile,,,,,,,,,,,,,
+Venmo,com.venmo,,,,,,,,,,,,,
+Intuit Credit Karma,com.creditkarma.mobile,,,,,,,,,,,,,
+Zelle,com.zellepay.zelle,,,,,,,,,,,,,
+Finch: Self-Care Pet,com.finch.finch,,,,,,,,,,,,,
+Planet Fitness,com.planetfitness,,,,,,,,,,,,,
+Impulse - Brain Training Games,gen.tech.impulse.android,,,,,,,,,,,,,
+"Calm - Sleep, Meditate, Relax",com.calm.android,,,,,,,,,,,,,
+Life360: Stay Connected & Safe,com.life360.android.safetymapd,,,,,,,,,,,,,
+Pinterest,com.pinterest,,,,,,,,,,,,,
+Rewarded Play: Earn Gift Cards,com.affinity.rewarded_play,,,,,,,,,,,,,
+Ring - Always Home,com.ringapp,,,,,,,,,,,,,
+Nextdoor: Neighborhood network,com.nextdoor,,,,,,,,,,,,,
 Tubi: Free Movies & Live TV,com.tubitv,,,,,,,,,,,,,
-TextNow: Call + Text Unlimited,com.enflick.android.TextNow,,,,,,,,,,,,,
-MeloShort-Movies&Dramas,com.drama.happy.look,,,,,,,,,,,,,
-McDonald's,com.mcdonalds.app,,,,,,,,,,,,,
-Chime – Mobile Banking,com.onedebit.chime,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,FINANCE,Chime,5.271.0,"Apr 30, 2025",35,,O,"Identity , Contacts , Location , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
-"Whatnot: Shop, Sell, Connect",com.whatnot_mobile,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,SHOPPING,Whatnot Inc.,25.18.5,"May 1, 2025",34,,O,"Calendar , Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
-Life360: Stay Connected & Safe,com.life360.android.safetymapd,Pass,App is successfully Installed,NT/NA,"Not supportive, Not supportive",Not supportive,LIFESTYLE,Life360,25.16.0,"Apr 30, 2025",34,,O,"Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
-Temu: Shop Like a Billionaire,com.einnovation.temu,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,SHOPPING,Temu,3.54.0,"Apr 28, 2025",34,,X,"Location , Wi-Fi connection information , Other , Uncategorized"
-"Discord - Talk, Play, Hang Out",com.discord,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,COMMUNICATION,Discord Inc.,277.13 - Stable,"Apr 30, 2025",34,,O,"Contacts , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
-PDF Reader - PDF Viewer,pdf.pdfreader.viewer.editor.free,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,PRODUCTIVITY,QR Code Scanner.,1.8.1,"Apr 23, 2025",34,,O,"Photos/Media/Files , Storage , Camera , Other , Uncategorized"
-Netflix,com.netflix.mediaclient,Pass,App is successfully Installed,NT/NA,"Not supportive, Not supportive",Not supportive,ENTERTAINMENT,"Netflix, Inc.",9.13.0 build 5 62532,"May 1, 2025",34,,X,"Photos/Media/Files , Storage , Microphone , Wi-Fi connection information , Other , Uncategorized"
-"DoorDash: Food, Grocery, More",com.dd.doordash,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,FOOD_AND_DRINK,DoorDash,15.219.10,"Apr 29, 2025",34,,O,"Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+"Max: Stream HBO, TV, & Movies",com.wbd.stream,,,,,,,,,,,,,
+Netflix,com.netflix.mediaclient,,,,,,,,,,,,,
+Disney+,com.disney.disneyplus,,,,,,,,,,,,,

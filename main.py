@@ -7,7 +7,6 @@ import subprocess
 import platform
 import uiautomator2 as u2
 import pandas as pd
-import random
 from PyQt5.QtWidgets import(QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QTableWidget, 
     QTableWidgetItem, QFileDialog, QMessageBox, QTextEdit, QSpinBox, QHBoxLayout, QLineEdit, QFrame)
 from threading import Lock, Event
@@ -114,7 +113,28 @@ def connect_devices(): # source code from Hyeonjun An.
         device_map[device_id] = serial
                     
     return device_map
+'''
+def switch_navbar(device):
+    d = u2.connect(device)
 
+    for i in range(5):
+        subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_APP_SWITCH'
+                        ],check=True)
+        d(text = "Close all").click(10)
+        
+        subprocess.run(['adb', "-s", f"{device}", 'shell', 'am', 'start', '-a', 'android.settings.SETTINGS'
+                    ],capture_output=True, text=True, check=True)
+        d(text = "Display").click(10)
+        d(text = "Navigation bar").click(10)
+        d(text = "Swipe gestures").click(10)
+        
+        nav_status = subprocess.run(['adb', "-s", f"{device}", 'shell', 'settings', 'get', 'secure', 'navigation_mode'
+                                ],capture_output=True, text=True, check=True)
+        
+        if nav_status.stdout == 2:
+            break
+            
+'''    
 def process_csv(csv_filename):
     csv_file = os.path.abspath(csv_filename)
     
@@ -188,7 +208,6 @@ def toggle_multi_window_mode(device,package_name):
     else:
         mw_result = "Fail"
     
-    #toggle_monkey_test(device,package_name)
     return mw_result
 
 def toggle_monkey_test(device, package_name):
@@ -282,6 +301,15 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     remark_list, test_result, mw_results, launch_result, crash_log = [], [], [], [], []
     t_result_list = ["Pass","Fail","NT/NA"]
     l_result_list = ["Pass","NT/NA","Crash"]
+    
+    temp_available = os.path.exists(f"Test_result_{serial}_temp.csv")
+    temp_df = pd.read_csv(f"Test_result_{serial}_temp.csv", encoding='unicode_escape').rename(columns=lambda x: x.strip())
+
+    if temp_available:
+        skip_app_mode = True
+    
+    target_df = temp_df if skip_app_mode else df
+
                     
     # Initialize columns
     if 'Install Result' not in df.columns:
@@ -373,19 +401,18 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     def is_app_installed():
         #no_cancel = not d(text = "Cancel").exists
         yes_cancel = d(text = "Cancel").exists
-        timeout = 180
-        timeout_start = time.time()
         
         #Checking if cancel button is activated for 180 sec
-        while time.time() - timeout_start < timeout:
+        for i in range(60):
             if not yes_cancel:
                 break
+            time.sleep(5)
 
         if is_app_already_installed():
-            if d(text = "Uninstall").wait(timeout = 3):
+            if d(text = "Uninstall").wait(timeout = 5):
                 test_result.append(t_result_list[0]) # Pass
                 remark_list.append("App is successfully Installed")
-                            
+                    
             elif d(text = "Open").exists:
                 test_result.append(t_result_list[2]) # NT/NA
                 remark_list.append("App needs to be verified again")
@@ -394,10 +421,8 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 test_result.append(t_result_list[2]) # NT/NA
                 remark_list.append("App needs to be verified again")
         else:
-            test_result.append(t_result_list[2]) # Fail
+            test_result.append(t_result_list[1]) # Fail
             remark_list.append("App is failed to install")
-        
-        info_scrapper()
     
     def is_app_already_installed():
         app_check = subprocess.run([
@@ -407,7 +432,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             stderr=subprocess.PIPE,
             text=True
         )
-        return f"package:{package_name}" in app_check.stdout
+        return "package:" in app_check.stdout
             
     def handle_popup():
         screen_width, screen_height = d.window_size()    
@@ -448,12 +473,17 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             per_info = permissions(package_name)
             # Sync App name
             is_appname = app_info.get('title', [])
-            if is_appname:
-                app_name = is_appname
-            else:
-                app_name = "Unknown"
-            df.at[i, 'App Name'] = app_name
-                        
+            print(app_name)
+            if pd.isna(app_name) or str(app_name).strip() == "":
+                print("NO NAME")
+                if is_appname:
+                    print("I GOT THE NAME")
+                    new_appname = is_appname
+                else:
+                    new_appname = "Unknown"
+                print("NEW name", new_appname)
+                target_df.at[i, 'App Name'] = new_appname
+
             # Sync category
             is_category = app_info.get('categories', [])
             if is_category:
@@ -461,23 +491,23 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                     category_id = is_category[0].get('id', 'No category ID found').strip()
             else:
                 category_id = "Unknown"
-            df.at[i, 'App Category'] = category_id
+            target_df.at[i, 'App Category'] = category_id
             
             per_key = list(per_info.keys())
             per_key_l = ' , '.join(per_key)
-            df.at[i, 'Permissions'] = per_key_l
+            target_df.at[i, 'Permissions'] = per_key_l
             if "Camera" in per_key_l:
-                df.at[i, 'Is Camera'] = "O"
+                target_df.at[i, 'Is Camera'] = "O"
             else:
-                df.at[i, 'Is Camera'] = "X"
+                target_df.at[i, 'Is Camera'] = "X"
 
             # Sync developer
             is_developer = app_info.get('developer', 'No developer found').strip()
-            df.at[i, 'Developer'] = is_developer if is_developer else "Unknown"
+            target_df.at[i, 'Developer'] = is_developer if is_developer else "Unknown"
                     
             # Sync updated date
             is_updated = app_info.get('lastUpdatedOn', 'No lastUpdatedOn found').strip()
-            df.at[i, 'Updated Date'] = is_updated if is_updated else "Unknown"
+            target_df.at[i, 'Updated Date'] = is_updated if is_updated else "Unknown"
             
             app_version_finder = subprocess.run([
                 "adb", "-s", device, "shell", "dumpsys", "package", package_name
@@ -495,26 +525,27 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                     # d_target = {'versionCode': '10910200', 'minSdk'com.waze: '27', 'targetSdk': '35'}
                             
                     if "targetSdk" in d_target:
-                        df.at[i, 'TargetSdk'] = d_target['targetSdk']
+                        target_df.at[i, 'TargetSdk'] = d_target['targetSdk']
                     else:
-                        df.at[i, 'TargetSdk'] = "No data"
+                        target_df.at[i, 'TargetSdk'] = "No data"
 
                 if "versionName=" in line:
                     app_version = line.split("=")[1].strip()
-                    df.at[i, 'App Version'] = app_version
+                    target_df.at[i, 'App Version'] = app_version
                     is_version = True
                     break
             if not is_version:
                 # Sync app version
                 is_version_info = app_info.get('version', 'No version found').strip()
-                df.at[i, 'App Version'] = is_version_info if is_version_info else "Unknown"
+                target_df.at[i, 'App Version'] = is_version_info if is_version_info else "Unknown"
             
         except Exception as e:
-            df.at[i, 'Developer'] = "App is not found"
-            df.at[i, 'App Category'] = "App is not found"
-            df.at[i, 'App Version'] = "App is not found"
-            df.at[i, 'Updated Date'] = "App is not found"
-            df.at[i, 'TargetSdk'] = "App is not found"
+            print(e)
+            target_df.at[i, 'Developer'] = "App is not found"
+            target_df.at[i, 'App Category'] = "App is not found"
+            target_df.at[i, 'App Version'] = "App is not found"
+            target_df.at[i, 'Updated Date'] = "App is not found"
+            target_df.at[i, 'TargetSdk'] = "App is not found"
 
     def app_launcher():
         if crash_flag.is_set():
@@ -536,7 +567,6 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             launch_result.append(l_result_list[0]) # PASS
 
         else: 
-            print(f"app is not installed")
             launch_result.append(l_result_list[1]) # NA
             if d(text = "Allow").exists:
                 d(text = "Allow").click()
@@ -586,36 +616,37 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             else: 
                 print("App is not deleted")
                     
-            is_app_installed()
+            for i in range(60): 
+                if is_app_already_installed():
+                    break
+                time.sleep(5)
         stop_flag.set()
     
     # Navigate to the app page in google playstore
     for i, (package_name, app_name) in enumerate(zip(package_names, app_names)):
-        
         if not unlock_device(device):
             print("Device is off")
             break
         
-        skip_app = False
-            
-        if os.path.exists(f"Test_result_{serial}_temp.csv"):
-            temp_df = pd.read_csv(f"Test_result_{serial}_temp.csv", encoding='unicode_escape').rename(columns=lambda x: x.strip())
-
+        if skip_app_mode:
             # set 0 index
             temp_df = temp_df.reset_index(drop=True)
 
             if i < len(temp_df): # In case the lenth of list are not matching
                 temp_package_name = temp_df.at[i, 'App ID']
                 install_result = temp_df.at[i, 'Install Result']
+                app_info_result = temp_df.at[i, 'App Category']
 
                 if temp_package_name == package_name:
-                    if pd.notna(install_result) and str(install_result).strip():
-                        skip_app = True
-                        continue 
-            else:
-                continue
-        else:
-            continue
+                    print(i, package_name, "1")
+                    if pd.notna(install_result) and str(install_result).strip() == "Pass":
+                        print(i, package_name, "2")
+                        if pd.isna(app_info_result) or str(app_info_result).strip() == "App is not found":
+                            print(i, package_name, "YEssssss")
+                            info_scrapper()
+                            test_result_df = target_df[['App Name','App ID','Install Result','Remarks','Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']]
+                            test_result_df.to_csv(f'Test_result_{serial}_temp.csv', index=False, encoding = 'utf-8')
+                        continue
         
         for attempt in range(install_attempt):
             attempt += 1
@@ -708,7 +739,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                     if launch_result[-1] == l_result_list[2]:
                         print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
                         mw_results.clear()
-                        df.at[i, 'Crash log'] = "\n".join(crash_log)
+                        target_df.at[i, 'Crash log'] = "\n".join(crash_log)
                         crash_log.clear()
                         break
 
@@ -725,9 +756,9 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                         print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
                 
                 if mw_results:
-                    df.at[i,'MW Result'] = ', '.join(mw_results)
+                    target_df.at[i,'MW Result'] = ', '.join(mw_results)
                     final_mw_result = max(set(mw_results), key=mw_results.count)
-                    df.at[i,'Final MW Result'] = final_mw_result
+                    target_df.at[i,'Final MW Result'] = final_mw_result
                     mw_results.clear()
                 break
 
@@ -741,20 +772,19 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 if launch_result:
                     launch_result.pop()
                 launch_result.append(l_result_list[1]) # NA
-        
-        if skip_app:
-            continue        
+                
+        info_scrapper()
         # save the result to csv file
         if launch_result:
-            df.at[i, 'Running Result'] = launch_result[-1]
+            target_df.at[i, 'Running Result'] = launch_result[-1]
         if test_result:
-            df.at[i, 'Install Result'] = test_result[-1]
+            target_df.at[i, 'Install Result'] = test_result[-1]
         if remark_list:
-            df.at[i, 'Remarks'] = remark_list[-1]
-        test_result_df = df[['App Name','App ID','Install Result','Remarks','Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']]
-        test_result_df.to_csv(f'Test_result_{serial}_temp.csv', index=False)
+            target_df.at[i, 'Remarks'] = remark_list[-1]
+        test_result_df = target_df[['App Name','App ID','Install Result','Remarks','Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']]
+        test_result_df.to_csv(f'Test_result_{serial}_temp.csv', index=False, encoding = 'utf-8')
         total_count += 1
-    test_result_df.to_csv(f'Test_result_{serial}.csv', index=False)
+    test_result_df.to_csv(f'Test_result_{serial}.csv', index=False, encoding = 'utf-8')
     print(f"Total {total_count} app testing is completed")
 
 

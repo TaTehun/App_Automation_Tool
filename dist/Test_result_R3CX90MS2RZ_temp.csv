@@ -1,38 +1,44 @@
 App Name,App ID,Install Result,Remarks,Running Result,MW Result,Final MW Result,App Category,Developer,App Version,Updated Date,TargetSdk,Crash log,Is Camera,Permissions
-Verizon Cloud,com.vcast.mediamanager,NT/NA,App needs to be verified again,Crash,,,PRODUCTIVITY,Verizon Consumer Group,25.4.10,"Apr 8, 2025",35,"
---- Crash Detected ---
-05-01 17:17:03.503 E/AndroidRuntime(25060): FATAL EXCEPTION: main
---- End of Crash ---
-",O,"Device & app history , Identity , Calendar , Contacts , Location , SMS , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
-Little Caesars,com.littlecaesars,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-WeHealth,com.amerihealth.wehealthnew,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Venmo,com.venmo,Pass,App is successfully Installed,NT/NA,"Not supportive, Not supportive",Not supportive,,,,,,,,
-Hudl,com.hudl.hudroid,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Reddit,com.reddit.frontpage,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Uber Eats,com.ubercab.eats,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Doordash,com.dd.doordash,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-ChatGPT,com.openai.chatgpt,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-WhatsApp Messenger,com.whatsapp,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Easy Homescreen,easy.launcher,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,PERSONALIZATION,Homescreen Apps,1.7.39,"Apr 15, 2025",,,O,"Identity , Calendar , Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
-Snapchat,com.snapchat.android,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Cash App,com.squareup.cash,Pass,App is successfully Installed,NT/NA,"Not supportive, Not supportive",Not supportive,,,,,,,,
-Telegram,org.telegram.messenger,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Messenger,com.facebook.orca,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Indeed Job Search,com.indeed.android.jobsearch,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Microsoft Teams,com.microsoft.teams,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Walmart: Shopping & Savings,com.walmart.android,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-"Max: Stream HBO, TV, & Movies",com.wbd.stream,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-Intuit Credit Karma,com.creditkarma.mobile,Pass,App is successfully Installed,NT/NA,"Not supportive, Not supportive",Not supportive,,,,,,,,
-"PayPal - Pay, Send, Save",com.paypal.android.p2pmobile,Pass,App is successfully Installed,NT/NA,"Not supportive, Not supportive",Not supportive,,,,,,,,
-Tubi: Free Movies & Live TV,com.tubitv,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-TextNow: Call + Text Unlimited,com.enflick.android.TextNow,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,,,,,,,,
-MeloShort-Movies&Dramas,com.drama.happy.look,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,ENTERTAINMENT,HALOFUN PTE. LTD.,2.27.00,"Apr 29, 2025",,,X,"Device & app history , Phone , Photos/Media/Files , Storage , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
-McDonald's,com.mcdonalds.app,Pass,App is successfully Installed,NT/NA,"Not supportive, Not supportive",Not supportive,,,,,,,,
-Chime  Mobile Banking,com.onedebit.chime,,,,,,,,,,,,,
-"Whatnot: Shop, Sell, Connect",com.whatnot_mobile,,,,,,,,,,,,,
-Life360: Stay Connected & Safe,com.life360.android.safetymapd,,,,,,,,,,,,,
-Temu: Shop Like a Billionaire,com.einnovation.temu,,,,,,,,,,,,,
-"Discord - Talk, Play, Hang Out",com.discord,,,,,,,,,,,,,
-PDF Reader - PDF Viewer,pdf.pdfreader.viewer.editor.free,,,,,,,,,,,,,
-Netflix,com.netflix.mediaclient,,,,,,,,,,,,,
-DoorDash - Food Delivery,com.dd.doordash,,,,,,,,,,,,,
+PENNYMAC MOBILE,com.pennymac.app,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,FINANCE,"Pennymac Loan Services, LLC",1.4.283293,45770,34,,X,"Photos/Media/Files , Storage , Wi-Fi connection information , Other , Uncategorized"
+OfferUp: Buy. Sell. Simple.,com.offerup,NT/NA,App is successfully Installed,NT/NA,"Pass, Pass",Pass,SHOPPING,OfferUp Inc.,2025.18.1,45783,34,,O,"Calendar , Location , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
+"Crypto.com - Buy BTC, CRO, XRP",co.mona.android,Fail,App is successfully Installed,NT/NA,"Pass, Pass",Pass,FINANCE,Crypto Technology Holdings Limited,3.210.0,45778,34,,O,"Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+ESPN,com.espn.score_center,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,SPORTS,Disney,7.21.0,45776,35,,X,"Location , Phone , Photos/Media/Files , Storage , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Sofascore: Live Sports Scores,com.sofascore.results,,App is successfully Installed,NT/NA,"Pass, Pass",Pass,SPORTS,Sofascore,25.04.09,45776,35,,X,"Photos/Media/Files , Storage , Wi-Fi connection information , Other , Uncategorized"
+Reddit,com.reddit.frontpage,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,SOCIAL,reddit Inc.,2025.17.0,45783,35,,O,"Location , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
+Life360: Stay Connected & Safe,com.life360.android.safetymapd,Pass,App is successfully Installed,NT/NA,"Not supportive, Not supportive",Not supportive,LIFESTYLE,Life360,25.17.0,45777,34,,O,"Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
+OfferUp: Buy. Sell. Simple.,com.offerup,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,SHOPPING,OfferUp Inc.,2025.18.1,45783,34,,O,"Calendar , Location , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
+Crunchyroll,com.crunchyroll.crunchyroid,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,ENTERTAINMENT,"Crunchyroll, LLC",3.81.8,45782,35,,X,"Photos/Media/Files , Storage , Microphone , Other , Uncategorized"
+Health Sense: Blood Sugar Hub,com.healthapplines.healthsense.bloodsugarhub,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,HEALTH_AND_FITNESS,Health Applines,1.12.0,45772,34,,O,"Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+QR Note Scan&Genarate,com.codetools.qrnotescan,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,TOOLS,Jia.Dev,1.1.8,45632,34,,O,"Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Other"
+Freecash: Earn Money & Rewards,com.freecash.app2,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,FINANCE,Freecash,1.5,45775,34,,X,"Wi-Fi connection information , Other , Uncategorized"
+I Am Cat,com.NewFolderGames.IAmCat,Pass,App is successfully Installed,NT/NA,"Not supportive, Not supportive",Not supportive,GAME_SIMULATION,Estoty,1.0.2,45772,34,,X,"Wi-Fi connection information , Other , Uncategorized"
+Verizon Call Filter,com.vzw.ecid,NT/NA,App needs to be verified again,NT/NA,Pass,Pass,COMMUNICATION,Verizon Consumer Group,3.19.0,24-Apr-25,35,,O,"Contacts , SMS , Phone , Photos/Media/Files , Storage , Camera , Device ID & call information , Other , Uncategorized"
+Greenlight Kids & Teen Banking,me.greenlight,NT/NA,App is failed to install,NT/NA,"Pass, Not supportive",Pass,FINANCE,"Greenlight Financial Technology, Inc.",7.4.2,2-May-25,34,,O,"Identity , Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+CollX: Sports Card Scanner,app.collx.android,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,SPORTS,CollX,2.2.32,27-Apr-25,34,,O,"Identity , Contacts , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
+Belk – Shopping App,com.belk.android.belk,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,SHOPPING,Belk,52.1.3,23-Apr-25,35,,O,"Location , Phone , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Chick-fil-A®,com.chickfila.cfaflagship,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,FOOD_AND_DRINK,"Chick-fil-A, Inc.",2025.8.1,2-May-25,34,,O,"Location , Camera , Other , Uncategorized"
+ESPN,com.espn.score_center,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,SPORTS,Disney,7.21.0,29-Apr-25,35,,X,"Location , Phone , Photos/Media/Files , Storage , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+FordPass™,com.ford.fordpass,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,LIFESTYLE,Ford Motor Co.,5.18.0,24-Apr-25,34,,O,"Location , Phone , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Hudl,com.hudl.hudroid,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,SPORTS,Agile Sports,7.39.0,2-May-25,34,,O,"Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
+Uber Eats: Food Delivery,com.ubercab.eats,Pass,App is successfully Installed,NT/NA,"Fail, Pass",Pass,FOOD_AND_DRINK,"Uber Technologies, Inc.",6.269.10000,5-May-25,34,,O,"Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
+"DoorDash: Food, Grocery, More",com.dd.doordash,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,FOOD_AND_DRINK,DoorDash,15.220.8,6-May-25,34,,O,"Contacts , Location , Phone , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+StardustTV - Movies & Dramas,com.shdj.test,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,ENTERTAINMENT,StardustTV,2.20.0,27-Apr-25,34,,X,"Calendar , Photos/Media/Files , Storage , Wi-Fi connection information , Other , Uncategorized"
+MONOPOLY GO!,com.scopely.monopolygo,Pass,App is successfully Installed,NT/NA,"Not supportive, Not supportive",Not supportive,GAME_BOARD,Scopely,1.45.0,30-Apr-25,34,,X,"Contacts , Wi-Fi connection information , Other , Uncategorized"
+Crunchyroll,com.crunchyroll.crunchyroid,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,ENTERTAINMENT,"Crunchyroll, LLC",3.81.8,7-May-25,35,,X,"Photos/Media/Files , Storage , Microphone , Other , Uncategorized"
+Hulu: Stream TV shows & movies,com.hulu.plus,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,ENTERTAINMENT,Disney,6.2.0+11390633-google,22-Apr-25,35,,X,"Location , Wi-Fi connection information , Other , Uncategorized"
+Sprunki Beat: Full Mod Music,com.sprunki.mod.horror.incredibox.monster.beats.music.game,NT/NA,App needs to be verified again,NT/NA,"Not supportive, Not supportive",Not supportive,GAME_MUSIC,Gotstar Studio,0.1.6,28-Apr-25,34,,X,"Wi-Fi connection information , Other"
+Go'Rewards,com.dcp.gorewards,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,TOOLS,Jordan Couturier,3.1.6,5-May-25,34,,X,"Photos/Media/Files , Storage , Wi-Fi connection information , Other , Uncategorized"
+TikTok Lite - Faster TikTok,com.tiktok.lite.go,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,SOCIAL,TikTok Pte. Ltd.,38.9.54,7-May-25,34,,O,"Device & app history , Contacts , Location , Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
+ReelShort - Stream Drama & TV,com.newleaf.app.android.victor,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,ENTERTAINMENT,NewLeaf Publishing,2.6.00,16-Apr-25,35,,X,"Calendar , Phone , Photos/Media/Files , Storage , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Google Gemini,com.google.android.apps.bard,NT/NA,App needs to be verified again,NT/NA,"Pass, Pass",Pass,PRODUCTIVITY,Google LLC,1.0.667532867,29-Apr-25,34,,X,Other
+Canva: AI Photo & Video Editor,com.canva.editor,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,ART_AND_DESIGN,Canva,2.310.0,30-Apr-25,34,,O,"Photos/Media/Files , Storage , Camera , Microphone , Wi-Fi connection information , Other , Uncategorized"
+Circle K,com.circlek.gmap.na,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,SHOPPING,Circle K North America,3.38.5,28-Apr-25,34,,O,"Location , Photos/Media/Files , Storage , Camera , Wi-Fi connection information , Other , Uncategorized"
+PhoneFixer-Memory Cleaner,nb.ph.fixer,Pass,App is successfully Installed,Pass,"Pass, Pass, Pass",Pass,TOOLS,joydeb halder,1.8,7-Apr-25,34,,X,"Location , Phone , Photos/Media/Files , Storage , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Clean Swift Pro,com.clean.restore.klpu,NT/NA,App needs to be verified again,NT/NA,"Pass, Pass",Pass,TOOLS,tarda msa,1,17-Apr-25,34,,X,"Phone , Photos/Media/Files , Storage , Wi-Fi connection information , Device ID & call information , Other , Uncategorized"
+Talkie: Creative AI Community,com.weaver.app.prod,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,ENTERTAINMENT,SUBSUP,2.21.004,7-May-25,34,,X,"Photos/Media/Files , Storage , Microphone , Wi-Fi connection information , Other , Uncategorized"
+eBay online shopping & selling,com.ebay.mobile,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,SHOPPING,eBay Mobile,6.207.0.2,2-May-25,35,,O,"Location , Photos/Media/Files , Storage , Camera , Microphone , Other , Uncategorized"
+Snake Clash!,io.supercent.linkedcubic,Pass,App is successfully Installed,NT/NA,"Pass, Pass",Pass,GAME_ACTION,"Supercent, Inc.",59.0.0,6-May-25,34,,X,"Wi-Fi connection information , Other , Uncategorized"
+"AllTrails: Hike, Bike & Run",com.alltrails.alltrails,,,,,,,,,,,,,
+Lazy exercise at home,swiftflyers.homeworkout.chair.floor.bed.exercise.forlazy,,,,,,,,,,,,,
+Apple TV,com.apple.atve.androidtv.appletv,,,,,,,,,,,,,
+DramaBox - Stream Drama Shorts,com.storymatrix.drama,,,,,,,,,,,,,

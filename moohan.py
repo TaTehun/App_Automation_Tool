@@ -306,77 +306,39 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     '''        
 
     def is_app_installed():
-        subprocess.run([
-            "adb", "-s", device, "shell",
-            "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
-            "-a android.intent.action.VIEW",
-            "-d", f"market://details?id={package_name}"
-        ], check=True)
         #no_cancel = not d(text = "Cancel").exists
-        yes_cancel = d(text = "Cancel").exists
-        timeout = 180
-        timeout_start = time.time()
         
-        #Checking if cancel button is activated for 180 sec
-        while time.time() - timeout_start < timeout:
-            if not yes_cancel:
-                break
-            
         subprocess.run([
-            "adb", "-s", device, "shell",
-            "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
-            "-a android.intent.action.VIEW",
-            "-d", f"market://details?id={package_name}"
-        ], check=True)
-            
-        if d(text = "Uninstall").exists:
+                "adb", "-s", device, "shell",
+                "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
+                "-a android.intent.action.VIEW",
+                "-d", f"market://details?id={package_name}"
+            ], check=True)
+
+        if d(text = "Uninstall").wait(timeout = 30):
             test_result.append(t_result_list[0]) # Pass
             remark_list.append("App is successfully Installed")
                             
         elif d(text = "Open").exists:
             test_result.append(t_result_list[2]) # NT/NA
             remark_list.append("App needs to be verified again")
-                            
+                                
         elif d(text = "Play").exists:
             test_result.append(t_result_list[2]) # NT/NA
             remark_list.append("App needs to be verified again")
-            
         else:
-            test_result.append(t_result_list[1]) #Fail
-            remark_list.append("Timeout")
-            
-    def handle_popup():
-        screen_width, screen_height = d.window_size()    
-        # Popup variables
-        if d.xpath("//*[contains(@text,'t now')]").exists:
-            d(text = "Not now").click(10)
-        elif d.xpath("//*[contains(@text,'When Wi')]").wait(timeout = 5):
-            d(text = "OK").click(10)
-        elif d.xpath("//*[contains(@text,'t add')]").exists:
-            d.xpath("//*[contains(@text,'t add')]").click(10)
-        elif d.xpath("//*[contains(@text,'alert') and contains(@text,'OK')]").exists:
-            d(text = "OK").click(10)
-        elif d.xpath("//*[contains(@text,'Want to see local')]").wait(timeout = 5):
-            d(text = "No thanks").click(10)
-            #3app.test.mql
-        elif d.xpath("//*[contains(@text,'Complete account setup')]").wait(timeout = 5):
-            d(text = "Continue").click(10)
-            if d.xpath("//*[contains(@text,'Payment method]')]").wait(timeout = 5):
-                d(text = "Skip").click(10)
-            else:
-                d.click(screen_width //2, screen_height // 2)
-                subprocess.run([
-                    "adb","-s",f"{device}","shell",
-                    "input","keyevent","KEYCODE_HOME"
-                ], check=True)
-                
-        else:
-            # Touch and hold the Home button, then circle or tap text or images to learn more and explore.
-            d.click(screen_width //2, screen_height // 2)
-            subprocess.run([
-                "adb","-s",f"{device}","shell",
-                "input","keyevent","KEYCODE_HOME"
-            ], check=True)
+            test_result.append(t_result_list[2]) # Fail
+            remark_list.append("App is failed to install")
+        
+    def is_app_already_installed():
+        app_check = subprocess.run([
+            "adb", "-s", device, "shell", "pm", "list", "packages", package_name
+        ], 
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        return f"package:{package_name}" in app_check.stdout
             
     def info_scrapper():
         try:
@@ -398,13 +360,11 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                     
             df.at[i, 'Developer'] = is_developer if is_developer else "Unknown"
                     
-                    
-            # Camera permission
-            
-            is_camera = per_info.get('Camera', 'No permission found').strip()
-            print(is_camera)
-            print(per_info)
-            df.at[i, 'Camera_p'] = is_camera if is_camera else "Unknown"
+            per_key = list(per_info.keys())
+            if "Camera" in per_key:
+                df.at[i, 'Camera_p'] = "O"
+            else:
+                df.at[i, 'Camera_p'] = "X"
                     
             # Sync updated date
             is_updated = app_info.get('lastUpdatedOn', 'No lastUpdatedOn found').strip()
@@ -446,82 +406,17 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             df.at[i, 'App Version'] = "App is not found"
             df.at[i, 'Updated Date'] = "App is not found"
             df.at[i, 'TargetSdk'] = "App is not found"
-        
-    def app_launcher():
-        if crash_flag.is_set():
-            return
-        if d(text = "Play").wait(timeout = 5):
-            d(text = "Play").click(10)
-            time.sleep(5)
-            if is_app_open:
-            #time.sleep(2)
-            #toggle_dark_mode(device)
-            #time.sleep(2)
-            #mw_results.append(toggle_multi_window_mode(device,package_name))
-            #toggle_monkey_test(device,package_name)
-                launch_result.append(l_result_list[0]) # PASS
 
-        elif d(text = "Open").wait(timeout = 5):
-            d(text = "Open").click(10)
-            time.sleep(5)
-            if is_app_open:
-            #time.sleep(2)
-            #toggle_dark_mode(device)
-            #time.sleep(2)
-            #mw_results.append(toggle_multi_window_mode(device,package_name))
-            #toggle_monkey_test(device,package_name)
-                launch_result.append(l_result_list[0]) # PASS
-
-        else: 
-            print(f"app is not installed")
-            launch_result.append(l_result_list[1]) # NA
-            if d(text = "Allow").exists:
-                d(text = "Allow").click()
-            elif d(text = "Cancel").exists:
-                d(text = "Cancel").click()
-            elif d(text = "OK").exists:
-                d(text = "OK").click()
-            elif d(text = "Not now").exists:
-                d(text = "Not now").click()
-            elif d(text = "Close").exists:
-                d(text = "Close").click()
-            else:
-                subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_BACK'
-                                ],check=True)
-        
-        time.sleep(5)        
-        # stop app
-        subprocess.run(['adb', "-s", f"{device}", 'shell', 'am', 'force-stop', f"{package_name}"
-                    ],check=True)
-                
-        # open the app from google playstore
-        subprocess.run([
-            "adb", "-s", f"{device}", "shell",
-            "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
-            "-a android.intent.action.VIEW",
-            "-d", f"market://details?id={package_name}"
-        ], check=True)
-        time.sleep(2)
-        stop_flag.set()
-    
     # Navigate to the app page in google playstore
     for i, (package_name, app_name) in enumerate(zip(package_names, app_names)):
-
+        
+        if not unlock_device(device):
+            print("Device is off")
+            break
+        
         for attempt in range(install_attempt):
             attempt += 1
-            
-            if not is_device_unlocked:
-                while not is_device_unlocked:
-                    print("Device is not connected")
-            '''
-            if pd.notna(df.at[i, 'Final']) and df.at[i, 'Final'].strip():
-                break
-            
-            if pd.notna(df.at[i, 'Install and df.at[i, 'Launch Result'].strip().lower() = Result']) and df.at[i, 'Install Result'].strip().lower()= "pass":
-                test_result.append(t_result_list[0]) #Pass
-                break
-            '''
-                
+                        
             subprocess.run([
                 "adb", "-s", device, "shell",
                 "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
@@ -529,18 +424,16 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 "-d", f"market://details?id={package_name}"
             ], check=True)
             
-            # Verify if the app is pre-installed
-            if d(text = "Uninstall").wait(timeout = 10):
-                if d(text = "Update").exists:
+            if is_app_already_installed():
+            
+                # Verify if the app is pre-installed
+                if d(text = "Update").wait(timeout = 2):
                     d(text = "Update").click(10)
                     
-                    is_app_installed()
                 elif d(text = "Enable").exists:
                     d(text = "Enable").click(10)
-                    if d(text = "Update").wait(timeout = 5):
+                    if d(text = "Update").wait(timeout = 2):
                         d(text = "Update").click(10)
-                            
-                    is_app_installed()
                             
                 elif d.xpath("//*[contains(@text,'Update from')]").exists:
                     d(text = "Uninstall").click(10)
@@ -548,32 +441,12 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                         d(text = "Uninstall").click(10)
                         if d(text = "Install").wait(10):
                             d(text = "Install").click(10)
-                            continue
-                            
-                        else:
-                            test_result.append(t_result_list[1]) # Fail
-                            remark_list.append("Install button is not found")
-                                    
-                    # wait until open
-                    is_app_installed()
                 else: 
                     test_result.append(t_result_list[0]) #Pass
                     remark_list.append("App has already been installed")
                     
-            # Verify if the app is updatable
-            elif d(text = "Update").exists:
-                if d(text = "Open").exists:
-                    d(text = "Update").click(10)
-                        
-                    is_app_installed()
-                    
-            elif d(text = "Enable").exists:
-                d(text = "Enable").click(10)
-                if d(text = "Update").wait(timeout = 5):
-                    d(text = "Update").click(10)
-                        
                 is_app_installed()
-                    
+                
             # Verify the app's compatibility and availability  
             elif d.xpath("//*[contains(@text,'t compatible')]").exists:
                 test_result.append(t_result_list[2]) # NT/NA
@@ -595,7 +468,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             elif d.xpath("//*[contains(@text,'$')]").wait(timeout = 5) and not d(text = "Install").exists:
                 test_result.append(t_result_list[2]) # NT/NA
                 remark_list.append("App is a Paid App")
-                        
+                
             # Verify if the app is installable
             elif d(text = "Install").exists and not d(text = "Open").exists:
                 d(text = "Install").click(10)
@@ -606,85 +479,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 is_app_installed()
                 
             else:
-                test_result.append(t_result_list[1]) # Fail
-                remark_list.append("App is failed to install within the timeout")
-                
-            subprocess.run([
-                "adb", "-s", device, "shell",
-                "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
-                "-a android.intent.action.VIEW",
-                "-d", f"market://details?id={package_name}"
-            ], check=True)
-                
-            #attempt to reload the page and repeat the installation
-            if test_result[-1] == t_result_list[0]: #Pass
-                subprocess.run([
-                    "adb", "-s", device, "shell",
-                    "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
-                    "-a android.intent.action.VIEW",
-                    "-d", f"market://details?id={package_name}"
-                ], check=True)
-                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}")
-                if launch_attempt >= 1:
-                    for l_attempt in range(launch_attempt):
-                        l_attempt += 1
-                        crash_thread = threading.Thread(target=monitor_crashes, daemon=True)
-                        crash_thread.start()
-                        app_launcher()
-                        while not stop_flag.is_set():
-                            crash_flag.wait()
-                        if crash_flag.is_set():
-                            launch_result.append(l_result_list[2])
-                            break
-                    crash_thread.join()
-                    crash_flag.clear()
-                    stop_flag.clear()
-                        
-                    #attempt to reload the page and repeat the installation    
-                    if launch_result[-1] == l_result_list[2]:
-                        print(f"{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
-                        mw_results.clear()
-                        df.at[i, 'Crash log'] = "\n".join(crash_log)
-                        crash_log.clear()
-                        break
-
-                    elif l_attempt <= launch_attempt -1:
-                        print(f"{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
-                        launch_result.pop()
-                        
-                    elif launch_result[-1] == l_result_list[1]:
-                        if not is_app_open(package_name, device):
-                            launch_result[-1] == "App is not opened"
-                        else:
-                            launch_result[-1] == l_result_list[1]
-                    else:
-                        print(f"{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
-                break
-
-            elif attempt <= install_attempt -1:
-                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}")
-                #handle_popup()
-                test_result.pop()
-                remark_list.pop()
-            else:
-                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}")
-                if launch_result:
-                    launch_result.pop()
-                launch_result.append(l_result_list[1]) # NA
-        
-        '''        
-        os.system(f"adb -s R32Y30002QZ uninstall {package_name}")
-        
-        subprocess.run([
-            "adb", "-s", device, "shell",
-            "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
-            "-a android.intent.action.VIEW",
-            "-d", f"market://details?id={package_name}"
-        ], check=True)
-        
-        if d(text = "Install").wait(10):
-            print("Uninstalled")
-        '''
+                is_app_installed()
         info_scrapper()
         
         # save the result to csv file

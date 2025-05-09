@@ -20,7 +20,7 @@ def plm_category(row):
             'Reproducible on Ref. Model': row.get('Reproducible on Ref. Model', ''),
             'Issue Type': row.get('Issue Type', ''),
             'Issue Status': row.get('Issue Status', ''),
-        }    
+        }
 
 def plm_checker():
     try:

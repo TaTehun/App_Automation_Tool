@@ -283,12 +283,12 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                         crash_log.append(line)
 
                 if crash_detected:
-                    with log_lock:
-                        crash_log.append(line)
+                    #with log_lock:
+                        #crash_log.append(line)
                     
                     if process_death.search(line):
                         with log_lock:
-                            crash_log.append(line)
+                            #crash_log.append(line)
                             crash_log.append("--- End of Crash ---\n")
                         crash_flag.set()  # Set the flag to indicate a crash
                         crash_detected = False  # Reset flag after full crash log is captured
