@@ -8,7 +8,8 @@ import platform
 import uiautomator2 as u2
 import pandas as pd
 from PyQt5.QtWidgets import(QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QTableWidget, 
-    QTableWidgetItem, QFileDialog, QMessageBox, QTextEdit, QSpinBox, QHBoxLayout, QLineEdit, QFrame)
+    QTableWidgetItem, QFileDialog, QMessageBox, QTextEdit, QSpinBox, QHBoxLayout, QLineEdit, QFrame, QProgressBar)
+from PyQt5.QtCore import pyqtSignal, QObject
 from threading import Lock, Event
 from google_play_scraper import app, search, permissions
 
@@ -36,7 +37,7 @@ def is_device_unlocked(device):
     else:
         print(f"Unsupported OS: {os_name}")
 
-    if "mShowingDream=false" and "mDreamingLockscreen=false" in is_unlocked.stdout:
+    if "mShowingDream=false" in is_unlocked.stdout and "mDreamingLockscreen=false" in is_unlocked.stdout:
         return True
     return False
 
@@ -287,11 +288,10 @@ def is_app_open(package_name, device):
                     subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_HOME'
                                     ],check=True) 
                 
-        attempt += 1
     except subprocess.CalledProcessError:
         return False  # Continue if there's an issue with the adb command
 
-def test_app_install(device, package_names, app_names, df, install_attempt, launch_attempt, serial):
+def test_app_install(device, package_names, app_names, df, install_attempt, launch_attempt, serial, signals):
     
     crash_flag = threading.Event() # Use an Event to signal a crash detection
     stop_flag = threading.Event()
@@ -302,15 +302,13 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     t_result_list = ["Pass","Fail","NT/NA"]
     l_result_list = ["Pass","NT/NA","Crash"]
     
-    temp_available = os.path.exists(f"Test_result_{serial}_temp.csv")
-    temp_df = pd.read_csv(f"Test_result_{serial}_temp.csv", encoding='unicode_escape').rename(columns=lambda x: x.strip())
-
-    if temp_available:
-        skip_app_mode = True
+    #Checking if temp saved file exists
+    temp_csv = f"Test_result_{serial}_temp.csv"
+    skip_app_mode = os.path.exists(temp_csv)
+    temp_df = pd.read_csv(temp_csv, encoding='unicode_escape').rename(columns=lambda x: x.strip()) if skip_app_mode else None
     
     target_df = temp_df if skip_app_mode else df
 
-                    
     # Initialize columns
     if 'Install Result' not in df.columns:
         df['Install Result'] = ""
@@ -399,15 +397,6 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     '''        
 
     def is_app_installed():
-        #no_cancel = not d(text = "Cancel").exists
-        yes_cancel = d(text = "Cancel").exists
-        
-        #Checking if cancel button is activated for 180 sec
-        for i in range(60):
-            if not yes_cancel:
-                break
-            time.sleep(5)
-
         if is_app_already_installed():
             if d(text = "Uninstall").wait(timeout = 5):
                 test_result.append(t_result_list[0]) # Pass
@@ -425,9 +414,17 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             remark_list.append("App is failed to install")
     
     def is_app_already_installed():
+        #no_cancel = not d(text = "Cancel").exists
+        yes_cancel = d(text = "Cancel").exists
+        
+        #Checking if cancel button is activated for 180 sec
+        for i in range(60):
+            if not yes_cancel:
+                break
+            time.sleep(5)
+
         app_check = subprocess.run([
-            "adb", "-s", device, "shell", "pm", "list", "packages", package_name
-        ], 
+            "adb", "-s", device, "shell", "pm", "list", "packages", package_name], 
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True
@@ -546,13 +543,18 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     def app_launcher():
         if crash_flag.is_set():
             return
+        
+        launched = False
+        
         if d(text = "Play").wait(timeout = 5):
             d(text = "Play").click(10)
             time.sleep(2)
             toggle_dark_mode(device)
             time.sleep(2)
             mw_results.append(toggle_multi_window_mode(device,package_name))
+            print("Yes, play")
             launch_result.append(l_result_list[0]) # PASS
+            launched = True
 
         elif d(text = "Open").wait(timeout = 5):
             d(text = "Open").click(10)
@@ -560,9 +562,14 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             toggle_dark_mode(device)
             time.sleep(2)
             mw_results.append(toggle_multi_window_mode(device,package_name))
+            print("Yes, Open")
             launch_result.append(l_result_list[0]) # PASS
+            launched = True
 
-        else: 
+        print(launched)
+        time.sleep(5)
+        if not launched:
+            print("No, nothing")
             launch_result.append(l_result_list[1]) # NA
             if d(text = "Allow").exists:
                 d(text = "Allow").click()
@@ -606,20 +613,31 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 "-d", f"market://details?id={package_name}"
                 ], check=True)
             
-            if d(text = "Install").wait(10):
+            if d(text = "Install").wait(timeout= 10):
                 print("Uninstalled")
                 d(text = "Install").click(10)
             else: 
                 print("App is not deleted")
                     
             for i in range(60): 
-                if is_app_already_installed():
-                    break
                 time.sleep(5)
+                if is_app_already_installed():
+                    print("App installed again")
+                    break
+                elif d(text = "Install").wait(timeout= 10):
+                    d(text = "Install").click(10)
+                else:
+                    print("Failed to re-install the app")
+                    launch_result.append(l_result_list[2]) # Fail
+            time.sleep(3)
         stop_flag.set()
     
     # Navigate to the app page in google playstore
     for i, (package_name, app_name) in enumerate(zip(package_names, app_names)):
+        
+        signals.progress_signal.emit(int((i + 1) / len(package_names) * 100))
+        signals.progress_text_signal.emit(i + 1, len(package_names))
+        
         if not unlock_device(device):
             print("Device is off")
             break
@@ -637,12 +655,11 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                     if pd.notna(install_result) and str(install_result).strip() == "Pass":
                         if pd.isna(app_info_result) or str(app_info_result).strip() == "App is not found":
                             info_scrapper()
-                            target_df[['App Name','App ID','Install Result','Remarks','Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']]
-                            target_df.to_csv(f'Test_result_{serial}_temp.csv', index=False, encoding = 'utf-8')
+                            saved_columns = ['App Name','App ID','Install Result','Remarks','Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']
+                            target_df[saved_columns].to_csv(f'Test_result_{serial}_temp.csv', index=False, encoding = 'utf-8')
                         continue
         
         for attempt in range(install_attempt):
-            attempt += 1
                         
             subprocess.run([
                 "adb", "-s", device, "shell",
@@ -666,7 +683,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                     d(text = "Uninstall").click(10)
                     if d(text = "Uninstall").exists:
                         d(text = "Uninstall").click(10)
-                        if d(text = "Install").wait(10):
+                        if d(text = "Install").wait(timeout = 10):
                             d(text = "Install").click(10)
                 else: 
                     test_result.append(t_result_list[0]) #Pass
@@ -711,7 +728,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 
             #attempt to reload the page and repeat the installation
             if test_result[-1] == t_result_list[0]: #Pass
-                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}")
+                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt + 1}/{install_attempt}")
                 if launch_attempt >= 1:
                     for l_attempt in range(launch_attempt):
                         l_attempt += 1
@@ -720,14 +737,16 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                         app_launcher()
                         while not stop_flag.is_set():
                             print("Crash flag not set")
-                            crash_flag.wait()
+                            crash_flag.wait(timeout = 10)
+                        
                         if crash_flag.is_set():
                             launch_result.append(l_result_list[2])
                             break
                     crash_thread.join()
                     crash_flag.clear()
                     stop_flag.clear()
-                        
+                    
+                    print(launch_result, "2")
                     #attempt to reload the page and repeat the installation    
                     if launch_result[-1] == l_result_list[2]:
                         print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
@@ -742,9 +761,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                         
                     elif launch_result[-1] == l_result_list[1]:
                         if not is_app_open(package_name, device):
-                            launch_result[-1] == "App is not opened"
-                        else:
-                            launch_result[-1] == l_result_list[1]
+                            launch_result[-1] = "App is not opened"
                     else:
                         print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
                 
@@ -756,12 +773,12 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 break
 
             elif attempt <= install_attempt -1:
-                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}, {remark_list}")
+                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt + 1}/{install_attempt}, {remark_list}")
                 handle_popup()
                 test_result.pop()
                 remark_list.pop()
             else:
-                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}, {remark_list}")
+                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt + 1}/{install_attempt}, {remark_list}")
                 if launch_result:
                     launch_result.pop()
                 launch_result.append(l_result_list[1]) # NA
@@ -770,12 +787,16 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         # save the result to csv file
         if launch_result:
             target_df.at[i, 'Running Result'] = launch_result[-1]
+            launch_result.clear()
         if test_result:
             target_df.at[i, 'Install Result'] = test_result[-1]
+            test_result.clear()
         if remark_list:
             target_df.at[i, 'Remarks'] = remark_list[-1]
-        target_df[['App Name','App ID','Install Result','Remarks','Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']]
-        target_df.to_csv(f'Test_result_{serial}_temp.csv', index=False, encoding = 'utf-8')
+            remark_list.clear()
+            
+        saved_columns = ['App Name','App ID','Install Result','Remarks','Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']
+        target_df[saved_columns].to_csv(f'Test_result_{serial}_temp.csv', index=False, encoding = 'utf-8')
         total_count += 1
     target_df.to_csv(f'Test_result_{serial}.csv', index=False, encoding = 'utf-8')
     print(f"Total {total_count} app testing is completed")
@@ -799,15 +820,24 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     result_df.columns = result_df.columns.str.strip()
     pass_df = result_df[result_df['Result'] == 'Pass']
     pass_df.to_csv(f'pass_only_{device}_result.csv', index=False)
-"""  
-    
+""" 
+
+class SignalEmitter(QObject):
+    progress_signal = pyqtSignal(int) 
+    progress_text_signal = pyqtSignal(int, int)
 class AppTesterGUI(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
+        
+    def update_progress_text(self, current, total):
+        progress_percent = int((current / total) * 100)
+        self.progress_label.setText(f"{current} / {total} Apps, ({progress_percent}% completed)")
 
     def initUI(self):
         layout = QHBoxLayout()  # Main layout (horizontal)
+        
+        self.signals = SignalEmitter()
 
         # ===== Left Layout (Device Connection, Testing Controls) =====
         left_layout = QVBoxLayout()
@@ -854,6 +884,19 @@ class AppTesterGUI(QWidget):
 
         left_widget = QWidget()
         left_widget.setLayout(left_layout)
+        
+        # Progress bar
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setMinimum(0)
+        self.progress_bar.setValue(0)
+        left_layout.addWidget(self.progress_bar)
+        
+        # Progress Label
+        self.progress_label = QLabel("0 / 0")
+        left_layout.addWidget(self.progress_label)
+
+        self.signals.progress_text_signal.connect(self.update_progress_text)
+        self.signals.progress_signal.connect(self.progress_bar.setValue)
         
         # ===== Divider between Left and Middle =====
         left_divider = QFrame()
@@ -972,7 +1015,7 @@ class AppTesterGUI(QWidget):
         self.package_names = []
         self.app_names = []
         self.df = None
-        
+                
     def show_error(self, message):
         QMessageBox.critical(self, "Error", message)
 
@@ -1200,7 +1243,7 @@ class AppTesterGUI(QWidget):
                 for device in self.device_map:
                     serial = self.device_map[device]
                     self.log_output.append(f"Processing device {serial}...")
-                    test_app_install (device, self.package_names, self.app_names, self.df, install_attempt, launch_attempt, serial)
+                    test_app_install (device, self.package_names, self.app_names, self.df, install_attempt, launch_attempt, serial, self.signals)
                 self.log_output.append("Testing completed.")
                 self.stop_button.setEnabled(False)
                 self.start_all_button.setEnabled(True)
@@ -1241,7 +1284,7 @@ class AppTesterGUI(QWidget):
             def run_tests_for_device(device, serial):
                 self.log_output.append(f"Processing device {serial}...")
                 local_df = self.df.copy()
-                test_app_install(device, self.package_names, self.app_names, local_df, install_attempt, launch_attempt, serial)
+                test_app_install(device, self.package_names, self.app_names, local_df, install_attempt, launch_attempt, serial, self.signals)
 
             def run_all_tests():
                 threads = []
