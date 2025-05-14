@@ -164,7 +164,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     
     d = u2.connect(device)
     total_count, attempt, l_attempt = 0, 0, 0
-    remark_list, test_result, launch_result, crash_log = [], [], [], [], []
+    remark_list, test_result, launch_result, crash_log = [], [], [], []
     t_result_list = ["Pass","Fail","NT/NA"]
     l_result_list = ["Pass","NT/NA","Crash"]
     
