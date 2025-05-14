@@ -332,31 +332,6 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         try:
             app_info = app(package_name)
             per_info = permissions(package_name)
-            # Sync App name
-            is_appname = app_info.get('title', [])
-            if pd.isna(app_name) or str(app_name).strip() == "":
-                if is_appname:
-                    new_appname = is_appname
-                else:
-                    new_appname = "Unknown"
-                target_df.at[i, 'App Name'] = new_appname
-
-            # Sync category
-            is_category = app_info.get('categories', [])
-            if is_category:
-                if not is_category[0].get('id') is None:
-                    category_id = is_category[0].get('id', 'No category ID found').strip()
-            else:
-                category_id = "Unknown"
-            target_df.at[i, 'App Category'] = category_id
-            
-            per_key = list(per_info.keys())
-            per_key_l = ' , '.join(per_key)
-            target_df.at[i, 'Permissions'] = per_key_l
-            if "Camera" in per_key_l:
-                target_df.at[i, 'Is Camera'] = "O"
-            else:
-                target_df.at[i, 'Is Camera'] = "X"
 
             # Sync developer
             is_developer = app_info.get('developer', 'No developer found').strip()
@@ -671,7 +646,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                                 launch_result[-1] = "App is not opened"
                         else:
                             print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
-
+                break
             elif attempt <= install_attempt -1:
                 print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt + 1}/{install_attempt}, {remark_list}")
                 handle_popup()
