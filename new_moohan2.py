@@ -128,57 +128,6 @@ def toggle_dark_mode(device):
         subprocess.run(['adb', "-s", f"{device}", 'shell', 'cmd', 'uimode', 'night', 'no'
                     ],capture_output=True, text=True, check=True)
         time.sleep(1)
-        
-def toggle_multi_window_mode(device,package_name):
-    os_name = platform.system()
-    d = u2.connect(device)
-    horizontal = "mCurrentRotation=ROTATION_0"
-    
-    # initialize the screen size & duration
-    screen_width, screen_height = d.window_size()
-    center_x, center_y = screen_width //2 , screen_height // 2
-
-    # click recents button
-    subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_APP_SWITCH'
-                    ],check=True)
-        
-    time.sleep(1)
-    if os_name == "Windows":
-        crotation = subprocess.check_output(
-                        f"adb -s {device} shell dumpsys window | findstr mCurrentRotation",
-                        shell=True,
-                        text=True
-                    ).strip()
-        
-    elif os_name in ["Linux", "Darwin"]:
-        crotation = subprocess.check_output(
-                        f"adb -s {device} shell dumpsys window | grep mCurrentRotation",
-                        shell=True,
-                        text=True
-                    ).strip()
-        
-    if horizontal in crotation:
-        d.long_click(screen_width -1, center_y -1, duration = 3)            
-    else:
-        # click home button
-        subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_HOME'
-                        ],check=True)
-        time.sleep(1)
-        subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_APP_SWITCH'
-                        ],check=True)
-        time.sleep(1)
-        d.long_click(center_x // 2, center_y, duration = 3)
-        
-    toast_text = d.toast.get_message(5.0, 5.0)
-    if d.xpath("//*[contains(@text,'Select app')]").wait(2):
-        time.sleep(3)
-        mw_result = "Pass"
-    elif toast_text and "t use this app in Multi" in toast_text:
-        mw_result = "Not supportive"
-    else:
-        mw_result = "Fail"
-    
-    return mw_result
 
 def is_app_open(package_name, device):
     #Check if the app is running
@@ -215,7 +164,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     
     d = u2.connect(device)
     total_count, attempt, l_attempt = 0, 0, 0
-    remark_list, test_result, mw_results, launch_result, crash_log = [], [], [], [], []
+    remark_list, test_result, launch_result, crash_log = [], [], [], [], []
     t_result_list = ["Pass","Fail","NT/NA"]
     l_result_list = ["Pass","NT/NA","Crash"]
     
@@ -251,10 +200,6 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         df['TargetSdk'] = "" 
     if 'Running Result' not in df.columns:
         df['Running Result'] = ""
-    if 'Final MW Result' not in df.columns:
-        df['Final MW Result'] = ""
-    if 'MW Result' not in df.columns:
-        df['MW Result'] = ""
     if 'Crash log' not in df.columns:
         df['Crash log'] = ""
     if 'Is Camera' not in df.columns:
@@ -478,17 +423,13 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         if d(text = "Play").wait(timeout = 5):
             d(text = "Play").click(10)
             time.sleep(2)
-            toggle_dark_mode(device)
             time.sleep(2)
-            mw_results.append(toggle_multi_window_mode(device,package_name))
             launch_result.append(l_result_list[0]) # PASS
 
         elif d(text = "Open").wait(timeout = 5):
             d(text = "Open").click(10)
             time.sleep(2)
-            toggle_dark_mode(device)
             time.sleep(2)
-            mw_results.append(toggle_multi_window_mode(device,package_name))
             launch_result.append(l_result_list[0]) # PASS
 
         else:
@@ -558,7 +499,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                     if pd.notna(install_result) and str(install_result).strip() == "Pass":
                         if pd.isna(app_info_result) or str(app_info_result).strip() == "App is not found":
                             info_scrapper()
-                            saved_columns = ['App Name','App ID','Install Result','Remarks','Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']
+                            saved_columns = ['App Name','App ID','Install Result','Remarks','Running Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']
                             target_df[saved_columns].to_csv(f'Test_result_{serial}_temp.csv', index=False, encoding = 'utf-8')
                         continue
         
@@ -717,7 +658,6 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                         #attempt to reload the page and repeat the installation    
                         if launch_result[-1] == l_result_list[2]:
                             print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
-                            mw_results.clear()
                             target_df.at[i, 'Crash log'] = "\n".join(crash_log)
                             crash_log.clear()
                             break
@@ -731,13 +671,6 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                                 launch_result[-1] = "App is not opened"
                         else:
                             print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
-                    
-                    if mw_results:
-                        target_df.at[i,'MW Result'] = ', '.join(mw_results)
-                        final_mw_result = max(set(mw_results), key=mw_results.count)
-                        target_df.at[i,'Final MW Result'] = final_mw_result
-                        mw_results.clear()
-                        break
 
             elif attempt <= install_attempt -1:
                 print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt + 1}/{install_attempt}, {remark_list}")
@@ -782,7 +715,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             target_df.at[i, 'Remarks'] = remark_list[-1]
             remark_list.clear()
             
-        saved_columns = ['App Name','App ID','Install Result','Remarks','Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']
+        saved_columns = ['App Name','App ID','Install Result','Remarks','Running Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']
         target_df[saved_columns].to_csv(f'Test_result_{serial}_temp.csv', index=False, encoding = 'utf-8')
         total_count += 1
     target_df.to_csv(f'Test_result_{serial}.csv', index=False, encoding = 'utf-8')
