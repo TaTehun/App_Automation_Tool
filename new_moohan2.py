@@ -173,13 +173,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     skip_app_mode = os.path.exists(temp_csv)
     temp_df = pd.read_csv(temp_csv, encoding='unicode_escape').rename(columns=lambda x: x.strip()) if skip_app_mode else None
     
-    if skip_app_mode:
-        if temp_df[['App Name', 'App ID']].equals(df[['App Name', 'App ID']]):
-            target_df = temp_df
-        else:
-            target_df = df
-    else:
-        target_df = df
+    target_df = temp_df if skip_app_mode else df
 
     # Initialize columns
     if 'Install Result' not in df.columns:
