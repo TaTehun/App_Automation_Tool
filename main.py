@@ -600,7 +600,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             stop_flag.set()
             return
         
-        time.sleep(1)
+        #time.sleep(1)
         toggle_monkey_test(device,package_name)
         time.sleep(2)
         
@@ -707,6 +707,10 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             elif d.xpath("//*[contains(@text,'t compatible')]").exists:
                 test_result.append(t_result_list[2]) # NT/NA
                 remark_list.append("App is not compatible for this device")
+
+            elif d.xpath("//*[contains(@text,available only')]").exists:
+                test_result.append(t_result_list[2]) # NT/NA
+                remark_list.append("App is not available for this device")
                         
             elif d.xpath("//*[contains(@text,'t available')]").exists:
                 test_result.append(t_result_list[2]) # NT/NA
