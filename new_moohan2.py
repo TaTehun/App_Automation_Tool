@@ -653,7 +653,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                     launch_result.pop()
                 launch_result.append(l_result_list[1]) # NA
         
-        for i in range(10):
+        for retry in range(10):
             time.sleep(1)
             if is_app_already_installed():
                 os.system(f"adb -s R32Y30003EW uninstall {package_name}")
