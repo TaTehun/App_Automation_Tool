@@ -18,3 +18,6 @@ pip install -r requirements.txt
 3. (Optional) # If you have installed or updated dependencies.
 # Update requirements.txt
 pip freeze > requirements.txt
+
+4. Pyinstaller
+pyinstaller --onefile --add-data "C:\Users\YOUR PATH\myenv\Lib\site-packages\uiautomator2\assets\u2.jar;uiautomator2/assets" new_moohan2.py
