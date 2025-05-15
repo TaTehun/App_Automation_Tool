@@ -641,7 +641,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                         else:
                             print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
                 break
-            elif attempt <= install_attempt -1:
+            elif attempt < install_attempt -1:
                 print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt + 1}/{install_attempt}, {remark_list}")
                 handle_popup()
                 test_result.pop()

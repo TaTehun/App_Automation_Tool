@@ -787,7 +787,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                         mw_results.clear()
                     break
                 
-            elif attempt <= install_attempt -1:
+            elif attempt < install_attempt -1:
                 print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt + 1}/{install_attempt}, {remark_list}")
                 handle_popup()
                 test_result.pop()
