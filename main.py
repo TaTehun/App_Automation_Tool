@@ -202,7 +202,7 @@ def toggle_multi_window_mode(device,package_name):
         
     toast_text = d.toast.get_message(5.0, 5.0)
     if d.xpath("//*[contains(@text,'Select app')]").wait(2):
-        time.sleep(5)
+        time.sleep(3)
         mw_result = "Pass"
     elif toast_text and "t use this app in Multi" in toast_text:
         mw_result = "Not supportive"
@@ -291,8 +291,8 @@ def is_app_open(package_name, device):
     except subprocess.CalledProcessError:
         return False  # Continue if there's an issue with the adb command
 
-def test_app_install(device, package_names, app_names, df, install_attempt, launch_attempt, serial, signals):
-    
+def test_app_install(device, package_names, app_names, df, install_attempt, launch_attempt, serial, signals, test_stop_flag):
+        
     crash_flag = threading.Event() # Use an Event to signal a crash detection
     stop_flag = threading.Event()
     
@@ -308,7 +308,6 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     temp_df = pd.read_csv(temp_csv, encoding='unicode_escape').rename(columns=lambda x: x.strip()) if skip_app_mode else None
     
     target_df = temp_df if skip_app_mode else df
-
     # Initialize columns
     if 'Install Result' not in df.columns:
         df['Install Result'] = ""
@@ -468,6 +467,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         try:
             app_info = app(package_name)
             per_info = permissions(package_name)
+            '''
             # Sync App name
             is_appname = app_info.get('title', [])
             if pd.isna(app_name) or str(app_name).strip() == "":
@@ -476,7 +476,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 else:
                     new_appname = "Unknown"
                 target_df.at[i, 'App Name'] = new_appname
-
+            '''
             # Sync category
             is_category = app_info.get('categories', [])
             if is_category:
@@ -541,10 +541,16 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             target_df.at[i, 'TargetSdk'] = "App is not found"
 
     def app_launcher():
-        if crash_flag.is_set():
+        if crash_flag.is_set() or test_stop_flag.is_set():
+            stop_flag.set()
             return
         
-        launched = False
+        subprocess.run([
+                "adb", "-s", device, "shell",
+                "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
+                "-a android.intent.action.VIEW",
+                "-d", f"market://details?id={package_name}"
+                ], check=True)
         
         if d(text = "Play").wait(timeout = 5):
             d(text = "Play").click(10)
@@ -552,9 +558,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             toggle_dark_mode(device)
             time.sleep(2)
             mw_results.append(toggle_multi_window_mode(device,package_name))
-            print("Yes, play")
             launch_result.append(l_result_list[0]) # PASS
-            launched = True
 
         elif d(text = "Open").wait(timeout = 5):
             d(text = "Open").click(10)
@@ -562,14 +566,9 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             toggle_dark_mode(device)
             time.sleep(2)
             mw_results.append(toggle_multi_window_mode(device,package_name))
-            print("Yes, Open")
             launch_result.append(l_result_list[0]) # PASS
-            launched = True
 
-        print(launched)
-        time.sleep(5)
-        if not launched:
-            print("No, nothing")
+        else:
             launch_result.append(l_result_list[1]) # NA
             if d(text = "Allow").exists:
                 d(text = "Allow").click()
@@ -597,9 +596,17 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             "-d", f"market://details?id={package_name}"
         ], check=True)
         
+        if crash_flag.is_set() or test_stop_flag.is_set():
+            stop_flag.set()
+            return
+        
         time.sleep(1)
         toggle_monkey_test(device,package_name)
         time.sleep(2)
+        
+        if crash_flag.is_set() or test_stop_flag.is_set():
+            stop_flag.set()
+            return
         
         if l_attempt < launch_attempt / 2:
             subprocess.run([
@@ -614,33 +621,31 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 ], check=True)
             
             if d(text = "Install").wait(timeout= 10):
-                print("Uninstalled")
+                print(f"{app_name} is Uninstalled")
                 d(text = "Install").click(10)
             else: 
-                print("App is not deleted")
+                print(f"{app_name} is not deleted")
                     
             for i in range(60): 
                 time.sleep(5)
                 if is_app_already_installed():
-                    print("App installed again")
+                    print(f"{app_name} installed again")
                     break
                 elif d(text = "Install").wait(timeout= 10):
                     d(text = "Install").click(10)
                 else:
-                    print("Failed to re-install the app")
-                    launch_result.append(l_result_list[2]) # Fail
-            time.sleep(3)
+                    print(f"Failed to re-install {app_name}")
+        time.sleep(3)
         stop_flag.set()
     
     # Navigate to the app page in google playstore
     for i, (package_name, app_name) in enumerate(zip(package_names, app_names)):
         
+        if test_stop_flag.is_set():
+            break
+        
         signals.progress_signal.emit(int((i + 1) / len(package_names) * 100))
         signals.progress_text_signal.emit(i + 1, len(package_names))
-        
-        if not unlock_device(device):
-            print("Device is off")
-            break
         
         if skip_app_mode:
             # set 0 index
@@ -660,7 +665,14 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                         continue
         
         for attempt in range(install_attempt):
-                        
+            
+            if not unlock_device(device):
+                print("Device is off")
+                break
+            
+            if test_stop_flag.is_set():
+                break
+            
             subprocess.run([
                 "adb", "-s", device, "shell",
                 "am start -n com.android.vending/com.android.vending.AssetBrowserActivity",
@@ -725,6 +737,9 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             else:
                 test_result.append(t_result_list[1]) # Fail
                 remark_list.append("App is failed to install within the timeout")
+            
+            if test_stop_flag.is_set():
+                break
                 
             #attempt to reload the page and repeat the installation
             if test_result[-1] == t_result_list[0]: #Pass
@@ -736,42 +751,42 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                         crash_thread.start()
                         app_launcher()
                         while not stop_flag.is_set():
-                            print("Crash flag not set")
-                            crash_flag.wait(timeout = 10)
-                        
+                            crash_flag.wait(timeout = 5)
+                            test_stop_flag.wait(timeout = 5)
                         if crash_flag.is_set():
                             launch_result.append(l_result_list[2])
                             break
-                    crash_thread.join()
-                    crash_flag.clear()
-                    stop_flag.clear()
-                    
-                    print(launch_result, "2")
-                    #attempt to reload the page and repeat the installation    
-                    if launch_result[-1] == l_result_list[2]:
-                        print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
-                        mw_results.clear()
-                        target_df.at[i, 'Crash log'] = "\n".join(crash_log)
-                        crash_log.clear()
-                        break
-
-                    elif l_attempt <= launch_attempt -1:
-                        print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
-                        launch_result.pop()
+                        elif test_stop_flag.is_set():
+                            break
+                        crash_thread.join()
+                        crash_flag.clear()
+                        stop_flag.clear()
                         
-                    elif launch_result[-1] == l_result_list[1]:
-                        if not is_app_open(package_name, device):
-                            launch_result[-1] = "App is not opened"
-                    else:
-                        print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
-                
-                if mw_results:
-                    target_df.at[i,'MW Result'] = ', '.join(mw_results)
-                    final_mw_result = max(set(mw_results), key=mw_results.count)
-                    target_df.at[i,'Final MW Result'] = final_mw_result
-                    mw_results.clear()
-                break
+                        #attempt to reload the page and repeat the installation    
+                        if launch_result[-1] == l_result_list[2]:
+                            print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
+                            mw_results.clear()
+                            target_df.at[i, 'Crash log'] = "\n".join(crash_log)
+                            crash_log.clear()
+                            break
 
+                        elif l_attempt <= launch_attempt -1:
+                            print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
+                            launch_result.pop()
+                            
+                        elif launch_result[-1] == l_result_list[1]:
+                            if not is_app_open(package_name, device):
+                                launch_result[-1] = "App is not opened"
+                        else:
+                            print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
+                    
+                    if mw_results:
+                        target_df.at[i,'MW Result'] = ', '.join(mw_results)
+                        final_mw_result = max(set(mw_results), key=mw_results.count)
+                        target_df.at[i,'Final MW Result'] = final_mw_result
+                        mw_results.clear()
+                    break
+                
             elif attempt <= install_attempt -1:
                 print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt + 1}/{install_attempt}, {remark_list}")
                 handle_popup()
@@ -784,6 +799,8 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 launch_result.append(l_result_list[1]) # NA
                 
         info_scrapper()
+        if test_stop_flag.is_set():
+            break
         # save the result to csv file
         if launch_result:
             target_df.at[i, 'Running Result'] = launch_result[-1]
@@ -799,8 +816,6 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         target_df[saved_columns].to_csv(f'Test_result_{serial}_temp.csv', index=False, encoding = 'utf-8')
         total_count += 1
     target_df.to_csv(f'Test_result_{serial}.csv', index=False, encoding = 'utf-8')
-    print(f"Total {total_count} app testing is completed")
-
 
 """
     # Installation Test result
@@ -825,10 +840,16 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
 class SignalEmitter(QObject):
     progress_signal = pyqtSignal(int) 
     progress_text_signal = pyqtSignal(int, int)
+    show_error_signal = pyqtSignal(str)
+    show_info_signal = pyqtSignal(str)
+    
 class AppTesterGUI(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
+        self.test_stop_flag = threading.Event() # Stop testing
+        self.signals.show_error_signal.connect(self.show_error)
+        self.signals.show_info_signal.connect(self.show_info)
         
     def update_progress_text(self, current, total):
         progress_percent = int((current / total) * 100)
@@ -1015,6 +1036,9 @@ class AppTesterGUI(QWidget):
         self.package_names = []
         self.app_names = []
         self.df = None
+        
+    def show_info(self, message):
+        QMessageBox.information(self, "Info", message)
                 
     def show_error(self, message):
         QMessageBox.critical(self, "Error", message)
@@ -1058,7 +1082,7 @@ class AppTesterGUI(QWidget):
             file_path, _ = file_dialog.getOpenFileName(self, "Upload Test Result CSV", "", "CSV Files (*.csv)")
 
             if not file_path:
-                QMessageBox.warning(self, "No File Selected", "Please select a CSV file to proceed.")
+                self.signals.show_error_signal.emit("Please select a CSV file to proceed.")
                 return  # User canceled selection
 
             # Store the selected file path
@@ -1101,7 +1125,6 @@ class AppTesterGUI(QWidget):
             self.search_file_path = f'app_search_{self.keyword}_result.csv'
             self.automation_file_path = None  # Reset search file path to avoid interference
             self.resume_file_path = None
-
 
             df = pd.DataFrame({
                 'App Name': app_names,
@@ -1170,14 +1193,14 @@ class AppTesterGUI(QWidget):
     def save_csv(self):
         """Save the updated table data back to the most recently used file."""
         if self.df is None:
-            QMessageBox.warning(self, "Error", "No file loaded. Please load a CSV file first.")
+            self.signals.show_error_signal.emit("No file loaded. Please load a CSV file first.")
             return
 
         # Prioritize the most recent loaded CSV file
         file_path = self.automation_file_path if self.automation_file_path else self.search_file_path
 
         if not file_path:
-            QMessageBox.warning(self, "Error", "No file loaded. Please load a CSV file first.")
+            self.signals.show_error_signal.emit("No file loaded. Please load a CSV file first.")
             return
 
         # Extract data from table widget
@@ -1189,12 +1212,12 @@ class AppTesterGUI(QWidget):
 
         updated_df = pd.DataFrame(updated_data, columns=self.df.columns)
         updated_df.to_csv(file_path, index=False)
-        QMessageBox.information(self, "Success", f"CSV file saved successfully to {file_path}")
+        self.signals.show_info_signal.emit(f"CSV file saved successfully to {file_path}")
 
     def save_as_csv(self):
         """Prompt for renaming every time and save the updated data."""
         if self.df is None:
-            QMessageBox.warning(self, "Error", "No file loaded. Please load a CSV file first.")
+            self.signals.show_error_signal.emit("No file loaded. Please load a CSV file first.")
             return
 
         file_path, _ = QFileDialog.getSaveFileName(
@@ -1212,12 +1235,14 @@ class AppTesterGUI(QWidget):
 
             updated_df = pd.DataFrame(updated_data, columns=self.df.columns)
             updated_df.to_csv(file_path, index=False)
-            QMessageBox.information(self, "Success", f"CSV file saved successfully as:\n{file_path}")
+            self.signals.show_info_signal.emit(f"CSV file saved successfully as:\n{file_path}")
 
             self.file_path = file_path
 
     def start_testing(self):
         try:
+            self.test_stop_flag.clear()
+            
             if not self.device_map:
                 self.log_output.append("Error: Devices not connected")
                 return
@@ -1243,7 +1268,7 @@ class AppTesterGUI(QWidget):
                 for device in self.device_map:
                     serial = self.device_map[device]
                     self.log_output.append(f"Processing device {serial}...")
-                    test_app_install (device, self.package_names, self.app_names, self.df, install_attempt, launch_attempt, serial, self.signals)
+                    test_app_install (device, self.package_names, self.app_names, self.df, install_attempt, launch_attempt, serial, self.signals, self.test_stop_flag)
                 self.log_output.append("Testing completed.")
                 self.stop_button.setEnabled(False)
                 self.start_all_button.setEnabled(True)
@@ -1252,6 +1277,7 @@ class AppTesterGUI(QWidget):
                 self.load_search_data.setEnabled(True)
                 self.load_csv_button.setEnabled(True)
                 self.custom_csv_button.setEnabled(True)
+                self.signals.show_info_signal.emit("Testing has been completed.")
             
             threading.Thread(target=run_tests, daemon=True).start()
             
@@ -1260,6 +1286,7 @@ class AppTesterGUI(QWidget):
 
     def start_testing_all(self):
         try:
+            self.test_stop_flag.clear()
             if not self.device_map:
                 self.log_output.append("Error: Devices not connected")
                 return
@@ -1284,7 +1311,7 @@ class AppTesterGUI(QWidget):
             def run_tests_for_device(device, serial):
                 self.log_output.append(f"Processing device {serial}...")
                 local_df = self.df.copy()
-                test_app_install(device, self.package_names, self.app_names, local_df, install_attempt, launch_attempt, serial, self.signals)
+                test_app_install(device, self.package_names, self.app_names, local_df, install_attempt, launch_attempt, serial, self.signals, self.test_stop_flag)
 
             def run_all_tests():
                 threads = []
@@ -1301,8 +1328,6 @@ class AppTesterGUI(QWidget):
                 self.stop_button.setEnabled(False)
                 self.start_all_button.setEnabled(True)
                 self.start_button.setEnabled(True)
-                self.start_all_button.setEnabled(True)
-                self.start_button.setEnabled(True)
                 self.search_button.setEnabled(True)
                 self.load_search_data.setEnabled(True)
                 self.load_csv_button.setEnabled(True)
@@ -1314,18 +1339,9 @@ class AppTesterGUI(QWidget):
 
     def stop_testing(self):
         try:
-            os._exit(0)
-            #self.log_output.append("Testing stopped by user.")
+            self.test_stop_flag.set()
             self.stop_button.setEnabled(False)
-            self.stop_button.setEnabled(False)
-            self.start_all_button.setEnabled(True)
-            self.start_button.setEnabled(True)
-            self.start_all_button.setEnabled(True)
-            self.start_button.setEnabled(True)
-            self.search_button.setEnabled(True)
-            self.load_search_data.setEnabled(True)
-            self.load_csv_button.setEnabled(True)
-            self.custom_csv_button.setEnabled(True)
+            self.signals.show_info_signal.emit("Stopping the test... Please wait.")
         except Exception as e:
             self.show_error(str(e))
 
