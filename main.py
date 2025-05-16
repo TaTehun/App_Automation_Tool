@@ -665,6 +665,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                         continue
         
         for attempt in range(install_attempt):
+            attempt += 1
             
             if not unlock_device(device):
                 print("Device is off")
