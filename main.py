@@ -708,7 +708,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 test_result.append(t_result_list[2]) # NT/NA
                 remark_list.append("App is not compatible for this device")
 
-            elif d.xpath("//*[contains(@text,available only')]").exists:
+            elif d.xpath("//*[contains(@text,'available only')]").exists:
                 test_result.append(t_result_list[2]) # NT/NA
                 remark_list.append("App is not available for this device")
                         
