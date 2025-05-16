@@ -1,1 +1,11 @@
 myenv/
+.venv/
+__pycache__/
+*.__pycache__
+*.pyo
+*.pyd
+*.log
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
