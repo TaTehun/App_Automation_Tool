@@ -38,8 +38,8 @@ The tool is built with Python and PyQt5, and requires no manual interaction duri
 
 | OS      | File Type | Run Command                      |
 |---------|-----------|----------------------------------|
-| Windows | `.exe`    | Run `AppInstallationTester.exe` |
-| macOS   | `.app`    | Run `AppInstallationTester.app` *(allow in system preferences)*
+| Windows | `.exe`    | Run `app_tester_4_windows.exe` |
+| macOS   | `.app`    | Run `app_tester_4_mac.app` *(allow in system preferences)*
 
 ## From Source
 
@@ -50,10 +50,11 @@ python main.py
 ### Installation Flow
 This flow determines how the tool behaves when installing apps from the Play Store.
 ![Installation flow](/readme_files/Automated_App_Installer_Tester.png)
+<img src="/readme_files/Automated_App_Installer_Tester.png" width="720"/>
 
 ### Launch & Test Flow
 ![How it works](/readme_files/app_test_workflow.png)
-
+<img src="/readme_files/app_test_workflow.png" width="720"/>
 ---
 
 The tool automates the entire testing pipeline across connected Android devices:
@@ -77,9 +78,11 @@ The tool automates the entire testing pipeline across connected Android devices:
 
 ### Window:
 ![GUI Overview](/readme_files/main_window.png)
+<img src="/readme_files/main_window.png" width="720"/>
 
 ### Mac:
 ![GUI Mac](/readme_files/main_screen.png)
+<img src="/readme_files/main_screen.png" width="720"/>
 
 ---
 
@@ -146,6 +149,11 @@ The tool automates the entire testing pipeline across connected Android devices:
 
 ### CMD | Terminal Output
 ![cmd](/readme_files/cmd.png)
+<img src="/readme_files/cmd.png" width="600"/>
+
+![terminal](/readme_files/terminal.png)
+<img src="/readme_files/terminal.png" width="600"/>
+
 - **Log Output Window**  
   Displays real-time logs for each device.  
   Shows installation status, crash logs, Play Store actions, app compatibility, and result summaries.  
@@ -188,3 +196,4 @@ The tool automates the entire testing pipeline across connected Android devices:
 
 ## Demo Video
 [![Watch Demo](/readme_files/demo.png)](https://yourdomain.com/videos/demo.mp4)
+<img src="/readme_files/demo.png" width="300"/>
