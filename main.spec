@@ -5,7 +5,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('C:\\Users\\t2.jang\\Documents\\GitHub\\3rd_apps\\myenv\\Lib\\site-packages\\uiautomator2\\assets\\u2.jar', 'uiautomator2/assets')],
+    datas=[('/Users/tj/Documents/GitHub/3rd_apps/myenv/lib/python3.11/site-packages/uiautomator2/assets/u2.jar', 'uiautomator2/assets')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

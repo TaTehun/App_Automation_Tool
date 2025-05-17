@@ -1,3 +1,5 @@
+print("App Tester is starting... Please wait.")
+
 import os
 import sys
 import time
@@ -12,12 +14,6 @@ from PyQt5.QtWidgets import(QApplication, QWidget, QVBoxLayout, QLabel, QPushBut
 from PyQt5.QtCore import pyqtSignal, QObject
 from threading import Lock, Event
 from google_play_scraper import app, search, permissions
-
-# device -> run.py
-# package_names, app_names -> csv_handler.py
-
-#(-32001, 'androidx.test.uiautomator.UiObjectNotFoundException', 
-# ({'mask': 1, 'childOrSibling': [], 'childOrSiblingSelector': [], 'text': 'Open'},))
 
 def is_device_unlocked(device):
     os_name = platform.system()
@@ -136,6 +132,12 @@ def switch_navbar(device):
             break
             
 '''    
+def get_app_base_dir():
+    if getattr(sys, 'frozen', False):  # Check if Pyinstaller is built 
+        return os.path.dirname(sys.executable)  # .app location
+    else:
+        return os.path.dirname(os.path.abspath(__file__))
+    
 def process_csv(csv_filename):
     csv_file = os.path.abspath(csv_filename)
     
@@ -292,7 +294,8 @@ def is_app_open(package_name, device):
         return False  # Continue if there's an issue with the adb command
 
 def test_app_install(device, package_names, app_names, df, install_attempt, launch_attempt, serial, signals, test_stop_flag):
-        
+
+    base_dir = get_app_base_dir()
     crash_flag = threading.Event() # Use an Event to signal a crash detection
     stop_flag = threading.Event()
     
@@ -303,7 +306,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     l_result_list = ["Pass","NT/NA","Crash"]
     
     #Checking if temp saved file exists
-    temp_csv = f"Test_result_{serial}_temp.csv"
+    temp_csv = os.path.join(base_dir, f'Test_result_{serial}_temp.csv')
     skip_app_mode = os.path.exists(temp_csv)
     temp_df = pd.read_csv(temp_csv, encoding='unicode_escape').rename(columns=lambda x: x.strip()) if skip_app_mode else None
     
@@ -661,7 +664,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                         if pd.isna(app_info_result) or str(app_info_result).strip() == "App is not found":
                             info_scrapper()
                             saved_columns = ['App Name','App ID','Install Result','Remarks','Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']
-                            target_df[saved_columns].to_csv(f'Test_result_{serial}_temp.csv', index=False, encoding = 'utf-8')
+                            target_df[saved_columns].to_csv(temp_csv, index=False, encoding='utf-8')
                         continue
         
         for attempt in range(install_attempt):
@@ -748,7 +751,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 
             #attempt to reload the page and repeat the installation
             if test_result[-1] == t_result_list[0]: #Pass
-                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt + 1}/{install_attempt}")
+                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}")
                 if launch_attempt >= 1:
                     for l_attempt in range(launch_attempt):
                         l_attempt += 1
@@ -793,12 +796,12 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                     break
                 
             elif attempt < install_attempt -1:
-                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt + 1}/{install_attempt}, {remark_list}")
+                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}, {remark_list}")
                 handle_popup()
                 test_result.pop()
                 remark_list.pop()
             else:
-                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt + 1}/{install_attempt}, {remark_list}")
+                print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}, {remark_list}")
                 if launch_result:
                     launch_result.pop()
                 launch_result.append(l_result_list[1]) # NA
@@ -816,12 +819,12 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         if remark_list:
             target_df.at[i, 'Remarks'] = remark_list[-1]
             remark_list.clear()
-            
-        saved_columns = ['App Name','App ID','Install Result','Remarks','Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']
-        target_df[saved_columns].to_csv(f'Test_result_{serial}_temp.csv', index=False, encoding = 'utf-8')
-        total_count += 1
-    target_df.to_csv(f'Test_result_{serial}.csv', index=False, encoding = 'utf-8')
 
+        saved_columns = ['App Name','App ID','Install Result','Remarks','Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']
+        target_df.to_csv(temp_csv, index=False, encoding='utf-8')
+        total_count += 1
+    final_csv = os.path.join(base_dir, f'Test_result_{serial}.csv')
+    target_df.to_csv(final_csv, index=False, encoding='utf-8')
 """
     # Installation Test result
     actual_test_count = p_count + f_count + na_count 
@@ -1057,7 +1060,8 @@ class AppTesterGUI(QWidget):
             
     def load_csv(self):
         try:
-            self.automation_file_path = "test1.csv"
+            base_dir = get_app_base_dir()
+            self.automation_file_path = os.path.join(base_dir, "test1.csv")
             self.search_file_path = None
             self.resume_file_path = None
 
@@ -1066,25 +1070,13 @@ class AppTesterGUI(QWidget):
             self.display_data(self.tableWidget)
         except Exception as e:
             self.show_error(str(e))
-    '''        
-    def resume_csv(self):
-        try:
-            self.resume_file_path = "test_result_{device}.csv"
-            self.search_file_path = None
-            self.resume_file_path = None
 
-            self.package_names, self.app_names, self.df, _ = process_csv(self.resume_file_path)
-            self.log_output.append(f"Loaded CSV file - {self.resume_file_path}")
-            self.display_data(self.tableWidget)
-        except Exception as e:
-            self.show_error(str(e))
-    '''
     def custom_csv(self): 
         try:
             # Open a file selection dialog to upload a CSV file
             file_dialog = QFileDialog()
             file_dialog.setFileMode(QFileDialog.ExistingFile)
-            file_path, _ = file_dialog.getOpenFileName(self, "Upload Test Result CSV", "", "CSV Files (*.csv)")
+            file_path, _ = QFileDialog.getOpenFileName(self, "Upload CSV", get_app_base_dir(), "CSV Files (*.csv)")
 
             if not file_path:
                 self.signals.show_error_signal.emit("Please select a CSV file to proceed.")
@@ -1127,7 +1119,8 @@ class AppTesterGUI(QWidget):
                 prices.append('Unknown')
                 num_of_installs.append('Unknown')
                 
-            self.search_file_path = f'app_search_{self.keyword}_result.csv'
+            base_dir = get_app_base_dir()
+            self.search_file_path = os.path.join(base_dir, f'app_search_{self.keyword}_result.csv')
             self.automation_file_path = None  # Reset search file path to avoid interference
             self.resume_file_path = None
 
@@ -1139,7 +1132,7 @@ class AppTesterGUI(QWidget):
                 'Installation' : num_of_installs
             })
             
-            df.to_csv(self.search_file_path, index=False)
+        df.to_csv(self.search_file_path, index=False)
             
     def search_data(self):
         try:
@@ -1202,11 +1195,15 @@ class AppTesterGUI(QWidget):
             return
 
         # Prioritize the most recent loaded CSV file
+        base_dir = get_app_base_dir()
         file_path = self.automation_file_path if self.automation_file_path else self.search_file_path
 
         if not file_path:
             self.signals.show_error_signal.emit("No file loaded. Please load a CSV file first.")
             return
+        
+        if not os.path.isabs(file_path):
+            file_path = os.path.join(base_dir, file_path)
 
         # Extract data from table widget
         updated_data = []
@@ -1226,8 +1223,9 @@ class AppTesterGUI(QWidget):
             return
 
         file_path, _ = QFileDialog.getSaveFileName(
-            self, "Save CSV File As", "", "CSV Files (*.csv);;All Files (*)"
+            self, "Save CSV File As", get_app_base_dir(), "CSV Files (*.csv);;All Files (*)"
         )
+
 
         if file_path:
             updated_data = []
@@ -1354,4 +1352,5 @@ if __name__ == "__main__":
     qt_app = QApplication(sys.argv)
     ex = AppTesterGUI()
     ex.show()
+    print("App Tester is started. Please check the opened window.")
     sys.exit(qt_app.exec_())
