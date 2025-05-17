@@ -52,7 +52,7 @@ This flow determines how the tool behaves when installing apps from the Play Sto
 <img src="/readme_files/Automated_App_Installer_Tester.png">
 
 ### Launch & Test Flow
-<img src="/readme_files/app_test_workflow.png" width="600"/>
+<img src="/readme_files/app_test_workflow.png" width="500"/>
 ---
 
 The tool automates the entire testing pipeline across connected Android devices:
