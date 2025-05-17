@@ -157,6 +157,12 @@ The tool automates the entire testing pipeline across connected Android devices:
 
 ## How to Run in GUI
 
+**(Optional) App Search on Google Play Store**
+- Enter a keyword in the **App Search** input (e.g., `Trending social media apps`)  
+- Click **Search (Max: 30 apps)**  
+- A CSV file (e.g., `app_search_trending_social_apps_result.csv`) will be generated  
+- Click **Load searched data CSV File** to import it into the app  
+
 1. **Launch the App**  
    Run `app_tester_4_windows.exe` (on Windows) or `app_tester_4_mac.app` (on macOS).  
    > ⚠️ Ensure `test1.csv` is in the **same directory** as the executable.
@@ -173,20 +179,36 @@ The tool automates the entire testing pipeline across connected Android devices:
     **App Name,App ID**
     Instagram,com.instagram.android
 
-4. **Set Test Parameters**  
+4. **(Optional) Table Control**
+You can edit the app list in the table:
+- Use Add Row ↑ / ↓ or Delete Row to modify
+- After editing, Save CSV
+- Then click **Load Automation CSV File** or **Select CSV File** again to reflect changes in the app list
+
+5. **Set Test Parameters**  
 - **Installation Attempts**: How many times to retry installing if it fails  
 - **Launch Test Attempts**: If launch success rate is below 50%, the app will be uninstalled & reinstalled automatically
 
-5. **Start Testing**  
+6. **Start Testing**  
 - Click **Start Testing** to run on one device  
 - Or click **Start Testing All** to test **all connected devices in parallel**
 
-6. **Monitor Progress**  
+7. **Monitor Progress**  
 - Track real-time logs in the **log window** 
 - View **progress bar** and count
 
-7. **Stop Testing (Optional)**  
+8. **Stop Testing (Optional)**  
 - Click **Stop Testing** to cancel all running tests at any time.
 
 ## Demo Video
 [<img src="/readme_files/demo.png" width="300"/>](https://yourdomain.com/videos/demo.mp4)
+
+---
+
+## Test Result example
+
+1. App Search
+<img src="/readme_files/app_search.png" width="600"/>
+
+2. Test Result
+<img src="/readme_files/test_result.png" width="600"/>
