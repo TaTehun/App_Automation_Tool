@@ -56,9 +56,7 @@ This flow determines how the tool behaves when installing apps from the Play Sto
 ### Launch & Test Flow
 <img src="/readme_files/app_test_workflow.png" width="500"/>
 
----
-
-The tool automates the entire testing pipeline across connected Android devices:
+**The tool automates the entire testing pipeline across connected Android devices:**
 
 1. Detect connected devices via ADB
 2. Load the app list from a CSV file
