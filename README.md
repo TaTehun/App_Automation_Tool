@@ -202,7 +202,13 @@ You can edit the app list in the table:
 - Click **Stop Testing** to cancel all running tests at any time.
 
 ## Demo Video
-[<img src="/readme_files/demo.png" width="300"/>](https://yourdomain.com/videos/demo.mp4)
+**Demo for Mac**
+[<img src="/readme_files/demo.png" width="200"/>](https://tj-web.onrender.com/videos/Starting_test_mac.mp4)
+**Demo for Windows**
+[<img src="/readme_files/demo.png" width="200"/>](https://tj-web.onrender.com/videos/Starting_test_windows.mp4)
+**Table Control Demo**
+[<img src="/readme_files/demo.png" width="200"/>](https://tj-web.onrender.com/videos/table_control.mp4)
+
 
 ---
 
