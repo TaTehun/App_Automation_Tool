@@ -452,7 +452,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             if d.xpath("//*[contains(@text,'Payment method]')]").wait(timeout = 5):
                 d(text = "Skip").click(10)
             else:
-                d.click(screen_width //2, screen_height // 2)
+                d.click(screen_width //2, screen_height // 8)
                 subprocess.run([
                     "adb","-s",f"{device}","shell",
                     "input","keyevent","KEYCODE_HOME"
@@ -460,7 +460,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 
         else:
             # Touch and hold the Home button, then circle or tap text or images to learn more and explore.
-            d.click(screen_width //2, screen_height // 2)
+            d.click(screen_width //2, screen_height // 8)
             subprocess.run([
                 "adb","-s",f"{device}","shell",
                 "input","keyevent","KEYCODE_HOME"
