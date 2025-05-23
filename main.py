@@ -761,23 +761,20 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                         while not stop_flag.is_set():
                             crash_flag.wait(timeout = 5)
                             test_stop_flag.wait(timeout = 5)
+
                         if crash_flag.is_set():
                             launch_result.append(l_result_list[2])
-                            break
-                        elif test_stop_flag.is_set():
-                            break
-                        crash_thread.join()
-                        crash_flag.clear()
-                        stop_flag.clear()
-                        
-                        #attempt to reload the page and repeat the installation    
-                        if launch_result[-1] == l_result_list[2]:
                             print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
                             mw_results.clear()
                             target_df.at[i, 'Crash log'] = "\n".join(crash_log)
+                            crash_thread.join()
                             crash_log.clear()
+                            stop_flag.clear()
+                            break
+                        elif test_stop_flag.is_set():
                             break
 
+                        #attempt to reload the page and repeat the installation    
                         elif l_attempt <= launch_attempt -1:
                             print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
                             launch_result.pop()
@@ -787,7 +784,8 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                                 launch_result[-1] = "App is not opened"
                         else:
                             print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
-                    
+                        stop_flag.clear()
+
                     if mw_results:
                         target_df.at[i,'MW Result'] = ', '.join(mw_results)
                         final_mw_result = max(set(mw_results), key=mw_results.count)
