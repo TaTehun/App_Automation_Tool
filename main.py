@@ -322,8 +322,6 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         df['Developer'] = ""
     if 'App Version' not in df.columns:
         df['App Version'] = ""
-    if 'App Version2' not in df.columns:
-        df['App Version2'] = ""
     if 'Updated Date' not in df.columns:
         df['Updated Date'] = ""
     if 'TargetSdk' not in df.columns:
