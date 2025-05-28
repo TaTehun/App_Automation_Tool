@@ -420,7 +420,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         yes_cancel = d(text = "Cancel").exists
         
         #Checking if cancel button is activated for 180 sec
-        for i in range(60):
+        for i in range(120):
             if not yes_cancel:
                 break
             time.sleep(5)
@@ -629,8 +629,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             else: 
                 print(f"{app_name} is not deleted")
                     
-            for i in range(60): 
-                time.sleep(5)
+            for i in range(120): 
                 if is_app_already_installed():
                     print(f"{app_name} installed again")
                     break
@@ -638,6 +637,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                     d(text = "Install").click(10)
                 else:
                     print(f"Failed to re-install {app_name}")
+                time.sleep(5)
         time.sleep(3)
         stop_flag.set()
     
@@ -770,6 +770,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                             crash_thread.join()
                             crash_log.clear()
                             stop_flag.clear()
+                            crash_flag.clear()
                             break
                         elif test_stop_flag.is_set():
                             break
@@ -785,6 +786,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                         else:
                             print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
                         stop_flag.clear()
+                        crash_flag.clear()
 
                     if mw_results:
                         target_df.at[i,'MW Result'] = ', '.join(mw_results)
