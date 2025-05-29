@@ -1,11 +1,11 @@
-# App Installation Tester
+# App Automation Tester
 
 **Version:** 1.0.0  
 **Author:** Taehun Jang
 
 ## Introduction
 
-`App Installation Tester` is a GUI-based automation tool for testing Android apps across multiple devices simultaneously.  
+`App Automation Tester` is a GUI-based automation tool for testing Android apps across multiple devices simultaneously.  
 It provides automated app installation, UI testing, crash monitoring, and CSV-based reporting.  
 The tool is built with Python and PyQt5, and requires no manual interaction during test execution.
 
