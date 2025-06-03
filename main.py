@@ -1286,6 +1286,19 @@ class AppTesterGUI(QWidget):
             self.show_error(str(e))
 
     def start_testing_all(self):
+        
+        for device in self.device_map:
+            serial = self.device_map[device]
+
+            # jar path
+            if getattr(sys, 'frozen', False):
+                jar_path = os.path.join(sys._MEIPASS, 'uiautomator2', 'assets', 'u2.jar')
+            else:
+                jar_path = os.path.join(os.path.dirname(os.path.abspath(u2.__file__)), 'assets', 'u2.jar')
+
+            self.log_output.append(f"[{serial}] pushing u2.jar manually...")
+            subprocess.run(["adb", "-s", device, "push", jar_path, "/data/local/tmp/u2.jar"])
+            
         try:
             self.test_stop_flag.clear()
             if not self.device_map:
