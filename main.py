@@ -267,7 +267,7 @@ def is_app_open(package_name, device):
                 return True
             elif samsung_setting in result:
                 if d(text = "Not now").exists:
-                    d(text = "Not now").click(10)
+                    d(text = "Not now").click()
                     time.sleep(1)
             elif android_permission in result:
                 if d(text = "While using the app").exists:
@@ -398,7 +398,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
 
     def is_app_installed():
         if is_app_already_installed():
-            if d(text = "Uninstall").wait(timeout = 5):
+            if d(text = "Uninstall").exists(timeout = 10):
                 test_result.append(t_result_list[0]) # Pass
                 remark_list.append("App is successfully Installed")
                     
@@ -435,20 +435,20 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         screen_width, screen_height = d.window_size()    
         # Popup variables
         if d.xpath("//*[contains(@text,'t now')]").exists:
-            d(text = "Not now").click(10)
+            d(text = "Not now").click()
         elif d.xpath("//*[contains(@text,'When Wi')]").wait(timeout = 5):
-            d(text = "OK").click(10)
+            d(text = "OK").click()
         elif d.xpath("//*[contains(@text,'t add')]").exists:
-            d.xpath("//*[contains(@text,'t add')]").click(10)
+            d.xpath("//*[contains(@text,'t add')]").click()
         elif d.xpath("//*[contains(@text,'alert') and contains(@text,'OK')]").exists:
-            d(text = "OK").click(10)
+            d(text = "OK").click()
         elif d.xpath("//*[contains(@text,'Want to see local')]").wait(timeout = 5):
-            d(text = "No thanks").click(10)
+            d(text = "No thanks").click()
             #3app.test.mql
         elif d.xpath("//*[contains(@text,'Complete account setup')]").wait(timeout = 5):
-            d(text = "Continue").click(10)
+            d(text = "Continue").click()
             if d.xpath("//*[contains(@text,'Payment method]')]").wait(timeout = 5):
-                d(text = "Skip").click(10)
+                d(text = "Skip").click()
             else:
                 d.click(screen_width //2, screen_height // 8)
                 subprocess.run([
@@ -553,16 +553,16 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 "-d", f"market://details?id={package_name}"
                 ], check=True)
         
-        if d(text = "Play").wait(timeout = 5):
-            d(text = "Play").click(10)
+        if d(text = "Play").exists(timeout = 10):
+            d(text = "Play").click()
             time.sleep(2)
             toggle_dark_mode(device)
             time.sleep(2)
             mw_results.append(toggle_multi_window_mode(device,package_name))
             launch_result.append(l_result_list[0]) # PASS
 
-        elif d(text = "Open").wait(timeout = 5):
-            d(text = "Open").click(10)
+        elif d(text = "Open").exists(timeout = 10):
+            d(text = "Open").click()
             time.sleep(2)
             toggle_dark_mode(device)
             time.sleep(2)
@@ -623,7 +623,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             
             if d(text = "Install").wait(timeout= 10):
                 print(f"{app_name} is Uninstalled")
-                d(text = "Install").click(10)
+                d(text = "Install").click()
             else: 
                 print(f"{app_name} is not deleted")
                     
@@ -632,7 +632,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                     print(f"{app_name} installed again")
                     break
                 elif d(text = "Install").wait(timeout= 10):
-                    d(text = "Install").click(10)
+                    d(text = "Install").click()
                 else:
                     print(f"Failed to re-install {app_name}")
                 time.sleep(5)
@@ -686,19 +686,19 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             
                 # Verify if the app is pre-installed
                 if d(text = "Update").wait(timeout = 2):
-                    d(text = "Update").click(10)
+                    d(text = "Update").click()
                     
                 elif d(text = "Enable").exists:
-                    d(text = "Enable").click(10)
+                    d(text = "Enable").click()
                     if d(text = "Update").wait(timeout = 2):
-                        d(text = "Update").click(10)
+                        d(text = "Update").click()
                             
                 elif d.xpath("//*[contains(@text,'Update from')]").exists:
-                    d(text = "Uninstall").click(10)
+                    d(text = "Uninstall").click()
                     if d(text = "Uninstall").exists:
-                        d(text = "Uninstall").click(10)
+                        d(text = "Uninstall").click()
                         if d(text = "Install").wait(timeout = 10):
-                            d(text = "Install").click(10)
+                            d(text = "Install").click()
                 else: 
                     test_result.append(t_result_list[0]) #Pass
                     remark_list.append("App has already been installed")
@@ -733,10 +733,10 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 
             # Verify if the app is installable
             elif d(text = "Install").exists and not d(text = "Open").exists:
-                d(text = "Install").click(10)
+                d(text = "Install").click()
 
                 if d.xpath("//*[contains(@text,'When Wi')]").wait(timeout = 5):
-                    d(text = "OK").click(10)
+                    d(text = "OK").click()
                         
                 is_app_installed()
                 
@@ -1286,6 +1286,19 @@ class AppTesterGUI(QWidget):
             self.show_error(str(e))
 
     def start_testing_all(self):
+        
+        for device in self.device_map:
+            serial = self.device_map[device]
+
+            # jar path
+            if getattr(sys, 'frozen', False):
+                jar_path = os.path.join(sys._MEIPASS, 'uiautomator2', 'assets', 'u2.jar')
+            else:
+                jar_path = os.path.join(os.path.dirname(os.path.abspath(u2.__file__)), 'assets', 'u2.jar')
+
+            self.log_output.append(f"[{serial}] pushing u2.jar manually...")
+            subprocess.run(["adb", "-s", device, "push", jar_path, "/data/local/tmp/u2.jar"])
+            
         try:
             self.test_stop_flag.clear()
             if not self.device_map:
