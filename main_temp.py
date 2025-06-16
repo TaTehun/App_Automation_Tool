@@ -301,7 +301,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     
     d = u2.connect(device)
     total_count, attempt, l_attempt = 0, 0, 0
-    remark_list, test_result, mw_results, launch_result, crash_log = [], [], [], [], []
+    remark_list, test_result, mw_results, launch_result = [], [], [], []
     t_result_list = ["Pass","Fail","NT/NA"]
     l_result_list = ["Pass","NT/NA","Crash"]
     
@@ -334,8 +334,6 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         df['Final MW Result'] = ""
     if 'MW Result' not in df.columns:
         df['MW Result'] = ""
-    if 'Crash log' not in df.columns:
-        df['Crash log'] = ""
     if 'Is Camera' not in df.columns:
         df['Is Camera'] = ""
     if 'Permissions' not in df.columns:
@@ -369,22 +367,28 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                     logcat_process.terminate()
                     break
 
-                if crash_start.search(line):
+                if not crash_detected and crash_start.search(line):
                     crash_detected = True
+                    print("Crash Yes")
+                    replace_package_name = package_name.replace(".", "_")
+                    file_name = f"crashlog_{attempt}_{device}_{replace_package_name}.txt"
+                    file_path = os.path.join(get_app_base_dir(), file_name)
+                    log_file = open(file_path, "w", encoding = "utf-8")
                     with log_lock:
-                        crash_log.append("\n--- Crash Detected ---")
-                        crash_log.append(line)
+                        log_file.write("\n--- Crash Detected ---")
 
                 if crash_detected:
-                    with log_lock:
-                        crash_log.append(line)
+                    if log_file:
+                        with log_lock:
+                            log_file.write(line + "\n")
                     
                     if process_death.search(line):
                         with log_lock:
-                            crash_log.append(line)
-                            crash_log.append("--- End of Crash ---\n")
+                            log_file.write("--- End of Crash ---\n")
                         crash_flag.set()  # Set the flag to indicate a crash
                         crash_detected = False  # Reset flag after full crash log is captured
+                        if log_file:
+                            log_file.close()
                         break
                     
         except Exception as e:
@@ -668,7 +672,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                     if pd.notna(install_result) and str(install_result).strip() in ("Pass", "NT/NA") and str(final_result).strip() in ("Pass", "Not supportive") and str(running_result).strip() in ("Pass", "NT/NA"):
                         if pd.isna(app_info_result) or str(app_info_result).strip() == "App is not found":
                             info_scrapper()
-                            saved_columns = ['App Name','App ID','Install Result','Remarks','Running Result', 'Final Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']
+                            saved_columns = ['App Name','App ID','Install Result','Remarks','Running Result', 'Final Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Is Camera', 'Permissions']
                             target_df[saved_columns].to_csv(temp_csv, index=False, encoding='utf-8')
                         continue
                     
@@ -780,9 +784,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                             launch_result.append(l_result_list[2])
                             print(f"{device},{app_name} launch status: {launch_result[-1]}, attempt: {l_attempt}/{launch_attempt}")
                             mw_results.clear()
-                            target_df.at[i, 'Crash log'] = "\n".join(crash_log)
                             crash_thread.join()
-                            crash_log.clear()
                             stop_flag.clear()
                             crash_flag.clear()
                             break
@@ -836,7 +838,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             target_df.at[i, 'Remarks'] = remark_list[-1]
             remark_list.clear()
 
-        saved_columns = ['App Name','App ID','Install Result','Remarks','Running Result', 'Final Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Crash log', 'Is Camera', 'Permissions']
+        saved_columns = ['App Name','App ID','Install Result','Remarks','Running Result', 'Final Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Is Camera', 'Permissions']
         target_df.to_csv(temp_csv, index=False, encoding='utf-8')
         total_count += 1
     final_csv = os.path.join(base_dir, f'Test_result_{serial}.csv')
