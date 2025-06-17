@@ -193,6 +193,9 @@ def toggle_multi_window_mode(device,package_name):
     if horizontal in crotation:
         d.long_click(screen_width -1, center_y -1, duration = 3)            
     else:
+        subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_APP_SWITCH'
+                        ],check=True)
+        time.sleep(1)
         # click home button
         subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_HOME'
                         ],check=True)
@@ -591,10 +594,8 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             else:
                 subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_BACK'
                                 ],check=True)
-
-        # Press home button
-        subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_HOME'
-                    ],check=True)
+            subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_HOME'
+                        ],check=True)
                 
         # open the app from google playstore
         subprocess.run([
