@@ -811,7 +811,7 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                         target_df.at[i,'Final MW Result'] = final_mw_result
                         mw_results.clear()
                     break
-                
+                break
             elif attempt < install_attempt -1:
                 print(f"{app_name} installation status: {test_result[-1]}, attempt: {attempt}/{install_attempt}, {remark_list}")
                 handle_popup()
