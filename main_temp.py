@@ -193,9 +193,6 @@ def toggle_multi_window_mode(device,package_name):
     if horizontal in crotation:
         d.long_click(screen_width -1, center_y -1, duration = 3)            
     else:
-        subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_APP_SWITCH'
-                        ],check=True)
-        time.sleep(1)
         # click home button
         subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_HOME'
                         ],check=True)
@@ -314,6 +311,8 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     temp_df = pd.read_csv(temp_csv, encoding='unicode_escape').rename(columns=lambda x: x.strip()) if skip_app_mode else None
     
     target_df = temp_df if skip_app_mode else df
+    
+    
     # Initialize columns
     if 'Install Result' not in df.columns:
         df['Install Result'] = ""
@@ -342,14 +341,102 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
     if 'Permissions' not in df.columns:
         df['Permissions'] = ""
         
+    def test_settings():
+        try:
+            subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_APP_SWITCH'
+                        ],check=True)
+            if d(text = "Close all").wait(timeout=5):
+                d(text = "Close all").click()
+            time.sleep(1)
+            
+            nav_mode = subprocess.run(['adb', "-s", f"{device}", 'shell', 'settings', 'get', 'secure', 'navigation_mode'
+                        ],stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+            rep_nav_mode = nav_mode.stdout.strip()
+            
+            if rep_nav_mode != "2":
+                subprocess.run(
+                    ["adb", "-s", device, "shell", "am", "start", "-a", "android.settings.DISPLAY_SETTINGS"],
+                    check=True)
+                
+                d(scrollable=True).scroll.to(text="Navigation bar")
+                time.sleep(1)
+                if d.xpath("//*[contains(@text,'Navigation bar')]").wait(timeout = 5):
+                    d(text = "Navigation bar").click()
+                    time.sleep(1)
+                    if d.xpath("//*[contains(@text,'Swipe gestures')]").wait(timeout = 5):
+                        d(text = "Swipe gestures").click()
+                        
+            time.sleep(1)
+            subprocess.run(
+                ["adb", "-s", device, "shell", "am", "start", "-a", "android.settings.INPUT_METHOD_SETTINGS"],
+                check=True)
+            time.sleep(1)
+            if d.xpath("//*[contains(@text,'Samsung Keyboard')]").wait(timeout = 5):
+                d.xpath("//*[contains(@text,'Samsung Keyboard')]").all()[1].click()
+                time.sleep(1)
+            d(scrollable=True).scroll.to(text="Keyboard toolbar")
+            time.sleep(1)
+            
+            setting_count = 0
+            while setting_count <= 5:
+                if d.xpath("//*[contains(@text,'Keyboard toolbar')]").wait(timeout = 5):
+                    d(text = "Keyboard toolbar").click()
+                    
+                    if d.xpath("//*[contains(@text,'On')]").wait(timeout = 5):
+                        d(text = "On").click()
+                    elif d.xpath("//*[contains(@text,'Off')]").exists:
+                        break
+
+                    if d.xpath("//*[contains(@text,'When the toolbar is turned off')]").wait(timeout = 5):
+                        d(text = "OK").click()
+                        time.sleep(1)
+                        break
+                setting_count += 1
+            print("Test setting has been completed!")
+        except Exception as e:
+            print(f"Setting Error: {e}")
+            
+    def handle_screen_recording():
+        try:
+            replace_package_name = package_name.replace(".", "_")
+            video_file_name = f"{l_attempt}_{device}_{replace_package_name}.mp4"
+            video_file_path = f"/sdcard/{video_file_name}"
+            
+            def screen_recording():
+                subprocess.Popen(
+                    ["adb", "-s", device, "shell", "screenrecord", "--time-limit 180", video_file_path],
+                    shell=True)
+                time.sleep(3)
+        
+            def stop_recording():
+                subprocess.run(
+                    ["adb", "-s", device, "shell", "pkill", "-l", "INT", "screenrecord"],
+                    shell=True)
+                time.sleep(3)
+            
+            def mv_recording():
+                subprocess.run(
+                    f"adb -s {device} shell mv {video_file_path} /sdcard/crash_{video_file_name}",
+                    shell = True)
+                time.sleep(3)
+            
+            def remove_recording():
+                subprocess.run(
+                    f"adb -s {device} shell rm {video_file_path}",
+                    shell = True)
+                time.sleep(3)
+        except Exception as e:
+            print(f"Error while handle recording: {e}")
+        
+        return screen_recording, stop_recording, mv_recording, remove_recording
+        
     def monitor_crashes():
         log_lock = threading.Lock()
+        replace_package_name = package_name.replace(".", "_")
+        log_file_name = f"crashlog_{l_attempt}_{device}_{replace_package_name}.txt"
+        log_file_path = os.path.join(get_app_base_dir(), log_file_name)
+
         try:
-            subprocess.run(
-            ["adb", "-s", device, "logcat", "-c"],
-            check=True
-            )
-            
             logcat_process = subprocess.Popen(
                 f"adb -s {device} logcat -v time",
                 shell=True,
@@ -368,15 +455,14 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 line = line.strip()
                 if stop_flag.is_set():
                     logcat_process.terminate()
+                    subprocess.run(
+                        ["adb", "-s", device, "logcat", "-c"],
+                        check=True)
                     break
 
                 if not crash_detected and crash_start.search(line):
                     crash_detected = True
-                    print("Crash Yes")
-                    replace_package_name = package_name.replace(".", "_")
-                    file_name = f"crashlog_{attempt}_{device}_{replace_package_name}.txt"
-                    file_path = os.path.join(get_app_base_dir(), file_name)
-                    log_file = open(file_path, "w", encoding = "utf-8")
+                    log_file = open(log_file_path, "w", encoding = "utf-8")
                     with log_lock:
                         log_file.write("\n--- Crash Detected ---")
 
@@ -392,6 +478,10 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                         crash_detected = False  # Reset flag after full crash log is captured
                         if log_file:
                             log_file.close()
+                            subprocess.run(
+                            ["adb", "-s", device, "logcat", "-c"],
+                            check=True)
+                            logcat_process.terminate()
                         break
                     
         except Exception as e:
@@ -445,18 +535,20 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         # Popup variables
         if d.xpath("//*[contains(@text,'t now')]").exists:
             d(text = "Not now").click()
-        elif d.xpath("//*[contains(@text,'When Wi')]").wait(timeout = 5):
+        elif d.xpath("//*[contains(@text,'When Wi')]").exists:
             d(text = "OK").click()
         elif d.xpath("//*[contains(@text,'t add')]").exists:
             d.xpath("//*[contains(@text,'t add')]").click()
         elif d.xpath("//*[contains(@text,'alert') and contains(@text,'OK')]").exists:
             d(text = "OK").click()
-        elif d.xpath("//*[contains(@text,'Want to see local')]").wait(timeout = 5):
+        elif d.xpath("//*[contains(@text,'Want to see local')]").exists:
             d(text = "No thanks").click()
+        elif d.xpath("//*[contains(@text,'Can't install')]").exists:
+            d.xpath("//*[contains(@text,'Got it')]").click()
             #3app.test.mql
-        elif d.xpath("//*[contains(@text,'Complete account setup')]").wait(timeout = 5):
+        elif d.xpath("//*[contains(@text,'Complete account setup')]").exists:
             d(text = "Continue").click()
-            if d.xpath("//*[contains(@text,'Payment method]')]").wait(timeout = 5):
+            if d.xpath("//*[contains(@text,'Payment method]')]").exists:
                 d(text = "Skip").click()
             else:
                 d.click(screen_width //2, screen_height // 8)
@@ -551,9 +643,12 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             target_df.at[i, 'TargetSdk'] = "App is not found"
 
     def app_launcher():
+        screen_recording, stop_recording, mv_recording, remove_recording = handle_screen_recording()
         
         if crash_flag.is_set() or test_stop_flag.is_set():
             stop_flag.set()
+            stop_recording()
+            mv_recording()
             return
         
         subprocess.run([
@@ -562,6 +657,8 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 "-a android.intent.action.VIEW",
                 "-d", f"market://details?id={package_name}"
                 ], check=True)
+        
+        screen_recording()
         
         if d(text = "Play").wait(timeout = 10):
             d(text = "Play").click()
@@ -596,7 +693,12 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                                 ],check=True)
             subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_HOME'
                         ],check=True)
-                
+        time.sleep(1)
+        subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_APP_SWITCH'
+                        ],check=True)
+        if d(text = "Close all").wait(timeout=5):
+            d(text = "Close all").click()
+        time.sleep(1)
         # open the app from google playstore
         subprocess.run([
             "adb", "-s", f"{device}", "shell",
@@ -607,15 +709,26 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         
         if crash_flag.is_set() or test_stop_flag.is_set():
             stop_flag.set()
+            stop_recording()
+            mv_recording()
             return
         
-        #time.sleep(1)
+        time.sleep(1)
+        subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_APP_SWITCH'
+                        ],check=True)
+        if d(text = "Close all").wait(timeout=5):
+            d(text = "Close all").click()
+        time.sleep(1)
         toggle_monkey_test(device,package_name)
         time.sleep(2)
         
         if crash_flag.is_set() or test_stop_flag.is_set():
             stop_flag.set()
+            stop_recording()
+            mv_recording()
             return
+        
+        stop_recording()
         
         if l_attempt < launch_attempt / 2:
             subprocess.run([
@@ -645,9 +758,12 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                     print(f"Failed to re-install {app_name}")
                 time.sleep(5)
                 
-        time.sleep(3)
+        time.sleep(1)
+        remove_recording()
         stop_flag.set()
         
+    unlock_device(device)
+    test_settings()
     
     # Navigate to the app page in google playstore
     for i, (package_name, app_name) in enumerate(zip(package_names, app_names)):
@@ -788,6 +904,9 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                             crash_thread.join()
                             stop_flag.clear()
                             crash_flag.clear()
+                            subprocess.run(
+                            ["adb", "-s", device, "logcat", "-c"],
+                            check=True)
                             break
                         elif test_stop_flag.is_set():
                             break
@@ -842,6 +961,13 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         saved_columns = ['App Name','App ID','Install Result','Remarks','Running Result', 'Final Running Result', 'MW Result', 'Final MW Result', 'App Category', 'Developer', 'App Version', 'Updated Date', 'TargetSdk', 'Is Camera', 'Permissions']
         target_df.to_csv(temp_csv, index=False, encoding='utf-8')
         total_count += 1
+        
+        subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_APP_SWITCH'
+                        ],check=True)
+        if d(text = "Close all").wait(timeout=5):
+            d(text = "Close all").click()
+        
+        time.sleep(1)
     final_csv = os.path.join(base_dir, f'Test_result_{serial}.csv')
     target_df.to_csv(final_csv, index=False, encoding='utf-8')
 """
