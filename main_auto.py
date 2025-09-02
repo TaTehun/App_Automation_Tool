@@ -10,8 +10,8 @@ import platform
 import uiautomator2 as u2
 import pandas as pd
 from PyQt5.QtWidgets import(QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QTableWidget, 
-    QTableWidgetItem, QFileDialog, QMessageBox, QTextEdit, QSpinBox, QHBoxLayout, QLineEdit, QFrame, QProgressBar)
-from PyQt5.QtCore import pyqtSignal, QObject
+    QTableWidgetItem, QFileDialog, QMessageBox, QTextEdit, QSpinBox, QHBoxLayout, QLineEdit, QFrame, QProgressBar, QListWidget, QListWidgetItem)
+from PyQt5.QtCore import pyqtSignal, QObject, Qt
 from threading import Lock, Event
 from google_play_scraper import app, search, permissions
 
@@ -285,8 +285,8 @@ def test_app_install(device, package_names, df, install_attempt, launch_attempt,
     d = u2.connect(device)
     total_count, attempt, l_attempt = 0, 0, 0
     remark_list, test_result, mw_results, launch_result = [], [], [], []
-    t_result_list = ["Pass","Fail","NA"]
-    l_result_list = ["Pass","NA","Crash"]
+    t_result_list = ["Pass","Fail","NT/NA"]
+    l_result_list = ["Pass","NT/NA","Crash"]
     
     #Checking if temp saved file exists
     temp_csv = os.path.join(base_dir, f'Install_Launch_Result.csv')
@@ -297,21 +297,24 @@ def test_app_install(device, package_names, df, install_attempt, launch_attempt,
     
     
     # Initialize columns
-    if 'Install Result' not in df.columns:
-        df['Install Result'] = ""
-    if 'App Category' not in df.columns:
-        df['App Category'] = ""
-    if 'Developer' not in df.columns:
-        df['Developer'] = ""
-    if 'App Version' not in df.columns:
-        df['App Version'] = ""
-    if 'Updated Date' not in df.columns:
-        df['Updated Date'] = ""
-    #if 'Is Camera' not in df.columns:
-        #df['Is Camera'] = ""
-    if 'Permissions' not in df.columns:
-        df['Permissions'] = ""
-        
+    if 'Install Result' not in target_df.columns:
+        target_df['Install Result'] = ""
+    if 'App Category' not in target_df.columns:
+        target_df['App Category'] = ""
+    if 'Developer' not in target_df.columns:
+        target_df['Developer'] = ""
+    if 'App Version' not in target_df.columns:
+        target_df['App Version'] = ""
+    if 'Updated Date' not in target_df.columns:
+        target_df['Updated Date'] = ""
+    if 'Comment' not in target_df.columns:
+        target_df['Comment'] = ""
+    if 'Permissions' not in target_df.columns:
+        target_df['Permissions'] = ""
+    
+    saved_columns = ['App ID/Package name','App Version','Install Result','Launch Result','Comment', 'App Category', 'Developer', 'Updated Date', 'Permissions']
+    target_df[saved_columns].to_csv(temp_csv, index=False, encoding='utf-8')
+    
     def test_settings():
         try:
             subprocess.run(['adb', "-s", f"{device}", 'shell', 'input', 'keyevent', 'KEYCODE_APP_SWITCH'
@@ -448,13 +451,16 @@ def test_app_install(device, package_names, df, install_attempt, launch_attempt,
                     crash_detected = True
                     log_file = open(log_file_path, "w", encoding = "utf-8")
                     log_file.write("\n--- Crash Detected ---")
+                    log_file.flush()
 
                 if crash_detected:
                     if log_file:
                         log_file.write(line + "\n")
-                    
+                        log_file.flush()
+                        
                     if process_death.search(line):
                         log_file.write("--- End of Crash ---\n")
+                        log_file.flush()
                         crash_flag.set()  # Set the flag to indicate a crash
                         crash_detected = False  # Reset flag after full crash log is captured
                         if log_file:
@@ -768,18 +774,15 @@ def test_app_install(device, package_names, df, install_attempt, launch_attempt,
                 
                 if skip_app_mode:
                     # set 0 index
-                    temp_df = temp_df.reset_index(drop=True)
-
+                    temp_df = temp_df.reset_index(drop=True)                            
+                    
                     if i < len(temp_df): # In case the lenth of list are not matching
                         temp_package_name = temp_df.at[i, 'App ID/Package name']
                         installed_result = temp_df.at[i, 'Install Result']
                         launched_result = temp_df.at[i, 'Launch Result']
                         
-                        if temp_package_name.strip() == package_name.strip():
-                            if pd.notna(installed_result) and str(installed_result).strip().lower() and str(launched_result).strip().lower() == "pass":
-                                saved_columns = ['App ID/Package name','App Version','Install Result','Launch Result','Comment', 'App Category', 'Developer', 'Updated Date', 'Permissions']
-                                target_df[saved_columns].to_csv(temp_csv, index=False, encoding='utf-8')
-                                continue
+                        if pd.notna(installed_result) and str(installed_result).strip().lower() == "pass" and str(launched_result).strip().lower() == "pass":
+                            continue
 
                 for attempt in range(install_attempt):
                     attempt += 1
@@ -955,7 +958,6 @@ def test_app_install(device, package_names, df, install_attempt, launch_attempt,
                     target_df.at[i, 'Comment'] = remark_list[-1]
                     remark_list.clear()
                 
-                saved_columns = ['App ID/Package name','App Version','Install Result','Launch Result','Comment', 'App Category', 'Developer', 'Updated Date', 'Permissions']
                 target_df[saved_columns].to_csv(temp_csv, index=False, encoding='utf-8')
                 total_count += 1
                 
@@ -1006,6 +1008,10 @@ class AppTesterGUI(QWidget):
         self.connect_button = QPushButton("Connect Devices")
         self.connect_button.clicked.connect(self.connect_devices)
         left_layout.addWidget(self.connect_button)
+        
+        left_layout.addWidget(QLabel("Select devices to test (No check = all devices)"))
+        self.device_list = QListWidget()
+        left_layout.addWidget(self.device_list)
 
         self.install_attempt_label = QLabel("Installation Attempts:")
         left_layout.addWidget(self.install_attempt_label)
@@ -1023,11 +1029,11 @@ class AppTesterGUI(QWidget):
         self.launch_attempt_input.setValue(3)
         left_layout.addWidget(self.launch_attempt_input)
 
-        self.start_button = QPushButton("Start Testing")
+        self.start_button = QPushButton("Run in Sequential (One by One)")
         self.start_button.clicked.connect(self.start_testing)
         left_layout.addWidget(self.start_button)
 
-        self.start_all_button = QPushButton("Start Testing all")
+        self.start_all_button = QPushButton("Run in Parallel (All at Once)")
         self.start_all_button.clicked.connect(self.start_testing_all)
         left_layout.addWidget(self.start_all_button)
 
@@ -1184,8 +1190,28 @@ class AppTesterGUI(QWidget):
         try:
             self.device_map = connect_devices()
             self.device_label.setText(f"Connected Devices: {', '.join(self.device_map.values())}")
+            self.showing_device_list()
         except Exception as e:
             self.show_error(str(e))
+            
+    def showing_device_list(self):
+        self.device_list.clear()
+        for device_id, serial in self.device_map.items():
+            text = f"{serial} [{device_id}]"
+            item = QListWidgetItem(text)
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            item.setCheckState(Qt.Unchecked)
+            item.setData(Qt.UserRole, device_id)
+            self.device_list.addItem(item)
+    def get_selected_devices(self):
+        selected = []
+        for i in range(self.device_list.count()):
+            item = self.device_list.item(i)
+            if item.checkState() == Qt.Checked:
+                selected.append(item.data(Qt.UserRole))
+        if not selected:
+            selected = list(self.device_map.keys())
+        return selected
             
     def load_csv(self):
         try:
@@ -1397,8 +1423,9 @@ class AppTesterGUI(QWidget):
             self.custom_csv_button.setEnabled(False)
             
             def run_tests():
-                for device in self.device_map:
-                    serial = self.device_map[device]
+                devices_to_use = self.get_selected_devices()
+                for device in devices_to_use:
+                    serial = self.device_map.get(device, device)
                     self.log_output.append(f"Processing device {serial}...")
                     test_app_install (device, self.package_names, self.df, install_attempt, launch_attempt, serial, self.signals, self.test_stop_flag)
                 self.log_output.append("Testing completed.")
@@ -1447,8 +1474,9 @@ class AppTesterGUI(QWidget):
 
             def run_all_tests():
                 threads = []
-                for device in self.device_map:
-                    serial = self.device_map[device]
+                device_to_use = self.get_selected_devices()
+                for device in device_to_use:
+                    serial = self.device_map.get(device, device)
                     t = threading.Thread(target=run_tests_for_device, args=(device,serial), daemon=True)
                     threads.append(t)
                     t.start()

@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['main.py'],
+    ['main_auto.py'],
     pathex=[],
     binaries=[],
     datas=[('C:\\Users\\t2.jang\\Documents\\GitHub\\3rd_apps\\myenv\\Lib\\site-packages\\uiautomator2\\assets\\u2.jar', 'uiautomator2/assets')],
@@ -22,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='main',
+    name='main_auto',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

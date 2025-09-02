@@ -10,8 +10,8 @@ import platform
 import uiautomator2 as u2
 import pandas as pd
 from PyQt5.QtWidgets import(QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QTableWidget, 
-    QTableWidgetItem, QFileDialog, QMessageBox, QTextEdit, QSpinBox, QHBoxLayout, QLineEdit, QFrame, QProgressBar)
-from PyQt5.QtCore import pyqtSignal, QObject
+    QTableWidgetItem, QFileDialog, QMessageBox, QTextEdit, QSpinBox, QHBoxLayout, QLineEdit, QFrame, QProgressBar, QListWidget, QListWidgetItem)
+from PyQt5.QtCore import pyqtSignal, QObject, Qt
 from threading import Lock, Event
 from google_play_scraper import app, search, permissions
 
@@ -1061,6 +1061,10 @@ class AppTesterGUI(QWidget):
         self.connect_button = QPushButton("Connect Devices")
         self.connect_button.clicked.connect(self.connect_devices)
         left_layout.addWidget(self.connect_button)
+        
+        left_layout.addWidget(QLabel("Select devices to test (No check = all devices)"))
+        self.device_list = QListWidget()
+        left_layout.addWidget(self.device_list)
 
         self.install_attempt_label = QLabel("Installation Attempts:")
         left_layout.addWidget(self.install_attempt_label)
@@ -1239,8 +1243,28 @@ class AppTesterGUI(QWidget):
         try:
             self.device_map = connect_devices()
             self.device_label.setText(f"Connected Devices: {', '.join(self.device_map.values())}")
+            self.showing_device_list()
         except Exception as e:
             self.show_error(str(e))
+            
+    def showing_device_list(self):
+        self.device_list.clear()
+        for device_id, serial in self.device_map.items():
+            text = f"{serial} [{device_id}]"
+            item = QListWidgetItem(text)
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            item.setCheckState(Qt.Unchecked)
+            item.setData(Qt.UserRole, device_id)
+            self.device_list.addItem(item)
+    def get_selected_devices(self):
+        selected = []
+        for i in range(self.device_list.count()):
+            item = self.device_list.item(i)
+            if item.checkState() == Qt.Checked:
+                selected.append(item.data(Qt.UserRole))
+        if not selected:
+            selected = list(self.device_map.keys())
+        return selected
             
     def load_csv(self):
         try:
@@ -1452,10 +1476,11 @@ class AppTesterGUI(QWidget):
             self.custom_csv_button.setEnabled(False)
             
             def run_tests():
-                for device in self.device_map:
-                    serial = self.device_map[device]
+                devices_to_use = self.get_selected_devices()
+                for device in devices_to_use:
+                    serial = self.device_map.get(device, device)
                     self.log_output.append(f"Processing device {serial}...")
-                    test_app_install (device, self.package_names, self.app_names, self.df, install_attempt, launch_attempt, serial, self.signals, self.test_stop_flag)
+                    test_app_install (device, self.package_names, self.df, install_attempt, launch_attempt, serial, self.signals, self.test_stop_flag)                
                 self.log_output.append("Testing completed.")
                 self.stop_button.setEnabled(False)
                 self.start_all_button.setEnabled(True)
@@ -1502,8 +1527,9 @@ class AppTesterGUI(QWidget):
 
             def run_all_tests():
                 threads = []
-                for device in self.device_map:
-                    serial = self.device_map[device]
+                device_to_use = self.get_selected_devices()
+                for device in device_to_use:
+                    serial = self.device_map.get(device, device)
                     t = threading.Thread(target=run_tests_for_device, args=(device,serial), daemon=True)
                     threads.append(t)
                     t.start()
