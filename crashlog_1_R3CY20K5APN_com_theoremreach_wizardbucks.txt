@@ -1,2 +1,0 @@
-
---- Crash Detected ---09-01 13:33:27.920 E/AndroidRuntime(  974): FATAL EXCEPTION: main
