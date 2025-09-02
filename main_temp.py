@@ -375,10 +375,6 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 time.sleep(1)
             d(scrollable=True).scroll.to(text="Keyboard toolbar")
             time.sleep(1)
-            subprocess.run(
-                ["adb", "-s", device, "shell", "am", "start", "-a", "android.settings.SAFETY_EMERGENCY_SETTINGS"],
-                check=True)
-            time.sleep(1)
             """            if d.xpath("//*[contains(@text,'Wireless Emergency Alert')]").wait(timeout = 5):
                 d.xpath("//*[contains(@text,'Wireless Emergency Alert')]").click()
                 if d.xpath("//*[contains(@text,'Allow alerts')]").wait(timeout = 5):
@@ -622,8 +618,13 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
             target_df.at[i, 'Developer'] = is_developer if is_developer else "Unknown"
                     
             # Sync updated date
-            is_updated = app_info.get('lastUpdatedOn', 'No lastUpdatedOn found').strip()
-            target_df.at[i, 'Updated Date'] = is_updated if is_updated else "Unknown"
+            is_updated = app_info.get('lastUpdatedOn', 'No lastUpdatedOn found')
+            if isinstance(is_updated, str):
+                s = is_updated.strip()
+                is_date = pd.to_datetime(s, format = "%b %d, %Y").strftime("%Y%m%d")
+            else:
+                is_date = is_updated
+            target_df.at[i, 'Updated Date'] = is_date if is_date else "Unknown"
             
             app_version_finder = subprocess.run([
                 "adb", "-s", device, "shell", "dumpsys", "package", package_name
@@ -1480,7 +1481,8 @@ class AppTesterGUI(QWidget):
                 for device in devices_to_use:
                     serial = self.device_map.get(device, device)
                     self.log_output.append(f"Processing device {serial}...")
-                    test_app_install (device, self.package_names, self.df, install_attempt, launch_attempt, serial, self.signals, self.test_stop_flag)                
+                    test_app_install (device, self.package_names, self.app_names, self.df, install_attempt, launch_attempt, serial, self.signals, self.test_stop_flag)    
+            
                 self.log_output.append("Testing completed.")
                 self.stop_button.setEnabled(False)
                 self.start_all_button.setEnabled(True)
