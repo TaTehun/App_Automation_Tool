@@ -7,6 +7,7 @@ import re
 import threading
 import subprocess
 import platform
+import collections
 import uiautomator2 as u2
 import pandas as pd
 from PyQt5.QtWidgets import(QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QTableWidget, 
@@ -436,62 +437,91 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
         return screen_recording, stop_recording, mv_recording, remove_recording
         
     def monitor_crashes():
-        log_lock = threading.Lock()
         replace_package_name = package_name.replace(".", "_")
         log_file_name = f"crashlog_{l_attempt}_{device}_{replace_package_name}.txt"
         log_file_path = os.path.join(get_app_base_dir(), log_file_name)
+        
+        log_file = None
+        proc = None
+        crash_detected = False
+        
+        # Storing logs in buffer
+        ring = collections.deque(maxlen=800)
+        
+        pkg = re.escape(package_name)
+        start_trigger = re.compile(r"(FATAL EXCEPTION|ANR in|Abort message:|signal \d+ \(SIG[A-Z]+\))")
+        confirm_pkg = re.compile(rf"(Process:\s*{pkg}|ANR in\s+{pkg}|Cmdline:\s*{pkg})")
+        anr_in_pkg = re.compile(rf"\bANR in\s+{pkg}\b")
+        process_death = re.compile(rf"\bProcess\s+{pkg}\b.*\bhas died\b")
 
         try:
-            logcat_process = subprocess.Popen(
-                f"adb -s {device} logcat -v time",
-                shell=True,
+            cmd = ["adb", "-s", device, "logcat", "-v", "time"]
+            proc = subprocess.Popen(
+                cmd,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
                 text=True,
                 encoding="utf-8",
                 errors="replace"
             )
-
-            crash_start = re.compile(r"FATAL EXCEPTION|ANR in|Abort message:|signal \d+ \(SIG[A-Z]+\)")
-            process_death = re.compile(rf"Process {package_name} .* has died")
-            crash_detected = False
-
-            for line in logcat_process.stdout:
-                line = line.strip()
-                if stop_flag.is_set():
-                    logcat_process.terminate()
-                    if crash_detected:
-                        crash_detected = False
-                        log_file.close()
-                    subprocess.run(
-                        ["adb", "-s", device, "logcat", "-c"],
-                        check=True)
+            
+            while not stop_flag.is_set():
+                line = proc.stdout.readline()
+                if not line:
                     break
-
-                if not crash_detected and crash_start.search(line):
-                    crash_detected = True
+                line = line.rstrip("\n")
+                ring.append(line)
+                
+                # Storing lines in buffer
+                if start_trigger.search(line):
+                    pass
+                
+                # App related crash confirmed
+                if not crash_detected and confirm_pkg.search(line):
                     log_file = open(log_file_path, "w", encoding = "utf-8")
-                    with log_lock:
-                        log_file.write("\n--- Crash Detected ---")
-
-                    with log_lock:
-                        log_file.write(line + "\n")
+                    log_file.write("\n--- Crash Detected ---\n")
+                    log_file.writelines(stored_line + "\n" for stored_line in ring)
+                    log_file.flush()
+                    crash_detected = True
                     
-                    if process_death.search(line):
-                        with log_lock:
-                            log_file.write("--- End of Crash ---\n")
-                        crash_flag.set()  # Set the flag to indicate a crash
-                        crash_detected = False  # Reset flag after full crash log is captured
-                        if log_file:
-                            log_file.close()
-                            subprocess.run(
-                            ["adb", "-s", device, "logcat", "-c"],
-                            check=True)
-                            logcat_process.terminate()
+                if crash_detected and log_file:
+                    log_file.write(line + "\n")
+
+                    crash_confirmed = None
+                    if anr_in_pkg.search(line):
+                        crash_confirmed = "ANR"
+
+                    elif process_death.search(line):
+                        crash_confirmed = "App Crash"
+
+                    elif "Tombstone written" in line:
+                        crash_confirmed = "Tombstone"
+
+                    elif stop_flag.is_set():
+                        crash_confirmed = "Stop Flagged"
+                    
+                    if crash_confirmed:
+                        log_file.write(f"=== End of Crash ({crash_confirmed}) ===\n")
+                        log_file.flush()
+                        log_file.close()
+                        log_file = None
+                        crash_flag.set() 
+                        crash_detected = False
                         break
                     
         except Exception as e:
             print(f"Error while monitoring logcat: {e}")
+        finally:
+            if log_file:
+                log_file.flush()
+                log_file.close()
+                
+            if proc and proc.poll() is None:
+                proc.terminate()
+                try:
+                    proc.wait(timeout=2)
+                except Exception:
+                    proc.kill()
     '''        
     def skip_tested_apps():
         result_csv = f'Install_result_{device}.csv'  # Add .csv extension
