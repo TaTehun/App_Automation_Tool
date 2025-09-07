@@ -470,11 +470,10 @@ def test_app_install(device, package_names, app_names, df, install_attempt, laun
                 if not line:
                     break
                 line = line.rstrip("\n")
-                ring.append(line)
                 
                 # Storing lines in buffer
                 if start_trigger.search(line):
-                    pass
+                    ring.append(line)
                 
                 # App related crash confirmed
                 if not crash_detected and confirm_pkg.search(line):
