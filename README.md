@@ -1,218 +1,142 @@
 # App Automation Tester
 
-**Version:** 1.0.0  
-**Author:** Taehun Jang
+A GUI-based Android app testing automation tool that installs, launches, and stress-tests apps from Google Play across multiple connected devices simultaneously — with real-time crash detection, dark/multi-window mode testing, and CSV-driven reporting.
 
-## Introduction
-
-`App Automation Tester` is a GUI-based automation tool for testing Android apps across multiple devices simultaneously.  
-It provides automated app installation, UI testing, crash monitoring, and CSV-based reporting.  
-The tool is built with Python and PyQt5, and requires no manual interaction during test execution.
+> **Visual overview:** [project-overview.html](project-overview.html)
 
 ---
 
-## Features
+## Overview
 
-- Multi-device parallel testing (ADB over USB or Wi-Fi)  
-- Automated app installation from Google Play  
-- Auto uninstall & reinstall if launch success < 50%  
-- Dark/Light mode toggle before multi-window test  
-- Multi-window compatibility check  
-- Monkey test (random UI events)  
-- Real-time crash detection via logcat  
-- App info scraping (permissions, version, developer, category)  
-- CSV-driven input/output with resume support  
-- Fully GUI-based (no coding required)
+Testing app compatibility across Android devices is time-consuming and repetitive. This tool automates the full cycle: install from Google Play, launch the app, toggle dark mode, attempt multi-window mode, run a monkey test, detect crashes via logcat, and save structured results to CSV — all without manual interaction.
+
+Multiple devices can run in parallel. A resume mode picks up where it left off if the session is interrupted.
 
 ---
 
-## System Requirements
+## Project Structure
 
-- Python 3.8 or higher (for source version)  
-- ADB installed & working  
-- OS: Windows or macOS (via PyInstaller build)
+```
+App_Automation_Tool/
+├── main.py                  # Full GUI + automation pipeline
+├── test1.csv                # Default app list (App Name, App ID)
+├── Book1.csv                # Sample app list
+├── requirements.txt         # Python dependencies
+├── Readme_dev.md            # Dev environment setup notes
+└── readme_files/            # Screenshots and demo images for README
+```
 
 ---
-
-## Executable Build
-
-| OS      | File Type | Run Command                      |
-|---------|-----------|----------------------------------|
-| Windows | `.exe`    | Run `app_tester_4_windows.exe` |
-| macOS   | `.app`    | Run `app_tester_4_mac.app` *(allow in system preferences)*
-
-## From Source
-
-pip install PyQt5 pandas uiautomator2 google_play_scraper
-python main.py
 
 ## How It Works
-### Installation Flow
-This flow determines how the tool behaves when installing apps from the Play Store.
-<img src="/readme_files/Automated_App_Installer_Tester.png">
+
+### 1. Connect Devices
+Click **Connect Devices** to detect all Android devices via ADB (USB or wireless). Devices can be individually selected from a checklist — unchecked means all devices are used.
+
+### 2. Load App List
+- **Load Automation CSV File** — loads the default `test1.csv`
+- **Select CSV File** — opens a file picker for any CSV
+- **Search (Max: 30 apps)** — queries Google Play by keyword and generates a CSV automatically
+
+CSV format required:
+```
+App Name,App ID
+Instagram,com.instagram.android
+```
+
+### 3. Set Test Parameters
+- **Installation Attempts** — retries per app if install fails
+- **Launch Test Attempts** — if pass rate < 50%, the app is uninstalled and reinstalled automatically
+
+### 4. Run Tests
+- **Run in Sequential** — one device at a time
+- **Run in Parallel** — all selected devices simultaneously (multithreaded)
+
+Each app goes through:
+1. Open Google Play → Install
+2. Launch app (via Play / Open button)
+3. Toggle Dark Mode
+4. Attempt Multi-Window mode
+5. Run Monkey test (500 random touch events)
+6. Monitor logcat for crashes (ANR / Fatal Exception / Tombstone)
+7. Scrape app metadata (version, developer, category, permissions)
+8. Save result to temp CSV (resume-safe)
+
+### 5. Results
+Results are saved as `Test_result_{serial}.csv` per device. Columns include:
+
+| Column | Description |
+|--------|-------------|
+| Install Result | Pass / Fail / NT/NA |
+| Running Result | Pass / NT/NA / Crash |
+| Final Running Result | Most frequent launch result |
+| MW Result | Multi-window test result per attempt |
+| Final MW Result | Most frequent MW result |
+| Crash log | Saved to `crashlog_{attempt}_{device}_{package}.txt` |
+| App Version, Developer, Category, Updated Date, TargetSdk | Scraped from Google Play |
+| Permissions, Is Camera | Permission list and camera flag |
 
 ---
 
-### Launch & Test Flow
-<img src="/readme_files/app_test_workflow.png" width="500"/>
+## Resume Mode
 
-**The tool automates the entire testing pipeline across connected Android devices:**
-
-1. Detect connected devices via ADB
-2. Load the app list from a CSV file
-3. Open Google Play and attempt to install each app
-   ↳ If launch attempts < 50%, uninstall and reinstall the app
-4. Launch the installed app
-5. Toggle between Dark and Light mode
-6. Attempt to enter Multi-Window mode
-7. Run a Monkey test (random touch input events)
-8. Monitor the device logcat for crash signals
-9. Collect app metadata (permissions, version, developer, etc.)
-10. Save all test results to a CSV file
-🔴 Crash detection is active from step 4 to 7.
+If a session is interrupted, the tool resumes from the last saved temp CSV (`Test_result_{serial}_temp.csv`) on next run. Apps with a passing install + launch result are skipped automatically.
 
 ---
 
-## GUI Overview
+## Screen Recording
 
-### Window:
-<img src="/readme_files/main_window.png" width="720"/>
-
-### Mac:
-<img src="/readme_files/main_screen.png" width="720"/>
+A screen recording is captured for each launch attempt via `adb screenrecord`. On crash, the recording is renamed with a `crash_` prefix and kept. On success, it is deleted.
 
 ---
 
-### Device Management
-- **Connect Devices**  
-  Scans for connected Android devices via ADB (USB or wireless) and displays their IDs.
+## Requirements
+
+```
+PyQt5
+pandas
+uiautomator2
+google-play-scraper
+```
+
+Also requires `adb` installed and available in system PATH.
 
 ---
 
-### Test Parameters
-- **Installation Attempts**  
-  Number of times to retry installation if it fails.
+## Running
 
-- **Launch Test Attempts**  
-  Number of times to retry launching the app.  
-  If success rate is below 50%, the app will be uninstalled and reinstalled.
+```bash
+# From source
+pip install -r requirements.txt
+python main.py
+```
 
----
-
-### ▶️ Test Controls
-- **Start Testing**  
-  Begins testing only on one selected device.
-
-- **Start Testing All**  
-  Runs the same test across all connected devices in parallel (multithreaded).
-
-- **Stop Testing**  
-  Cancels all currently running tests.
+On first run with **Start Testing All**, the tool pushes `u2.jar` to each device automatically.
 
 ---
 
-### App Search (Google Play)
-- **Search (Max: 30 apps)**  
-  Searches for apps on Google Play using a keyword and generates a CSV.
+## Executable Build (archived)
 
-- **Load searched data CSV File**  
-  Loads a previously saved CSV from the app search to use for testing.
+Previously built with PyInstaller for Windows (`.exe`) and macOS (`.app`). Source-only going forward.
 
 ---
 
-### CSV Automation
-- **Load Automation CSV File**  
-  Loads a predefined list of apps (App Name & App ID) to automate testing.
+## Changelog
 
-- **Select CSV File**  
-  Allows manual CSV file selection for loading app list.
+### v2.0 — 2026-05-07 · Crash Detection Overhaul + Device Selection UI
+- Ring-buffer logcat monitoring (800-line buffer) — crash context captured before detection confirmed
+- ANR / App Crash / Tombstone distinguished in crash log output
+- Device checklist UI — run on selected devices only
+- `test_settings()` — auto-configures swipe navigation and keyboard toolbar before test run
+- Screen recording per launch attempt, preserved on crash
+- `Updated Date` converted to `YYYYMMDD` format
+- Resume logic tightened — skips only apps with both install and launch passing
 
----
-
-### Table Control
-- **Add Row (↑ / ↓)**  
-  Adds a new row above or below the selected row.
-
-- **Delete Row**  
-  Removes the currently selected row(s) from the table.
-
-- **Save CSV**  
-  Saves changes to the currently loaded CSV file.
-
-- **Save As**  
-  Saves the table content as a new CSV file.
-
----
-
-### CMD | Terminal Output
-<img src="/readme_files/cmd.png" width="600"/>
-
-<img src="/readme_files/terminal.png" width="600"/>
-
-- **Log Output Window**  
-  Displays real-time logs for each device.  
-  Shows installation status, crash logs, Play Store actions, app compatibility, and result summaries.  
-  Helps the user track progress and debug issues as they happen.
-
-  ---
-
-## How to Run in GUI
-
-**(Optional) App Search on Google Play Store**
-- Enter a keyword in the **App Search** input (e.g., `Trending social media apps`)  
-- Click **Search (Max: 30 apps)**  
-- A CSV file (e.g., `app_search_trending_social_apps_result.csv`) will be generated  
-- Click **Load searched data CSV File** to import it into the app  
-
-1. **Launch the App**  
-   Run `app_tester_4_windows.exe` (on Windows) or `app_tester_4_mac.app` (on macOS).  
-   > ⚠️ Ensure `test1.csv` is in the **same directory** as the executable.
-
-2. **Connect Devices**  
-   Click **Connect Devices** (top-left).  
-   This detects all Android devices connected via ADB (USB or wireless).
-
-3. **Load CSV File**  
-   - Click **Load Automation CSV File** to load the default `test1.csv`,  
-   - Or click **Select CSV File** to choose a custom app list.  
-   The CSV must contain **App Name,App ID**
-    example:
-    **App Name,App ID**
-    Instagram,com.instagram.android
-
-4. **(Optional) Table Control**
-You can edit the app list in the table:
-- Use Add Row ↑ / ↓ or Delete Row to modify
-- After editing, Save CSV
-- Then click **Load Automation CSV File** or **Select CSV File** again to reflect changes in the app list
-
-5. **Set Test Parameters**  
-- **Installation Attempts**: How many times to retry installing if it fails  
-- **Launch Test Attempts**: If launch success rate is below 50%, the app will be uninstalled & reinstalled automatically
-
-6. **Start Testing**  
-- Click **Start Testing** to run on one device  
-- Or click **Start Testing All** to test **all connected devices in parallel**
-
-7. **Monitor Progress**  
-- Track real-time logs in the **log window** 
-- View **progress bar** and count
-
-8. **Stop Testing (Optional)**  
-- Click **Stop Testing** to cancel all running tests at any time.
-
-## Demo Video
-
-| Demo for Mac | **Demo for Windows** (Recommend) | Table Control Demo |
-|--------------|------------------|---------------------|
-| [<img src="/readme_files/demo.png" width="200"/>](https://tjangweb.onrender.com/videos/Starting_test_mac.mp4) | [<img src="/readme_files/demo.png" width="200"/>](https://tjangweb.onrender.com/videos/Starting_test_windows.mp4) | [<img src="/readme_files/demo.png" width="200"/>](https://tjangweb.onrender.com/videos/table_control.mp4) |
-
----
-
-## Test Result example
-
-1. App Search
-<img src="/readme_files/app_search.png" width="600"/>
-
-2. Test Result
-<img src="/readme_files/test_result.png" width="600"/>
+### v1.0 — Initial Release
+- Multi-device parallel testing via ADB
+- Google Play install automation
+- Dark mode / multi-window / monkey test
+- Crash detection via logcat
+- Google Play scraper for app metadata
+- CSV-driven input/output with resume support
+- PyQt5 GUI with progress bar and log output

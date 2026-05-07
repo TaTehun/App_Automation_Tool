@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>App Automation Tester — Project Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-deep:    #080b10;
+      --bg-page:    #0f1318;
+      --bg-card:    #1c2230;
+      --border:     #404858;
+      --border-hi:  #505a6e;
+      --text-1:     #e6edf3;
+      --text-2:     #c8d4e0;
+      --text-3:     #a0adb8;
+      --green:      #4ade80;
+      --blue:       #60a5fa;
+      --red:        #f87171;
+      --yellow:     #fbbf24;
+      --purple:     #a78bfa;
+      --orange:     #fb923c;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-1);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.03) 2px,
+        rgba(0,0,0,0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    @keyframes blink     { 50% { opacity: 0; } }
+    @keyframes fade-up   { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes pulse-dot { 0%,100% { box-shadow: 0 0 0 0 rgba(74,222,128,.4); } 60% { box-shadow: 0 0 0 6px rgba(74,222,128,0); } }
+    @keyframes draw-path { from { stroke-dashoffset: var(--len); } to { stroke-dashoffset: 0; } }
+
+    .anim-fade-up { animation: fade-up .5s ease both; }
+    .d1 { animation-delay: .05s; }
+    .d2 { animation-delay: .12s; }
+    .d3 { animation-delay: .19s; }
+    .d4 { animation-delay: .26s; }
+    .d5 { animation-delay: .33s; }
+    .d6 { animation-delay: .40s; }
+
+    /* ── Header ── */
+    .hdr {
+      background: var(--bg-deep);
+      border-bottom: 1px solid var(--border);
+      padding: 0 48px;
+      display: flex;
+      align-items: stretch;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      min-height: 72px;
+    }
+    .hdr::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--green) 20%, var(--blue) 60%, transparent);
+      opacity: 0.35;
+    }
+    .hdr-left { display: flex; flex-direction: column; justify-content: center; gap: 3px; }
+    .hdr-prompt {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--green);
+      opacity: 0.8;
+    }
+    .hdr-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-1);
+      letter-spacing: -0.02em;
+    }
+    .hdr-cursor { color: var(--green); animation: blink 1.1s step-end infinite; }
+    .hdr-sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--text-3);
+      letter-spacing: 0.01em;
+    }
+    .hdr-right { display: flex; align-items: center; gap: 6px; }
+    .hdr-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 5px 12px;
+      letter-spacing: 0.04em;
+    }
+    .pill-green { color: var(--green); border: 1px solid rgba(74,222,128,.3); background: rgba(74,222,128,.07); }
+    .pill-green .dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+      animation: pulse-dot 2s ease infinite;
+    }
+    .pill-dim { color: var(--text-2); border: 1px solid var(--border); background: var(--bg-card); }
+
+    /* ── Tabs ── */
+    .tabs-wrap {
+      background: var(--bg-deep);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      display: flex;
+      position: sticky;
+      top: 72px;
+      z-index: 99;
+    }
+    .tab {
+      color: var(--text-3);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      padding: 14px 24px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color .2s, border-color .2s, background .2s;
+      user-select: none;
+    }
+    .tab:hover { color: var(--text-1); background: rgba(255,255,255,.02); }
+    .tab.active { color: var(--text-1); border-bottom-color: var(--green); background: rgba(74,222,128,.04); }
+    .tab-num { color: var(--green); margin-right: 9px; font-size: 0.65rem; opacity: .7; }
+    .tab.active .tab-num { opacity: 1; }
+
+    /* ── Pages ── */
+    .page { display: none; background: var(--bg-page); }
+    .page.active { display: block; }
+    .page-inner { max-width: 1100px; margin: 0 auto; padding: 40px 28px 60px; }
+
+    .sec-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--green);
+      letter-spacing: 0.1em;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sec-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+      max-width: 180px;
+    }
+    .sec { margin-bottom: 52px; }
+
+    /* ── Metrics ── */
+    .metrics-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .metric {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-top: 2px solid transparent;
+      padding: 20px 16px 18px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .2s, transform .2s;
+    }
+    .metric::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(96,165,250,.04) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .metric:hover { transform: translateY(-2px); border-color: var(--border-hi); }
+    .metric.m-blue   { border-top-color: var(--blue); }
+    .metric.m-green  { border-top-color: var(--green); }
+    .metric.m-red    { border-top-color: var(--red); }
+    .metric.m-yellow { border-top-color: var(--yellow); }
+    .metric.m-purple { border-top-color: var(--purple); }
+    .metric-val { font-family: 'JetBrains Mono', monospace; font-size: 2rem; font-weight: 700; line-height: 1; }
+    .m-blue .metric-val   { color: var(--blue); }
+    .m-green .metric-val  { color: var(--green); }
+    .m-red .metric-val    { color: var(--red); }
+    .m-yellow .metric-val { color: var(--yellow); }
+    .m-purple .metric-val { color: var(--purple); }
+    .metric-key { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; font-weight: 700; color: var(--text-3); margin-top: 10px; letter-spacing: 0.04em; }
+    .metric-sub { font-size: 0.67rem; font-weight: 500; color: var(--text-2); margin-top: 3px; }
+
+    /* ── Pipeline strip ── */
+    .pipeline-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: stretch;
+      overflow: hidden;
+    }
+    .pipe-step {
+      flex: 1;
+      padding: 16px 12px;
+      border-right: 1px solid var(--border);
+      position: relative;
+    }
+    .pipe-step:last-child { border-right: none; }
+    .pipe-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: var(--green);
+      margin-bottom: 5px;
+    }
+    .pipe-title {
+      font-size: 0.77rem;
+      font-weight: 700;
+      color: var(--text-1);
+      margin-bottom: 4px;
+    }
+    .pipe-desc {
+      font-size: 0.67rem;
+      font-weight: 500;
+      color: var(--text-2);
+      line-height: 1.5;
+    }
+    .pipe-tag {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.56rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      margin-top: 7px;
+    }
+    .tag-green  { background: rgba(74,222,128,.08);  color: var(--green);  border: 1px solid rgba(74,222,128,.3); }
+    .tag-blue   { background: rgba(96,165,250,.08);  color: var(--blue);   border: 1px solid rgba(96,165,250,.3); }
+    .tag-red    { background: rgba(248,113,113,.08); color: var(--red);    border: 1px solid rgba(248,113,113,.3); }
+    .tag-yellow { background: rgba(251,191,36,.08);  color: var(--yellow); border: 1px solid rgba(251,191,36,.3); }
+
+    /* ── Feature cards ── */
+    .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .feat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--blue);
+      padding: 20px;
+      transition: transform .2s, border-color .2s;
+    }
+    .feat-card:hover { transform: translateY(-2px); border-color: rgba(96,165,250,.6); }
+    .feat-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; font-weight: 700; color: var(--blue); letter-spacing: 0.14em; margin-bottom: 8px; }
+    .feat-title { font-size: 0.84rem; font-weight: 700; color: var(--text-1); margin-bottom: 8px; }
+    .feat-desc { font-size: 0.73rem; font-weight: 500; color: var(--text-2); line-height: 1.7; }
+    .feat-desc code {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--bg-deep);
+      color: var(--red);
+      padding: 1px 6px;
+      font-size: 0.67rem;
+      border: 1px solid var(--border);
+    }
+
+    /* ── Dependencies ── */
+    .dep-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .dep { background: var(--bg-card); border: 1px solid var(--border); padding: 8px 15px; display: flex; align-items: center; gap: 10px; transition: border-color .15s; cursor: default; }
+    .dep:hover { border-color: var(--border-hi); }
+    .dep-name { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 700; color: var(--text-1); }
+    .dep-role { font-size: 0.63rem; font-weight: 600; color: var(--text-3); }
+
+    /* ── Flowchart (SVG) ── */
+    .flowchart-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 24px 16px;
+      overflow: hidden;
+      position: relative;
+    }
+    .fc-svg-container {
+      width: 100%;
+      cursor: zoom-in;
+      transition: transform .35s cubic-bezier(.25,.46,.45,.94);
+    }
+    .fc-svg-container.zoomed { transform: scale(1.4); cursor: zoom-out; }
+    #fc-svg { display: block; width: 100%; height: auto; }
+    .fc-zoom-hint {
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      font-weight: 600;
+      color: var(--text-3);
+      margin-top: 10px;
+      letter-spacing: 0.06em;
+    }
+
+    .fc-node-start    { fill: #0d1e33; stroke: rgba(96,165,250,.55);  stroke-width: 1.5; }
+    .fc-node-process  { fill: #131c28; stroke: #505a6e;               stroke-width: 1.5; }
+    .fc-node-decision { fill: #1e1a08; stroke: rgba(202,138,4,.55);   stroke-width: 1.5; }
+    .fc-node-ok       { fill: #0a1f12; stroke: rgba(74,222,128,.55);  stroke-width: 1.5; }
+    .fc-node-err      { fill: #1f0d0d; stroke: rgba(248,113,113,.55); stroke-width: 1.5; }
+    .fc-node-loop     { fill: #0d1828; stroke: rgba(96,165,250,.4);   stroke-width: 1.5; stroke-dasharray: 4 3; }
+
+    .fc-t-main  { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 11.5px; fill: #e6edf3; }
+    .fc-t-main.start  { fill: #93c5fd; }
+    .fc-t-main.ok     { fill: #4ade80; }
+    .fc-t-main.err    { fill: #f87171; }
+    .fc-t-main.decide { fill: #fbbf24; }
+    .fc-t-sub   { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 8.5px; fill: #a0adb8; }
+
+    .fc-edge     { fill: none; stroke: #505a6e; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    .fc-edge-yes { stroke: rgba(74,222,128,.7); }
+    .fc-edge-no  { stroke: rgba(248,113,113,.7); }
+    .fc-edge.animated { stroke-dasharray: var(--len); stroke-dashoffset: var(--len); }
+    .fc-edge.animated.run { animation: draw-path .6s ease forwards; }
+    .fc-label-yes { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 8.5px; fill: #4ade80; }
+    .fc-label-no  { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 8.5px; fill: #f87171; }
+
+    /* ── Error grid ── */
+    .err-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+    .err-card { background: var(--bg-card); border: 1px solid var(--border); padding: 18px 20px; }
+    .err-title { font-size: 0.83rem; font-weight: 700; color: var(--text-1); margin-bottom: 8px; }
+    .err-desc { font-size: 0.73rem; font-weight: 500; color: var(--text-2); line-height: 1.65; }
+    .err-desc code {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--bg-deep);
+      color: var(--red);
+      padding: 1px 6px;
+      font-size: 0.67rem;
+      border: 1px solid var(--border);
+    }
+
+    /* ── Code cards ── */
+    .code-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .code-card { background: #07090e; border: 1px solid var(--border); overflow: hidden; cursor: pointer; }
+    .code-card:hover { border-color: var(--border-hi); }
+    .code-card-hdr {
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-card);
+    }
+    .code-card-title { font-size: 0.72rem; font-weight: 700; color: var(--text-1); }
+    .code-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 2px 9px;
+      background: rgba(74,222,128,.08);
+      color: var(--green);
+      border: 1px solid rgba(74,222,128,.3);
+    }
+    pre {
+      padding: 16px;
+      font-size: 0.72rem;
+      line-height: 1.78;
+      color: var(--text-1);
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', monospace;
+      font-weight: 500;
+    }
+    .kw  { color: #f472b6; font-weight: 700; }
+    .vr  { color: var(--blue); }
+    .st  { color: #86efac; }
+    .cm  { color: #4d5a6a; font-style: italic; }
+    .nm  { color: var(--orange); }
+
+    .code-card pre .char { transition: none; }
+    .type-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: var(--green);
+      vertical-align: text-bottom;
+      margin-left: 1px;
+      animation: blink .9s step-end infinite;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 20px 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.67rem;
+      font-weight: 600;
+      color: var(--text-3);
+      border-top: 1px solid var(--border);
+      background: var(--bg-deep);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .hdr { padding: 0 20px; min-height: 60px; }
+      .hdr-prompt { display: none; }
+      .hdr-title { font-size: 0.95rem; }
+      .hdr-sub { font-size: 0.62rem; }
+      .hdr-pill { font-size: 0.62rem; padding: 4px 9px; }
+      .tabs-wrap { top: 60px; padding: 0 12px; }
+      .tab { font-size: 0.7rem; padding: 12px 14px; }
+      .page-inner { padding: 24px 16px 48px; }
+      .sec { margin-bottom: 36px; }
+      .metrics-row { grid-template-columns: repeat(3, 1fr); }
+      .pipeline-wrap { flex-direction: column; }
+      .pipe-step { border-right: none; border-bottom: 1px solid var(--border); }
+      .pipe-step:last-child { border-bottom: none; }
+      .feat-grid { grid-template-columns: 1fr; }
+      .err-grid  { grid-template-columns: 1fr; }
+      .code-grid  { grid-template-columns: 1fr; }
+      pre { font-size: 0.66rem; }
+    }
+    @media (max-width: 480px) {
+      .metrics-row { grid-template-columns: repeat(2, 1fr); }
+      .metric:last-child { grid-column: span 2; }
+      .hdr-right .pill-dim:first-of-type { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-left">
+    <span class="hdr-prompt">~/projects/app-automation-tester</span>
+    <h1 class="hdr-title">app_automation_tester<span class="hdr-cursor">_</span></h1>
+    <p class="hdr-sub">Android app install &amp; test automation &nbsp;·&nbsp; Python &nbsp;·&nbsp; ADB + uiautomator2 → PyQt5 GUI → CSV</p>
+  </div>
+  <div class="hdr-right">
+    <span class="hdr-pill pill-green"><span class="dot"></span>ACTIVE</span>
+    <span class="hdr-pill pill-dim">multi-device</span>
+    <span class="hdr-pill pill-dim">v2.0</span>
+  </div>
+</header>
+
+<div class="tabs-wrap">
+  <div class="tab active" onclick="switchTab(0)"><span class="tab-num">01</span>Overview</div>
+  <div class="tab" onclick="switchTab(1)"><span class="tab-num">02</span>Pipeline Flow</div>
+  <div class="tab" onclick="switchTab(2)"><span class="tab-num">03</span>Code &amp; Highlights</div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 1 — OVERVIEW
+══════════════════════════════════════ -->
+<div class="page active" id="page-0">
+  <div class="page-inner">
+
+    <div class="sec">
+      <p class="sec-label">// system_metrics</p>
+      <div class="metrics-row">
+        <div class="metric m-blue anim-fade-up d1">
+          <div class="metric-val">N</div>
+          <div class="metric-key">devices_parallel</div>
+          <div class="metric-sub">USB or Wi-Fi ADB</div>
+        </div>
+        <div class="metric m-green anim-fade-up d2">
+          <div class="metric-val">7</div>
+          <div class="metric-key">test_stages</div>
+          <div class="metric-sub">per app</div>
+        </div>
+        <div class="metric m-red anim-fade-up d3">
+          <div class="metric-val">0</div>
+          <div class="metric-key">manual_steps</div>
+          <div class="metric-sub">fully automated</div>
+        </div>
+        <div class="metric m-yellow anim-fade-up d4">
+          <div class="metric-val">800</div>
+          <div class="metric-key">crash_buffer</div>
+          <div class="metric-sub">logcat ring buffer</div>
+        </div>
+        <div class="metric m-purple anim-fade-up d5">
+          <div class="metric-val">.csv</div>
+          <div class="metric-key">output_format</div>
+          <div class="metric-sub">per device, resumable</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <p class="sec-label">// test_pipeline · per app</p>
+      <div class="pipeline-wrap anim-fade-up d2">
+        <div class="pipe-step">
+          <div class="pipe-num">01</div>
+          <div class="pipe-title">Install</div>
+          <div class="pipe-desc">Open Google Play → tap Install. Retries on failure. Handles pre-installed, paid, incompatible, offline cases.</div>
+          <span class="pipe-tag tag-green">ADB + uiautomator2</span>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-num">02</div>
+          <div class="pipe-title">Launch</div>
+          <div class="pipe-desc">Tap Play or Open. Handles permission popups automatically.</div>
+          <span class="pipe-tag tag-blue">uiautomator2</span>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-num">03</div>
+          <div class="pipe-title">Dark Mode</div>
+          <div class="pipe-desc">Toggle night mode on/off via ADB cmd uimode.</div>
+          <span class="pipe-tag tag-blue">ADB</span>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-num">04</div>
+          <div class="pipe-title">Multi-Window</div>
+          <div class="pipe-desc">Attempt split-screen via recents long-click. Result: Pass / Not supportive / Fail.</div>
+          <span class="pipe-tag tag-yellow">uiautomator2</span>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-num">05</div>
+          <div class="pipe-title">Monkey Test</div>
+          <div class="pipe-desc">500 random touch events via adb monkey.</div>
+          <span class="pipe-tag tag-blue">ADB monkey</span>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-num">06</div>
+          <div class="pipe-title">Crash Detection</div>
+          <div class="pipe-desc">logcat ring-buffer monitors for ANR, Fatal Exception, Tombstone — runs in parallel thread.</div>
+          <span class="pipe-tag tag-red">logcat</span>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-num">07</div>
+          <div class="pipe-title">Metadata Scrape</div>
+          <div class="pipe-desc">Pulls version, developer, category, permissions, targetSdk from Google Play + ADB.</div>
+          <span class="pipe-tag tag-green">google-play-scraper</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <p class="sec-label">// technical_highlights</p>
+      <div class="feat-grid">
+        <div class="feat-card anim-fade-up d1">
+          <div class="feat-tag">CRASH DETECTION</div>
+          <div class="feat-title">Ring-Buffer Logcat Monitor</div>
+          <div class="feat-desc">An 800-line <code>deque</code> pre-buffers logcat output. When a crash trigger is confirmed as app-specific, context lines are flushed to the log file — capturing the full stack without missing early frames.</div>
+        </div>
+        <div class="feat-card anim-fade-up d2">
+          <div class="feat-tag">CRASH DETECTION</div>
+          <div class="feat-title">3-Stage Crash Classification</div>
+          <div class="feat-desc">Distinguishes <code>ANR</code>, <code>App Crash</code> (FATAL EXCEPTION / process death), and <code>Tombstone</code> — each written to a separate crashlog file with type label at the end.</div>
+        </div>
+        <div class="feat-card anim-fade-up d3">
+          <div class="feat-tag">PARALLELISM</div>
+          <div class="feat-title">Per-Device Threading</div>
+          <div class="feat-desc">Each device runs its own test thread. <code>df.copy()</code> isolates the DataFrame per device. A device checklist lets the user select a subset without modifying the code.</div>
+        </div>
+        <div class="feat-card anim-fade-up d4">
+          <div class="feat-tag">RESUME</div>
+          <div class="feat-title">Interrupt-Safe Temp CSV</div>
+          <div class="feat-desc">Results are written to <code>Test_result_{serial}_temp.csv</code> after each app. On restart, completed apps (Pass install + Pass launch) are skipped automatically.</div>
+        </div>
+        <div class="feat-card anim-fade-up d5">
+          <div class="feat-tag">RECORDING</div>
+          <div class="feat-title">Per-Attempt Screen Recording</div>
+          <div class="feat-desc">ADB <code>screenrecord</code> runs for every launch attempt. On crash, the file is renamed with <code>crash_</code> prefix and kept. On success, it is deleted to save space.</div>
+        </div>
+        <div class="feat-card anim-fade-up d6">
+          <div class="feat-tag">SETUP</div>
+          <div class="feat-title">Auto Device Configuration</div>
+          <div class="feat-desc"><code>test_settings()</code> runs before the test loop — sets swipe gesture navigation and disables keyboard toolbar automatically so test conditions are consistent across devices.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <p class="sec-label">// dependencies</p>
+      <div class="dep-grid">
+        <div class="dep"><span class="dep-name">python</span><span class="dep-role">runtime</span></div>
+        <div class="dep"><span class="dep-name">PyQt5</span><span class="dep-role">GUI framework</span></div>
+        <div class="dep"><span class="dep-name">uiautomator2</span><span class="dep-role">Android UI automation</span></div>
+        <div class="dep"><span class="dep-name">adb</span><span class="dep-role">device control</span></div>
+        <div class="dep"><span class="dep-name">pandas</span><span class="dep-role">CSV input/output</span></div>
+        <div class="dep"><span class="dep-name">google-play-scraper</span><span class="dep-role">app metadata</span></div>
+        <div class="dep"><span class="dep-name">threading</span><span class="dep-role">parallel device runs</span></div>
+        <div class="dep"><span class="dep-name">subprocess</span><span class="dep-role">ADB shell commands</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 2 — PIPELINE FLOW
+══════════════════════════════════════ -->
+<div class="page" id="page-1">
+  <div class="page-inner">
+
+    <div class="sec">
+      <p class="sec-label">// execution_flow · per device</p>
+      <div class="flowchart-wrap">
+        <div class="fc-svg-container">
+        <svg id="fc-svg" viewBox="0 0 980 1160">
+          <defs>
+            <marker id="arr"     markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+              <path d="M0,0.5 L0,6.5 L7,3.5 z" fill="#505a6e"/>
+            </marker>
+            <marker id="arr-yes" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+              <path d="M0,0.5 L0,6.5 L7,3.5 z" fill="rgba(74,222,128,.85)"/>
+            </marker>
+            <marker id="arr-no"  markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+              <path d="M0,0.5 L0,6.5 L7,3.5 z" fill="rgba(248,113,113,.85)"/>
+            </marker>
+          </defs>
+
+          <!-- ══ EDGES — STARTUP ══ -->
+          <line class="fc-edge animated" x1="490" y1="58"  x2="490" y2="86"  marker-end="url(#arr)"/>
+          <line class="fc-edge animated" x1="490" y1="138" x2="490" y2="166" marker-end="url(#arr)"/>
+          <line class="fc-edge animated" x1="490" y1="218" x2="490" y2="258" marker-end="url(#arr)"/>
+
+          <!-- Resume decision: Yes (left) / No (right) -->
+          <path class="fc-edge fc-edge-yes animated" d="M 462,284 H 310 V 330" marker-end="url(#arr-yes)"/>
+          <path class="fc-edge fc-edge-no animated"  d="M 518,284 H 640 V 330" marker-end="url(#arr-no)"/>
+
+          <!-- Both branches → Per-App Loop (converge at y=420 horizontal, then down to loop box) -->
+          <line class="fc-edge fc-edge-yes animated" x1="310" y1="382" x2="310" y2="420" marker-end="url(#arr-yes)"/>
+          <line class="fc-edge fc-edge-no animated"  x1="640" y1="382" x2="640" y2="420" marker-end="url(#arr-no)"/>
+          <!-- horizontal converge bar at y=420, meeting at center x=490 -->
+          <line class="fc-edge animated" x1="310" y1="420" x2="640" y2="420"/>
+          <!-- drop from center to Per-App Loop -->
+          <line class="fc-edge animated" x1="490" y1="420" x2="490" y2="460" marker-end="url(#arr)"/>
+
+          <!-- Per-app loop label box edge -->
+          <line class="fc-edge animated" x1="490" y1="490" x2="490" y2="530" marker-end="url(#arr)"/>
+
+          <!-- Skip check: Yes (left) / No (right) -->
+          <path class="fc-edge fc-edge-yes animated" d="M 462,556 H 200 V 600" marker-end="url(#arr-yes)"/>
+          <path class="fc-edge fc-edge-no animated"  d="M 518,556 H 740 V 600" marker-end="url(#arr-no)"/>
+
+          <!-- Skip branch: metadata → continue -->
+          <line class="fc-edge fc-edge-yes animated" x1="200" y1="652" x2="200" y2="690" marker-end="url(#arr-yes)"/>
+
+          <!-- Run branch: install loop → crash detect → result write -->
+          <line class="fc-edge fc-edge-no animated" x1="740" y1="652" x2="740" y2="690" marker-end="url(#arr-no)"/>
+          <line class="fc-edge animated" x1="740" y1="742" x2="740" y2="780" marker-end="url(#arr)"/>
+
+          <!-- Crash check: Yes (left err) / No (right ok) -->
+          <path class="fc-edge fc-edge-yes animated" d="M 712,806 H 580 V 848" marker-end="url(#arr-yes)"/>
+          <path class="fc-edge fc-edge-no animated"  d="M 768,806 H 880 V 848" marker-end="url(#arr-no)"/>
+
+          <!-- Both crash branches converge to metadata + save -->
+          <line class="fc-edge animated" x1="580" y1="896" x2="580" y2="930" marker-end="url(#arr)"/>
+          <line class="fc-edge animated" x1="880" y1="896" x2="880" y2="930" marker-end="url(#arr)"/>
+          <path class="fc-edge animated" d="M 580,956 H 680 V 980" marker-end="url(#arr)"/>
+          <path class="fc-edge animated" d="M 880,956 H 800 V 980" marker-end="url(#arr)"/>
+
+          <!-- Save temp CSV → more apps? -->
+          <line class="fc-edge animated" x1="740" y1="1008" x2="740" y2="1038" marker-end="url(#arr)"/>
+
+          <!-- ══ NODES ══ -->
+
+          <!-- GUI Launch -->
+          <rect class="fc-node-start" x="340" y="14" width="300" height="44" rx="4"/>
+          <text class="fc-t-main start" x="490" y="31" text-anchor="middle" dominant-baseline="middle" dy="5">GUI Launch</text>
+          <text class="fc-t-sub"        x="490" y="49" text-anchor="middle">Connect Devices · Select CSV · Set Attempts</text>
+
+          <!-- unlock + settings -->
+          <rect class="fc-node-process" x="330" y="86" width="320" height="52" rx="0"/>
+          <text class="fc-t-main" x="490" y="107" text-anchor="middle">unlock_device()  ·  test_settings()</text>
+          <text class="fc-t-sub"  x="490" y="124" text-anchor="middle">screen timeout 24h · swipe nav · keyboard toolbar off</text>
+
+          <!-- Resume check diamond center (490, 284) -->
+          <rect class="fc-node-process" x="330" y="166" width="320" height="52" rx="0"/>
+          <text class="fc-t-main" x="490" y="187" text-anchor="middle">Load App List</text>
+          <text class="fc-t-sub"  x="490" y="204" text-anchor="middle">from input CSV</text>
+
+          <!-- DIAMOND: temp CSV exists? -->
+          <polygon class="fc-node-decision" points="490,258 560,284 490,310 420,284"/>
+          <text class="fc-t-main decide" x="490" y="279" text-anchor="middle">temp CSV</text>
+          <text class="fc-t-main decide" x="490" y="293" text-anchor="middle">exists?</text>
+          <text class="fc-label-yes" x="350" y="279" text-anchor="middle">Yes</text>
+          <text class="fc-label-no"  x="630" y="279" text-anchor="middle">No</text>
+
+          <!-- Load temp DF (left) -->
+          <rect class="fc-node-process" x="218" y="330" width="184" height="52" rx="0"/>
+          <text class="fc-t-main" x="310" y="351" text-anchor="middle">Load Temp DF</text>
+          <text class="fc-t-sub"  x="310" y="368" text-anchor="middle">resume from checkpoint</text>
+
+          <!-- Use input CSV (right) -->
+          <rect class="fc-node-process" x="548" y="330" width="184" height="52" rx="0"/>
+          <text class="fc-t-main" x="640" y="351" text-anchor="middle">Use Input CSV</text>
+          <text class="fc-t-sub"  x="640" y="368" text-anchor="middle">start from beginning</text>
+
+          <!-- Per-app loop -->
+          <rect class="fc-node-loop" x="350" y="460" width="280" height="30" rx="2"/>
+          <text class="fc-t-main" x="490" y="470" text-anchor="middle" dominant-baseline="middle" dy="5" style="fill:#93c5fd; font-size:11px;">Per-App Loop</text>
+
+          <!-- DIAMOND: Skip this app? -->
+          <polygon class="fc-node-decision" points="490,530 568,556 490,582 412,556"/>
+          <text class="fc-t-main decide" x="490" y="551" text-anchor="middle">Skip</text>
+          <text class="fc-t-main decide" x="490" y="565" text-anchor="middle">this app?</text>
+          <text class="fc-label-yes" x="338" y="551" text-anchor="middle">Yes</text>
+          <text class="fc-label-no"  x="644" y="551" text-anchor="middle">No</text>
+
+          <!-- Skip → fill metadata if missing -->
+          <rect class="fc-node-process" x="108" y="600" width="184" height="52" rx="0"/>
+          <text class="fc-t-main" x="200" y="618" text-anchor="middle">info_scrapper()</text>
+          <text class="fc-t-sub"  x="200" y="635" text-anchor="middle">fill missing metadata · save</text>
+
+          <!-- continue label -->
+          <rect class="fc-node-ok" x="120" y="690" width="160" height="36" rx="0"/>
+          <text class="fc-t-main ok" x="200" y="703" text-anchor="middle">continue</text>
+          <text class="fc-t-sub"    x="200" y="717" text-anchor="middle">next app in loop</text>
+
+          <!-- Install + Launch attempts -->
+          <rect class="fc-node-process" x="590" y="600" width="300" height="52" rx="0"/>
+          <text class="fc-t-main" x="740" y="618" text-anchor="middle">Install + Launch Attempts</text>
+          <text class="fc-t-sub"  x="740" y="635" text-anchor="middle">retry loops · popup handling · screenrecord</text>
+
+          <!-- toggle tests -->
+          <rect class="fc-node-process" x="590" y="690" width="300" height="52" rx="0"/>
+          <text class="fc-t-main" x="740" y="708" text-anchor="middle">Dark Mode · Multi-Window · Monkey</text>
+          <text class="fc-t-sub"  x="740" y="725" text-anchor="middle">cmd uimode · recents long-click · adb monkey 500</text>
+
+          <!-- DIAMOND: crash_flag set? -->
+          <polygon class="fc-node-decision" points="740,780 812,806 740,832 668,806"/>
+          <text class="fc-t-main decide" x="740" y="801" text-anchor="middle">crash</text>
+          <text class="fc-t-main decide" x="740" y="815" text-anchor="middle">detected?</text>
+          <text class="fc-label-yes" x="600" y="800" text-anchor="middle">Yes</text>
+          <text class="fc-label-no"  x="880" y="800" text-anchor="middle">No</text>
+
+          <!-- Crash branch -->
+          <rect class="fc-node-err" x="488" y="848" width="184" height="48" rx="0"/>
+          <text class="fc-t-main err" x="580" y="866" text-anchor="middle">Record Crash</text>
+          <text class="fc-t-sub"     x="580" y="883" text-anchor="middle">rename crash_*.mp4</text>
+
+          <!-- Pass branch -->
+          <rect class="fc-node-ok" x="788" y="848" width="184" height="48" rx="0"/>
+          <text class="fc-t-main ok" x="880" y="866" text-anchor="middle">Record Pass</text>
+          <text class="fc-t-sub"    x="880" y="883" text-anchor="middle">delete recording</text>
+
+          <!-- info_scrapper + adb dumpsys -->
+          <rect class="fc-node-process" x="590" y="930" width="300" height="26" rx="0"/>
+          <text class="fc-t-main" x="740" y="943" text-anchor="middle" dominant-baseline="middle">info_scrapper()  ·  adb dumpsys</text>
+
+          <!-- Save temp CSV -->
+          <rect class="fc-node-process" x="590" y="980" width="300" height="28" rx="0"/>
+          <text class="fc-t-main" x="740" y="994" text-anchor="middle" dominant-baseline="middle">Save Temp CSV · clear recents</text>
+
+          <!-- More apps? diamond center (740, 1048) -->
+          <polygon class="fc-node-decision" points="740,1020 820,1048 740,1076 660,1048"/>
+          <text class="fc-t-main decide" x="740" y="1043" text-anchor="middle">More apps?</text>
+          <text class="fc-label-yes" x="598" y="1043" text-anchor="middle">Yes</text>
+          <text class="fc-label-no"  x="882" y="1043" text-anchor="middle">No</text>
+
+          <!-- Yes → loop back (왼쪽 바깥 우회 → Per-App Loop 왼쪽 진입) -->
+          <path class="fc-edge fc-edge-yes animated" d="M 660,1048 H 60 V 475 H 350" marker-end="url(#arr-yes)"/>
+
+          <!-- No → Write Final CSV (right) -->
+          <path class="fc-edge fc-edge-no animated" d="M 820,1048 H 880 V 1090" marker-end="url(#arr-no)"/>
+
+          <!-- Write Final CSV node -->
+          <rect class="fc-node-ok" x="790" y="1090" width="180" height="48" rx="0"/>
+          <text class="fc-t-main ok" x="880" y="1109" text-anchor="middle">Write Final CSV</text>
+          <text class="fc-t-sub"    x="880" y="1126" text-anchor="middle">Test_result_{serial}.csv</text>
+
+        </svg>
+        </div>
+        <p class="fc-zoom-hint">click to zoom in</p>
+      </div>
+    </div>
+
+    <div class="sec">
+      <p class="sec-label">// error_handling</p>
+      <div class="err-grid">
+        <div class="err-card" style="border-left:3px solid var(--red);">
+          <div class="err-title">Device Lock / Screen Off</div>
+          <div class="err-desc"><code>unlock_device()</code> wakes the screen with keyevent 224 and swipes to unlock. Retries up to 5 times before marking the device as unavailable.</div>
+        </div>
+        <div class="err-card" style="border-left:3px solid var(--orange);">
+          <div class="err-title">App Not Compatible / Not Available</div>
+          <div class="err-desc">XPath checks for Play Store warning text — incompatible, region-restricted, not found, offline. Result is set to <code>NT/NA</code> rather than Fail.</div>
+        </div>
+        <div class="err-card" style="border-left:3px solid var(--green);">
+          <div class="err-title">Install Popup Interference</div>
+          <div class="err-desc"><code>handle_popup()</code> dismisses Wi-Fi prompts, Samsung Pass saves, account setup flows, and stray OK/Cancel dialogs before retrying the install.</div>
+        </div>
+        <div class="err-card" style="border-left:3px solid var(--blue);">
+          <div class="err-title">Partial Crash Context</div>
+          <div class="err-desc">An 800-line ring buffer pre-captures logcat before crash confirmation. No missed frames even if the crash trigger fires mid-stream.</div>
+        </div>
+        <div class="err-card" style="border-left:3px solid var(--purple);">
+          <div class="err-title">Metadata Scrape Failure</div>
+          <div class="err-desc"><code>info_scrapper()</code> is wrapped in <code>try/except</code>. If the app is not on Play Store, all metadata fields are set to <code>"App is not found"</code> — the row is still saved.</div>
+        </div>
+        <div class="err-card" style="border-left:3px solid var(--yellow);">
+          <div class="err-title">Outer Exception Recovery</div>
+          <div class="err-desc">The entire app loop is wrapped in a <code>for retries in range(100)</code> block. Unexpected exceptions print and retry from the last saved position in the temp CSV.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 3 — CODE & HIGHLIGHTS
+══════════════════════════════════════ -->
+<div class="page" id="page-2">
+  <div class="page-inner">
+
+    <div class="sec">
+      <p class="sec-label">// code_highlights · main.py</p>
+      <div class="code-grid">
+
+        <div class="code-card">
+          <div class="code-card-hdr">
+            <span class="code-card-title">Ring-Buffer Crash Detection</span>
+            <span class="code-tag">monitor_crashes()</span>
+          </div>
+          <pre><span class="cm"># Pre-buffer 800 lines before crash is confirmed</span>
+ring = collections.deque(maxlen=<span class="nm">800</span>)
+
+start_trigger = re.compile(
+    <span class="st">r"(FATAL EXCEPTION|ANR in|Abort message:|signal \d+)"</span>)
+confirm_pkg = re.compile(
+    <span class="st">rf"(Process:\s*{pkg}|ANR in\s+{pkg}|Cmdline:\s*{pkg})"</span>)
+
+<span class="kw">while not</span> stop_flag.is_set():
+    line = proc.stdout.readline()
+    <span class="kw">if</span> start_trigger.search(line):
+        ring.append(line)
+    <span class="kw">if not</span> crash_detected <span class="kw">and</span> confirm_pkg.search(line):
+        log_file = open(log_file_path, <span class="st">"w"</span>)
+        log_file.writelines(
+            stored + <span class="st">"\n"</span> <span class="kw">for</span> stored <span class="kw">in</span> ring)
+        crash_detected = <span class="kw">True</span></pre>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card-hdr">
+            <span class="code-card-title">3-Stage Crash Classification</span>
+            <span class="code-tag">monitor_crashes()</span>
+          </div>
+          <pre><span class="cm"># Distinguish crash type from logcat signal</span>
+anr_in_pkg = re.compile(
+    <span class="st">rf"\bANR in\s+{pkg}\b"</span>)
+process_death = re.compile(
+    <span class="st">rf"\bProcess\s+{pkg}\b.*\bhas died\b"</span>)
+
+crash_confirmed = <span class="kw">None</span>
+<span class="kw">if</span>   anr_in_pkg.search(line):    crash_confirmed = <span class="st">"ANR"</span>
+<span class="kw">elif</span> process_death.search(line): crash_confirmed = <span class="st">"App Crash"</span>
+<span class="kw">elif</span> <span class="st">"Tombstone written"</span> <span class="kw">in</span> line: crash_confirmed = <span class="st">"Tombstone"</span>
+
+<span class="kw">if</span> crash_confirmed:
+    log_file.write(
+        <span class="st">f"=== End of Crash ({crash_confirmed}) ===\n"</span>)
+    crash_flag.set()</pre>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card-hdr">
+            <span class="code-card-title">Multi-Window Mode Detection</span>
+            <span class="code-tag">toggle_multi_window_mode()</span>
+          </div>
+          <pre><span class="cm"># Long-click differs by orientation</span>
+<span class="kw">if</span> horizontal <span class="kw">in</span> crotation:
+    d.long_click(screen_width - <span class="nm">1</span>,
+                 center_y - <span class="nm">1</span>, duration=<span class="nm">3</span>)
+<span class="kw">else</span>:
+    d.long_click(center_x // <span class="nm">2</span>,
+                 center_y, duration=<span class="nm">3</span>)
+
+toast_text = d.toast.get_message(<span class="nm">5.0</span>, <span class="nm">5.0</span>)
+
+<span class="kw">if</span> d.xpath(<span class="st">"//*[contains(@text,'Select app')]"</span>).wait(<span class="nm">2</span>):
+    mw_result = <span class="st">"Pass"</span>
+<span class="kw">elif</span> toast_text <span class="kw">and</span> <span class="st">"t use this app in Multi"</span> <span class="kw">in</span> toast_text:
+    mw_result = <span class="st">"Not supportive"</span>
+<span class="kw">else</span>:
+    mw_result = <span class="st">"Fail"</span></pre>
+        </div>
+
+        <div class="code-card">
+          <div class="code-card-hdr">
+            <span class="code-card-title">Device Checklist + Selective Run</span>
+            <span class="code-tag">get_selected_devices()</span>
+          </div>
+          <pre><span class="cm"># QListWidget with checkboxes per device</span>
+<span class="kw">def</span> showing_device_list(self):
+    <span class="kw">for</span> device_id, serial <span class="kw">in</span> self.device_map.items():
+        item = QListWidgetItem(<span class="st">f"{serial} [{device_id}]"</span>)
+        item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+        item.setCheckState(Qt.Unchecked)
+        item.setData(Qt.UserRole, device_id)
+        self.device_list.addItem(item)
+
+<span class="kw">def</span> get_selected_devices(self):
+    selected = [item.data(Qt.UserRole)
+        <span class="kw">for</span> i <span class="kw">in</span> range(self.device_list.count())
+        <span class="kw">for</span> item <span class="kw">in</span> [self.device_list.item(i)]
+        <span class="kw">if</span> item.checkState() == Qt.Checked]
+    <span class="kw">return</span> selected <span class="kw">or</span> list(self.device_map.keys())</pre>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  App Automation Tester &nbsp;·&nbsp; Taehun Jang &nbsp;·&nbsp; Python · Claude Code
+</footer>
+
+<script>
+  /* ══ TYPING ANIMATION ══ */
+  function initCodeCard(card) {
+    const pre = card.querySelector('pre');
+    if (!pre || card._typingInit) return;
+    card._typingInit = true;
+
+    pre.querySelectorAll('span[class]').forEach(s => {
+      s.dataset.color = getComputedStyle(s).color;
+    });
+
+    function wrapChars(node) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const frag = document.createDocumentFragment();
+        for (const ch of node.textContent) {
+          const s = document.createElement('span');
+          s.className = 'char';
+          s.textContent = ch;
+          frag.appendChild(s);
+        }
+        node.replaceWith(frag);
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        Array.from(node.childNodes).forEach(wrapChars);
+        if (node.dataset.color) {
+          node.querySelectorAll('.char:not([data-color])').forEach(c => {
+            c.dataset.color = node.dataset.color;
+          });
+        }
+      }
+    }
+    Array.from(pre.childNodes).forEach(wrapChars);
+    pre.querySelectorAll('.char:not([data-color])').forEach(c => { c.dataset.color = '#e6edf3'; });
+
+    const cursor = document.createElement('span');
+    cursor.className = 'type-cursor';
+    cursor.style.display = 'none';
+    pre.appendChild(cursor);
+
+    card._chars  = Array.from(pre.querySelectorAll('.char'));
+    card._cursor = cursor;
+    card._typing = false;
+  }
+
+  function replayCode(card) {
+    if (card._typing) return;
+    card._typing = true;
+    card._cursor.style.display = 'inline-block';
+    card._chars.forEach(c => { c.style.color = 'transparent'; });
+
+    const batch = Math.max(1, Math.floor(card._chars.length / 280));
+    let i = 0;
+    function tick() {
+      if (i >= card._chars.length) {
+        card._cursor.style.display = 'none';
+        card._typing = false;
+        return;
+      }
+      for (let b = 0; b < batch && i < card._chars.length; b++, i++) {
+        card._chars[i].style.color = card._chars[i].dataset.color;
+      }
+      setTimeout(tick, 10);
+    }
+    setTimeout(tick, 80);
+  }
+
+  let page2Inited = false;
+  function initPage2() {
+    if (page2Inited) return;
+    page2Inited = true;
+
+    document.querySelectorAll('.code-card').forEach(initCodeCard);
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        observer.unobserve(el);
+        if (el.classList.contains('code-card')) replayCode(el);
+      });
+    }, { threshold: 0.35 });
+
+    document.querySelectorAll('.code-card').forEach(c => observer.observe(c));
+  }
+
+  function switchTab(i) {
+    document.querySelectorAll('.tab').forEach((t, j) => t.classList.toggle('active', j === i));
+    document.querySelectorAll('.page').forEach((p, j) => p.classList.toggle('active', j === i));
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    if (i === 2) initPage2();
+
+    document.querySelectorAll('.page.active .anim-fade-up').forEach(el => {
+      el.style.animation = 'none';
+      el.offsetHeight;
+      el.style.animation = '';
+    });
+
+    if (i === 1) {
+      const edges = document.querySelectorAll('#fc-svg .fc-edge.animated');
+      edges.forEach(el => el.classList.remove('run'));
+      requestAnimationFrame(() => {
+        edges.forEach((el, idx) => {
+          const len = el.getTotalLength ? el.getTotalLength() : 100;
+          el.style.setProperty('--len', len);
+          el.style.strokeDasharray  = len;
+          el.style.strokeDashoffset = len;
+          setTimeout(() => el.classList.add('run'), idx * 80);
+        });
+      });
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const edges = document.querySelectorAll('#fc-svg .fc-edge');
+    edges.forEach(el => {
+      const len = el.getTotalLength ? el.getTotalLength() : 80;
+      el.style.setProperty('--len', len);
+    });
+
+    const container = document.querySelector('.fc-svg-container');
+    const hint = document.querySelector('.fc-zoom-hint');
+
+    function getOrigin(e) {
+      const rect = container.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const xPct = ((clientX - rect.left) / rect.width  * 100).toFixed(1) + '%';
+      const yPct = ((clientY - rect.top)  / rect.height * 100).toFixed(1) + '%';
+      return `${xPct} ${yPct}`;
+    }
+
+    function toggleZoom(e) {
+      e.preventDefault();
+      const zooming = !container.classList.contains('zoomed');
+      if (zooming) container.style.transformOrigin = getOrigin(e);
+      container.classList.toggle('zoomed', zooming);
+      if (hint) hint.textContent = zooming ? 'click to zoom out' : 'click to zoom in';
+    }
+
+    if (container) {
+      container.addEventListener('click', toggleZoom);
+      container.addEventListener('touchstart', toggleZoom, { passive: false });
+    }
+  });
+</script>
+
+</body>
+</html>
