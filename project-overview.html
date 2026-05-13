@@ -413,12 +413,13 @@
 
     /* ── Responsive ── */
     @media (max-width: 768px) {
-      .hdr { padding: 0 20px; min-height: 60px; }
+      .hdr { padding: 0 20px; flex-wrap: wrap; align-content: center; gap: 6px; }
       .hdr-prompt { display: none; }
       .hdr-title { font-size: 0.95rem; }
       .hdr-sub { font-size: 0.62rem; }
-      .hdr-pill { font-size: 0.62rem; padding: 4px 9px; }
-      .tabs-wrap { top: 60px; padding: 0 12px; }
+      .hdr-right { flex-wrap: wrap; gap: 4px; }
+      .hdr-pill { font-size: 0.6rem; padding: 3px 8px; }
+      .tabs-wrap { padding: 0 12px; }
       .tab { font-size: 0.7rem; padding: 12px 14px; }
       .page-inner { padding: 24px 16px 48px; }
       .sec { margin-bottom: 36px; }
@@ -1004,6 +1005,14 @@ toast_text = d.toast.get_message(<span class="nm">5.0</span>, <span class="nm">5
 
     document.querySelectorAll('.code-card').forEach(c => observer.observe(c));
   }
+
+  function syncTabsTop() {
+    const hdr = document.querySelector('.hdr');
+    const tabs = document.querySelector('.tabs-wrap');
+    if (hdr && tabs) tabs.style.top = hdr.offsetHeight + 'px';
+  }
+  syncTabsTop();
+  window.addEventListener('resize', syncTabsTop);
 
   function switchTab(i) {
     document.querySelectorAll('.tab').forEach((t, j) => t.classList.toggle('active', j === i));
