@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>App Automation Tester — Project Overview</title>
+  <title>App Automation Tester · Project Overview</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -533,7 +533,7 @@
         <div class="pipe-step">
           <div class="pipe-num">06</div>
           <div class="pipe-title">Crash Detection</div>
-          <div class="pipe-desc">logcat ring-buffer monitors for ANR, Fatal Exception, Tombstone — runs in parallel thread.</div>
+          <div class="pipe-desc">logcat ring-buffer monitors for ANR, Fatal Exception, Tombstone, running in a parallel thread.</div>
           <span class="pipe-tag tag-red">logcat</span>
         </div>
         <div class="pipe-step">
@@ -551,12 +551,12 @@
         <div class="feat-card anim-fade-up d1">
           <div class="feat-tag">CRASH DETECTION</div>
           <div class="feat-title">Ring-Buffer Logcat Monitor</div>
-          <div class="feat-desc">An 800-line <code>deque</code> pre-buffers logcat output. When a crash trigger is confirmed as app-specific, context lines are flushed to the log file — capturing the full stack without missing early frames.</div>
+          <div class="feat-desc">An 800-line <code>deque</code> pre-buffers logcat output. When a crash trigger is confirmed as app-specific, context lines are flushed to the log file, capturing the full stack without missing early frames.</div>
         </div>
         <div class="feat-card anim-fade-up d2">
           <div class="feat-tag">CRASH DETECTION</div>
           <div class="feat-title">3-Stage Crash Classification</div>
-          <div class="feat-desc">Distinguishes <code>ANR</code>, <code>App Crash</code> (FATAL EXCEPTION / process death), and <code>Tombstone</code> — each written to a separate crashlog file with type label at the end.</div>
+          <div class="feat-desc">Distinguishes <code>ANR</code>, <code>App Crash</code> (FATAL EXCEPTION / process death), and <code>Tombstone</code>, each written to a separate crashlog file with a type label at the end.</div>
         </div>
         <div class="feat-card anim-fade-up d3">
           <div class="feat-tag">PARALLELISM</div>
@@ -576,7 +576,7 @@
         <div class="feat-card anim-fade-up d6">
           <div class="feat-tag">SETUP</div>
           <div class="feat-title">Auto Device Configuration</div>
-          <div class="feat-desc"><code>test_settings()</code> runs before the test loop — sets swipe gesture navigation and disables keyboard toolbar automatically so test conditions are consistent across devices.</div>
+          <div class="feat-desc"><code>test_settings()</code> runs before the test loop and sets swipe gesture navigation and disables the keyboard toolbar automatically, so test conditions stay consistent across devices.</div>
         </div>
       </div>
     </div>
@@ -787,7 +787,7 @@
         </div>
         <div class="err-card" style="border-left:3px solid var(--orange);">
           <div class="err-title">App Not Compatible / Not Available</div>
-          <div class="err-desc">XPath checks for Play Store warning text — incompatible, region-restricted, not found, offline. Result is set to <code>NT/NA</code> rather than Fail.</div>
+          <div class="err-desc">XPath checks for Play Store warning text: incompatible, region-restricted, not found, offline. Result is set to <code>NT/NA</code> rather than Fail.</div>
         </div>
         <div class="err-card" style="border-left:3px solid var(--green);">
           <div class="err-title">Install Popup Interference</div>
@@ -799,7 +799,7 @@
         </div>
         <div class="err-card" style="border-left:3px solid var(--purple);">
           <div class="err-title">Metadata Scrape Failure</div>
-          <div class="err-desc"><code>info_scrapper()</code> is wrapped in <code>try/except</code>. If the app is not on Play Store, all metadata fields are set to <code>"App is not found"</code> — the row is still saved.</div>
+          <div class="err-desc"><code>info_scrapper()</code> is wrapped in <code>try/except</code>. If the app is not on Play Store, all metadata fields are set to <code>"App is not found"</code>, and the row is still saved.</div>
         </div>
         <div class="err-card" style="border-left:3px solid var(--yellow);">
           <div class="err-title">Outer Exception Recovery</div>

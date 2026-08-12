@@ -1,6 +1,6 @@
 # App Automation Tester
 
-A GUI-based Android app testing automation tool that installs, launches, and stress-tests apps from Google Play across multiple connected devices simultaneously — with real-time crash detection, dark/multi-window mode testing, and CSV-driven reporting.
+A GUI-based Android app testing automation tool that installs, launches, and stress-tests apps from Google Play across multiple connected devices simultaneously, with real-time crash detection, dark/multi-window mode testing, and CSV-driven reporting.
 
 > **Visual overview:** [project-overview.html](project-overview.html)
 
@@ -8,7 +8,7 @@ A GUI-based Android app testing automation tool that installs, launches, and str
 
 ## Overview
 
-Testing app compatibility across Android devices is time-consuming and repetitive. This tool automates the full cycle: install from Google Play, launch the app, toggle dark mode, attempt multi-window mode, run a monkey test, detect crashes via logcat, and save structured results to CSV — all without manual interaction.
+Testing app compatibility across Android devices is time-consuming and repetitive. This tool automates the full cycle: install from Google Play, launch the app, toggle dark mode, attempt multi-window mode, run a monkey test, detect crashes via logcat, and save structured results to CSV, all without manual interaction.
 
 Multiple devices can run in parallel. A resume mode picks up where it left off if the session is interrupted.
 
@@ -31,12 +31,12 @@ App_Automation_Tool/
 ## How It Works
 
 ### 1. Connect Devices
-Click **Connect Devices** to detect all Android devices via ADB (USB or wireless). Devices can be individually selected from a checklist — unchecked means all devices are used.
+Click **Connect Devices** to detect all Android devices via ADB (USB or wireless). Devices can be individually selected from a checklist. Leaving them unchecked selects all devices.
 
 ### 2. Load App List
-- **Load Automation CSV File** — loads the default `test1.csv`
-- **Select CSV File** — opens a file picker for any CSV
-- **Search (Max: 30 apps)** — queries Google Play by keyword and generates a CSV automatically
+- **Load Automation CSV File**: loads the default `test1.csv`
+- **Select CSV File**: opens a file picker for any CSV
+- **Search (Max: 30 apps)**: queries Google Play by keyword and generates a CSV automatically
 
 CSV format required:
 ```
@@ -45,12 +45,12 @@ Instagram,com.instagram.android
 ```
 
 ### 3. Set Test Parameters
-- **Installation Attempts** — retries per app if install fails
-- **Launch Test Attempts** — if pass rate < 50%, the app is uninstalled and reinstalled automatically
+- **Installation Attempts**: retries per app if install fails
+- **Launch Test Attempts**: if pass rate < 50%, the app is uninstalled and reinstalled automatically
 
 ### 4. Run Tests
-- **Run in Sequential** — one device at a time
-- **Run in Parallel** — all selected devices simultaneously (multithreaded)
+- **Run in Sequential**: one device at a time
+- **Run in Parallel**: all selected devices simultaneously (multithreaded)
 
 Each app goes through:
 1. Open Google Play → Install
@@ -123,16 +123,16 @@ Previously built with PyInstaller for Windows (`.exe`) and macOS (`.app`). Sourc
 
 ## Changelog
 
-### v2.0 — 2026-05-07 · Crash Detection Overhaul + Device Selection UI
-- Ring-buffer logcat monitoring (800-line buffer) — crash context captured before detection confirmed
+### v2.0 · 2026-05-07 · Crash Detection Overhaul + Device Selection UI
+- Ring-buffer logcat monitoring (800-line buffer) captures crash context before detection is confirmed
 - ANR / App Crash / Tombstone distinguished in crash log output
-- Device checklist UI — run on selected devices only
-- `test_settings()` — auto-configures swipe navigation and keyboard toolbar before test run
+- Device checklist UI: run on selected devices only
+- `test_settings()`: auto-configures swipe navigation and keyboard toolbar before test run
 - Screen recording per launch attempt, preserved on crash
 - `Updated Date` converted to `YYYYMMDD` format
-- Resume logic tightened — skips only apps with both install and launch passing
+- Resume logic tightened to skip only apps with both install and launch passing
 
-### v1.0 — Initial Release
+### v1.0 · Initial Release
 - Multi-device parallel testing via ADB
 - Google Play install automation
 - Dark mode / multi-window / monkey test
